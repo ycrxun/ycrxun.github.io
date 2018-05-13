@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="服务注册,服务发现,KV存储," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Axiba" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="什么是ConsulConsul是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置。它提供了几个关键功能：  服务发现：Consul的客户端可以为一些客户端发现给定服务的提供者，诸如api或mysql之类的服务，通过使用DNS或HTTP，应用程序可以很容易地找到它们所依赖的服务。 健康检查：Consul的客户端可以提供任何数量的健康检查，或者与给定的服务（“是Web服务器">
+<meta name="keywords" content="服务注册,服务发现,KV存储">
+<meta property="og:type" content="article">
+<meta property="og:title" content="consul学习一-初见">
+<meta property="og:url" content="https://ycrxun.gitlab.io/2018/01/07/consul-first-time/index.html">
+<meta property="og:site_name" content="Axiba">
+<meta property="og:description" content="什么是ConsulConsul是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置。它提供了几个关键功能：  服务发现：Consul的客户端可以为一些客户端发现给定服务的提供者，诸如api或mysql之类的服务，通过使用DNS或HTTP，应用程序可以很容易地找到它们所依赖的服务。 健康检查：Consul的客户端可以提供任何数量的健康检查，或者与给定的服务（“是Web服务器">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://www.consul.io/assets/images/consul-arch-420ce04a.png">
+<meta property="og:image" content="https://ycrxun.gitlab.io/2018/01/07/consul-first-time/consul-ui.png">
+<meta property="og:updated_time" content="2018-05-13T03:34:28.922Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="consul学习一-初见">
+<meta name="twitter:description" content="什么是ConsulConsul是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置。它提供了几个关键功能：  服务发现：Consul的客户端可以为一些客户端发现给定服务的提供者，诸如api或mysql之类的服务，通过使用DNS或HTTP，应用程序可以很容易地找到它们所依赖的服务。 健康检查：Consul的客户端可以提供任何数量的健康检查，或者与给定的服务（“是Web服务器">
+<meta name="twitter:image" content="https://www.consul.io/assets/images/consul-arch-420ce04a.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://ycrxun.gitlab.io/2018/01/07/consul-first-time/"/>
+
+
+
+
+
+  <title>consul学习一-初见 | Axiba</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Axiba</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Open & Free</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://ycrxun.gitlab.io/2018/01/07/consul-first-time/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Soi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Axiba">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">consul学习一-初见</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-07T19:38:00+08:00">
+                2018-01-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Consul/" itemprop="url" rel="index">
+                    <span itemprop="name">Consul</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="什么是Consul"><a href="#什么是Consul" class="headerlink" title="什么是Consul"></a>什么是Consul</h2><p><strong><a href="https://www.consul.io" target="_blank" rel="noopener">Consul</a></strong>是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置。它提供了几个关键功能：</p>
+<ul>
+<li>服务发现：Consul的客户端可以为一些客户端发现给定服务的提供者，诸如api或mysql之类的服务，通过使用DNS或HTTP，应用程序可以很容易地找到它们所依赖的服务。</li>
+<li>健康检查：Consul的客户端可以提供任何数量的健康检查，或者与给定的服务（“是Web服务器返回200 OK”），或与本地节点（“内存利用率低于90％”）相关联。操作员可以使用此信息来监视群集运行状况，服务发现组件使用此信息将流量从不健康的主机中引导出去。</li>
+<li>KV存储：应用程序可以使用Consul的分层键/值存储，用于任何目的，包括动态配置，功能标记，协调，领导选举等等。简单的HTTP API使其易于使用。</li>
+<li>多数据中心：Consul支持多个数据中心。这意味着Consul的用户不必担心构建额外的抽象层以扩展到多个区域。</li>
+</ul>
+<h2 id="基本架构"><a href="#基本架构" class="headerlink" title="基本架构"></a>基本架构</h2><p>Consul是一个分布式，高度可用的系统。<br><img src="https://www.consul.io/assets/images/consul-arch-420ce04a.png" alt=""></p>
+<p>向Consul提供服务的每个节点都运行一个Consul代理。 发现其他服务或获取/设置键/值数据不需要运行代理。 代理负责健康检查节点上的服务以及节点本身。</p>
+<p>代理与一个或多个Consul服务器通讯。 Consul服务器是数据存储和复制的地方。 服务器自己选出一位领导。 虽然Consul可以在一台服务器上运行，但推荐使用3到5来避免导致数据丢失的故障情况。 每个数据中心都建议使用一组Consul服务器。</p>
+<p>需要发现其他服务或节点的基础架构组件可以查询任何Consul服务器或任何Consul代理。 代理自动将查询转发到服务器。</p>
+<p>每个数据中心都运行Consul服务器集群。 当发生跨数据中心服务发现或配置请求时，本地Consul服务器将请求转发给远程数据中心并返回结果。</p>
+<h2 id="简单使用"><a href="#简单使用" class="headerlink" title="简单使用"></a>简单使用</h2><p>consul的使用非常简单，其采用Go语言编写，编译出的文件无其他依赖。因此只需要从官方下载对应平台的编译好的二进制可执行程序直接运行就可以了，下载地址<a href="https://www.consul.io/downloads.html" target="_blank" rel="noopener">https://www.consul.io/downloads.html</a></p>
+<h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>我使用的Linux系统，所以安装如下：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -O https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip &amp;&amp; sudo unzip consul_1.0.2_linux_amd64.zip -d /usr/local/bin/</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> consul</span></span><br><span class="line">Usage: consul [--version] [--help] &lt;command&gt; [&lt;args&gt;]</span><br><span class="line"></span><br><span class="line">Available commands are:</span><br><span class="line">    agent          Runs a Consul agent</span><br><span class="line">    catalog        Interact with the catalog</span><br><span class="line">    event          Fire a new event</span><br><span class="line">    exec           Executes a command on Consul nodes</span><br><span class="line">    force-leave    Forces a member of the cluster to enter the "left" state</span><br><span class="line">    info           Provides debugging information for operators.</span><br><span class="line">    join           Tell Consul agent to join cluster</span><br><span class="line">    keygen         Generates a new encryption key</span><br><span class="line">    keyring        Manages gossip layer encryption keys</span><br><span class="line">    kv             Interact with the key-value store</span><br><span class="line">    leave          Gracefully leaves the Consul cluster and shuts down</span><br><span class="line">    lock           Execute a command holding a lock</span><br><span class="line">    maint          Controls node or service maintenance mode</span><br><span class="line">    members        Lists the members of a Consul cluster</span><br><span class="line">    monitor        Stream logs from a Consul agent</span><br><span class="line">    operator       Provides cluster-level tools for Consul operators</span><br><span class="line">    reload         Triggers the agent to reload configuration files</span><br><span class="line">    rtt            Estimates network round trip time between nodes</span><br><span class="line">    snapshot       Saves, restores and inspects snapshots of Consul server state</span><br><span class="line">    validate       Validate config files/directories</span><br><span class="line">    version        Prints the Consul version</span><br><span class="line">    watch          Watch for changes in Consul</span><br></pre></td></tr></table></figure>
+<h3 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h3><p>为了简单起见，我们将暂时在开发者模式中启动Consul代理。这个模式可以非常容易快速地启动一个单节点的Consul环境。当然它并不是用于生产环境下并且它也不会持久任何状态。<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> consul agent -dev</span></span><br><span class="line">==&gt; Starting Consul agent...</span><br><span class="line">==&gt; Consul agent running!</span><br><span class="line">           Version: 'v1.0.2'</span><br><span class="line">           Node ID: '14f11e8d-4904-3fcd-1cd5-251c311cf775'</span><br><span class="line">         Node name: 'master.soi.io'</span><br><span class="line">        Datacenter: 'dc1' (Segment: '&lt;all&gt;')</span><br><span class="line">            Server: true (Bootstrap: false)</span><br><span class="line">       Client Addr: [127.0.0.1] (HTTP: 8500, HTTPS: -1, DNS: 8600)</span><br><span class="line">      Cluster Addr: 127.0.0.1 (LAN: 8301, WAN: 8302)</span><br><span class="line">           Encrypt: Gossip: false, TLS-Outgoing: false, TLS-Incoming: false</span><br><span class="line"></span><br><span class="line">==&gt; Log data will now stream in as it occurs:</span><br><span class="line"></span><br><span class="line">    2018/01/12 22:02:36 [DEBUG] Using random ID "14f11e8d-4904-3fcd-1cd5-251c311cf775" as node ID</span><br><span class="line">    2018/01/12 22:02:36 [INFO] raft: Initial configuration (index=1): [&#123;Suffrage:Voter ID:14f11e8d-4904-3fcd-1cd5-251c311cf775 Address:127.0.0.1:8300&#125;]</span><br><span class="line">    2018/01/12 22:02:36 [INFO] raft: Node at 127.0.0.1:8300 [Follower] entering Follower state (Leader: "")</span><br><span class="line">    2018/01/12 22:02:36 [INFO] serf: EventMemberJoin: master.soi.io.dc1 127.0.0.1</span><br><span class="line">    2018/01/12 22:02:36 [INFO] serf: EventMemberJoin: master.soi.io 127.0.0.1</span><br><span class="line">    2018/01/12 22:02:36 [INFO] consul: Adding LAN server master.soi.io (Addr: tcp/127.0.0.1:8300) (DC: dc1)</span><br><span class="line">    2018/01/12 22:02:36 [INFO] consul: Handled member-join event for server "master.soi.io.dc1" in area "wan"</span><br><span class="line">    2018/01/12 22:02:36 [INFO] agent: Started DNS server 127.0.0.1:8600 (udp)</span><br><span class="line">    2018/01/12 22:02:36 [INFO] agent: Started DNS server 127.0.0.1:8600 (tcp)</span><br><span class="line">    2018/01/12 22:02:36 [INFO] agent: Started HTTP server on 127.0.0.1:8500 (tcp)</span><br><span class="line">    2018/01/12 22:02:36 [INFO] agent: started state syncer</span><br><span class="line">    2018/01/12 22:02:36 [WARN] raft: Heartbeat timeout from "" reached, starting election</span><br><span class="line">    2018/01/12 22:02:36 [INFO] raft: Node at 127.0.0.1:8300 [Candidate] entering Candidate state in term 2</span><br><span class="line">    2018/01/12 22:02:36 [DEBUG] raft: Votes needed: 1</span><br><span class="line">    2018/01/12 22:02:36 [DEBUG] raft: Vote granted from 14f11e8d-4904-3fcd-1cd5-251c311cf775 in term 2. Tally: 1</span><br><span class="line">    2018/01/12 22:02:36 [INFO] raft: Election won. Tally: 1</span><br><span class="line">    2018/01/12 22:02:36 [INFO] raft: Node at 127.0.0.1:8300 [Leader] entering Leader state</span><br><span class="line">    2018/01/12 22:02:36 [INFO] consul: cluster leadership acquired</span><br><span class="line">    2018/01/12 22:02:36 [INFO] consul: New leader elected: master.soi.io</span><br><span class="line">    2018/01/12 22:02:36 [DEBUG] consul: Skipping self join check for "master.soi.io" since the cluster is too small</span><br><span class="line">    2018/01/12 22:02:36 [INFO] consul: member 'master.soi.io' joined, marking health alive</span><br><span class="line">    2018/01/12 22:02:36 [DEBUG] Skipping remote check "serfHealth" since it is managed automatically</span><br><span class="line">    2018/01/12 22:02:36 [INFO] agent: Synced node info</span><br><span class="line">    2018/01/12 22:02:36 [DEBUG] agent: Node info in sync</span><br><span class="line">    2018/01/12 22:02:37 [DEBUG] Skipping remote check "serfHealth" since it is managed automatically</span><br><span class="line">    2018/01/12 22:02:37 [DEBUG] agent: Node info in sync</span><br></pre></td></tr></table></figure></p>
+<h3 id="集群成员"><a href="#集群成员" class="headerlink" title="集群成员"></a>集群成员</h3><p>此时，打开另一个终端，使用<code>consul members</code>命令查看：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> consul members</span></span><br><span class="line">Node           Address         Status  Type    Build  Protocol  DC   Segment</span><br><span class="line">master.soi.io  127.0.0.1:8301  alive   server  1.0.2  2         dc1  &lt;all&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="使用server模式运行"><a href="#使用server模式运行" class="headerlink" title="使用server模式运行"></a>使用server模式运行</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> consul agent -server -bootstrap -data-dir=<span class="variable">$PWD</span> -advertise=192.168.31.28 -client=0.0.0.0 -ui</span></span><br><span class="line">bootstrap = true: do not enable unless necessary</span><br><span class="line">==&gt; Starting Consul agent...</span><br><span class="line">==&gt; Consul agent running!</span><br><span class="line">           Version: 'v1.0.2'</span><br><span class="line">           Node ID: 'aac96fbf-2ccb-e0a8-2e82-aa4e3ff40d82'</span><br><span class="line">         Node name: 'master.soi.io'</span><br><span class="line">        Datacenter: 'dc1' (Segment: '&lt;all&gt;')</span><br><span class="line">            Server: true (Bootstrap: true)</span><br><span class="line">       Client Addr: [0.0.0.0] (HTTP: 8500, HTTPS: -1, DNS: 8600)</span><br><span class="line">      Cluster Addr: 192.168.31.28 (LAN: 8301, WAN: 8302)</span><br><span class="line">           Encrypt: Gossip: false, TLS-Outgoing: false, TLS-Incoming: false</span><br><span class="line"></span><br><span class="line">==&gt; Log data will now stream in as it occurs:</span><br><span class="line"></span><br><span class="line">    2018/01/12 22:09:19 [INFO] raft: Initial configuration (index=1): [&#123;Suffrage:Voter ID:aac96fbf-2ccb-e0a8-2e82-aa4e3ff40d82 Address:192.168.31.28:8300&#125;]</span><br><span class="line">    2018/01/12 22:09:19 [INFO] raft: Node at 192.168.31.28:8300 [Follower] entering Follower state (Leader: "")</span><br><span class="line">    2018/01/12 22:09:19 [INFO] serf: EventMemberJoin: master.soi.io.dc1 192.168.31.28</span><br><span class="line">    2018/01/12 22:09:19 [INFO] serf: EventMemberJoin: master.soi.io 192.168.31.28</span><br><span class="line">    2018/01/12 22:09:19 [INFO] consul: Handled member-join event for server "master.soi.io.dc1" in area "wan"</span><br><span class="line">    2018/01/12 22:09:19 [INFO] consul: Adding LAN server master.soi.io (Addr: tcp/192.168.31.28:8300) (DC: dc1)</span><br><span class="line">    2018/01/12 22:09:19 [INFO] agent: Started DNS server 0.0.0.0:8600 (udp)</span><br><span class="line">    2018/01/12 22:09:19 [INFO] agent: Started DNS server 0.0.0.0:8600 (tcp)</span><br><span class="line">    2018/01/12 22:09:19 [INFO] agent: Started HTTP server on [::]:8500 (tcp)</span><br><span class="line">    2018/01/12 22:09:19 [INFO] agent: started state syncer</span><br></pre></td></tr></table></figure>
+<p>在浏览器中打开<a href="http://localhost:8500" target="_blank" rel="noopener">http://localhost:8500</a></p>
+<img src="/2018/01/07/consul-first-time/consul-ui.png">
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechatpay.png" alt="Soi WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="Soi Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/服务注册/" rel="tag"># 服务注册</a>
+          
+            <a href="/tags/服务发现/" rel="tag"># 服务发现</a>
+          
+            <a href="/tags/KV存储/" rel="tag"># KV存储</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/04/2018-technology-plan/" rel="next" title="2018年计划">
+                <i class="fa fa-chevron-left"></i> 2018年计划
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/15/consul-cluster/" rel="prev" title="consul学习二-集群">
+                consul学习二-集群 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div onclick="showGitment()" id="gitment_title" class="gitment_title">显示 Gitment 评论</div>
+      <div id="container" style="display:none"></div>
+      <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+      <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+      <script>
+        var myTheme = {
+            render(state, instance) {
+                const container = document.createElement('div');
+                container.lang = "en-US";
+                container.className = 'gitment-container gitment-root-container';
+                container.appendChild(instance.renderHeader(state, instance));
+                container.appendChild(instance.renderEditor(state, instance));
+                container.appendChild(instance.renderComments(state, instance));
+                container.appendChild(instance.renderFooter(state, instance));
+                return container;
+            }
+        }
+        function showGitment() {
+            $("#gitment_title").attr("style", "display:none");
+            $("#container").attr("style", "").addClass("gitment_container");
+            var gitment = new Gitment({
+                id: window.location.pathname,
+                theme: myTheme,
+                owner: 'ycrxun',
+                repo: 'axiba',
+                oauth: {
+                    client_id: 'a2f917f5cb45d6dffe92',
+                    client_secret: '879169dfceea28b064c49ef7fd190cdafcc6e5a7'
+                }
+            });
+            gitment.render('container');
+        }
+    </script>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Soi" />
+          <p class="site-author-name" itemprop="name">Soi</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ycrxun" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://gitlab.com/ycrxun" target="_blank" title="GitLab">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  GitLab
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/JeffYang57210446" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-link"></i>
+              友情连接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.codedoge.com/" title="Codedoge" target="_blank">Codedoge</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://wolfdu.github.io/" title="Wolfdu" target="_blank">Wolfdu</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://joya-z.github.io/" title="Joya" target="_blank">Joya</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#什么是Consul"><span class="nav-number">1.</span> <span class="nav-text">什么是Consul</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本架构"><span class="nav-number">2.</span> <span class="nav-text">基本架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简单使用"><span class="nav-number">3.</span> <span class="nav-text">简单使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">3.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动"><span class="nav-number">3.2.</span> <span class="nav-text">启动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群成员"><span class="nav-number">3.3.</span> <span class="nav-text">集群成员</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用server模式运行"><span class="nav-number">3.4.</span> <span class="nav-text">使用server模式运行</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Soi</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-ribbon/canvas-ribbon.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

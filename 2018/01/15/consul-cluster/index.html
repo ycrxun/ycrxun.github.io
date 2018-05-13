@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.1" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="服务注册,服务发现,KV存储," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Axiba" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.1" />
+
+
+
+
+
+
+<meta name="description" content="在前面我们已经介绍了什么是Consul，接下来，我们将介绍下怎么搭建一个集群。 环境准备   节点名称 ip 角色     ams1 192.168.42.33 leader   ams2 192.168.42.198 server   ams3 192.168.42.85 server   ams4 192.168.42.252 client    安装并配置安装分别在4个节点安装 12345$">
+<meta name="keywords" content="服务注册,服务发现,KV存储">
+<meta property="og:type" content="article">
+<meta property="og:title" content="consul学习二-集群">
+<meta property="og:url" content="https://ycrxun.gitlab.io/2018/01/15/consul-cluster/index.html">
+<meta property="og:site_name" content="Axiba">
+<meta property="og:description" content="在前面我们已经介绍了什么是Consul，接下来，我们将介绍下怎么搭建一个集群。 环境准备   节点名称 ip 角色     ams1 192.168.42.33 leader   ams2 192.168.42.198 server   ams3 192.168.42.85 server   ams4 192.168.42.252 client    安装并配置安装分别在4个节点安装 12345$">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://ycrxun.gitlab.io/2018/01/15/consul-cluster/consul-cluster.svg">
+<meta property="og:image" content="https://ycrxun.gitlab.io/2018/01/15/consul-cluster/consul-cluster-ui.png">
+<meta property="og:updated_time" content="2018-05-13T03:34:28.921Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="consul学习二-集群">
+<meta name="twitter:description" content="在前面我们已经介绍了什么是Consul，接下来，我们将介绍下怎么搭建一个集群。 环境准备   节点名称 ip 角色     ams1 192.168.42.33 leader   ams2 192.168.42.198 server   ams3 192.168.42.85 server   ams4 192.168.42.252 client    安装并配置安装分别在4个节点安装 12345$">
+<meta name="twitter:image" content="https://ycrxun.gitlab.io/2018/01/15/consul-cluster/consul-cluster.svg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://ycrxun.gitlab.io/2018/01/15/consul-cluster/"/>
+
+
+
+
+
+  <title>consul学习二-集群 | Axiba</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Axiba</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <h1 class="site-subtitle" itemprop="description">Open & Free</h1>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="https://ycrxun.gitlab.io/2018/01/15/consul-cluster/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Soi">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.png">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Axiba">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">consul学习二-集群</h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-01-15T21:42:19+08:00">
+                2018-01-15
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Consul/" itemprop="url" rel="index">
+                    <span itemprop="name">Consul</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在前面我们已经介绍了<a href="https://ronggle.com/2018/01/07/consul-first-time/" target="_blank" rel="noopener">什么是Consul</a>，接下来，我们将介绍下怎么搭建一个集群。</p>
+<h2 id="环境准备"><a href="#环境准备" class="headerlink" title="环境准备"></a>环境准备</h2><table>
+<thead>
+<tr>
+<th>节点名称</th>
+<th>ip</th>
+<th>角色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ams1</td>
+<td>192.168.42.33</td>
+<td>leader</td>
+</tr>
+<tr>
+<td>ams2</td>
+<td>192.168.42.198</td>
+<td>server</td>
+</tr>
+<tr>
+<td>ams3</td>
+<td>192.168.42.85</td>
+<td>server</td>
+</tr>
+<tr>
+<td>ams4</td>
+<td>192.168.42.252</td>
+<td>client</td>
+</tr>
+</tbody>
+</table>
+<h2 id="安装并配置"><a href="#安装并配置" class="headerlink" title="安装并配置"></a>安装并配置</h2><h3 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h3><p>分别在4个节点安装</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> wget https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> unzip onsul_1.0.2_linux_amd64.zip -d /usr/bin</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> consul version</span></span><br><span class="line">Consul v1.0.2</span><br><span class="line">Protocol 2 spoken by default, understands 2 to 3 (agent will automatically use protocol &gt;2 when speaking to compatible agents)</span><br></pre></td></tr></table></figure>
+<p>Consul安装之后，运行Agent。<br>Agent可以在server或client模式下运行。每个数据中心都必须至少有一个运行于serve，但推荐使用3台或5台服务器。<br><img src="/2018/01/15/consul-cluster/consul-cluster.svg"></p>
+<h3 id="启动leader"><a href="#启动leader" class="headerlink" title="启动leader"></a>启动leader</h3><h4 id="创建配置文件"><a href="#创建配置文件" class="headerlink" title="创建配置文件"></a>创建配置文件</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> cat /etc/consul.d/server.json</span></span><br><span class="line">&#123;</span><br><span class="line">  "datacenter": "ams",</span><br><span class="line">  "data_dir": "/data/consul",</span><br><span class="line">  "node_name": "consul-leader",</span><br><span class="line">  "server": true,</span><br><span class="line">  "ui": true,</span><br><span class="line">  "bootstrap_expect": 1,</span><br><span class="line">  "client_addr": "0.0.0.0",</span><br><span class="line">  "advertise_addr": "192.168.42.33"</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="数据目录"><a href="#数据目录" class="headerlink" title="数据目录"></a>数据目录</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> mkdir -p /data/consul</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> mkdir -p /data/consul/<span class="built_in">log</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="启动"><a href="#启动" class="headerlink" title="启动"></a>启动</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<h3 id="启动server1"><a href="#启动server1" class="headerlink" title="启动server1"></a>启动server1</h3><h4 id="创建配置文件-1"><a href="#创建配置文件-1" class="headerlink" title="创建配置文件"></a>创建配置文件</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> cat /etc/consul.d/server.json</span></span><br><span class="line">&#123;</span><br><span class="line">  "datacenter": "ams",</span><br><span class="line">  "data_dir": "/data/consul",</span><br><span class="line">  "node_name": "consul-server1",</span><br><span class="line">  "server": true,</span><br><span class="line">  "ui": true,</span><br><span class="line">  "client_addr": "0.0.0.0",</span><br><span class="line">  "advertise_addr": "192.168.42.198",</span><br><span class="line">  "retry_join": ["192.168.42.33"]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="数据目录-1"><a href="#数据目录-1" class="headerlink" title="数据目录"></a>数据目录</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> mkdir -p /data/consul</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> mkdir -p /data/consul/<span class="built_in">log</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="启动-1"><a href="#启动-1" class="headerlink" title="启动"></a>启动</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<h3 id="启动server2"><a href="#启动server2" class="headerlink" title="启动server2"></a>启动server2</h3><h4 id="创建配置文件-2"><a href="#创建配置文件-2" class="headerlink" title="创建配置文件"></a>创建配置文件</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> cat /etc/consul.d/server.json</span></span><br><span class="line">&#123;</span><br><span class="line">  "datacenter": "ams",</span><br><span class="line">  "data_dir": "/data/consul",</span><br><span class="line">  "node_name": "consul-server2",</span><br><span class="line">  "server": true,</span><br><span class="line">  "ui": true,</span><br><span class="line">  "client_addr": "0.0.0.0",</span><br><span class="line">  "advertise_addr": "192.168.42.85",</span><br><span class="line">  "retry_join": ["192.168.42.33"]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="数据目录-2"><a href="#数据目录-2" class="headerlink" title="数据目录"></a>数据目录</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> mkdir -p /data/consul</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> mkdir -p /data/consul/<span class="built_in">log</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="启动-2"><a href="#启动-2" class="headerlink" title="启动"></a>启动</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<h3 id="启动client"><a href="#启动client" class="headerlink" title="启动client"></a>启动client</h3><h4 id="创建配置文件-3"><a href="#创建配置文件-3" class="headerlink" title="创建配置文件"></a>创建配置文件</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> cat /etc/consul.d/server.json</span></span><br><span class="line">&#123;</span><br><span class="line">  "datacenter": "ams",</span><br><span class="line">  "data_dir": "/data/consul",</span><br><span class="line">  "node_name": "consul-client",</span><br><span class="line">  "server": true,</span><br><span class="line">  "client_addr": "0.0.0.0",</span><br><span class="line">  "advertise_addr": "192.168.42.252",</span><br><span class="line">  "retry_join": ["192.168.42.33"]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="数据目录-3"><a href="#数据目录-3" class="headerlink" title="数据目录"></a>数据目录</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> mkdir -p /data/consul</span></span><br><span class="line"><span class="meta">#</span><span class="bash"> mkdir -p /data/consul/<span class="built_in">log</span></span></span><br></pre></td></tr></table></figure>
+<h4 id="启动-3"><a href="#启动-3" class="headerlink" title="启动"></a>启动</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;</span><br></pre></td></tr></table></figure>
+<h2 id="验证安装"><a href="#验证安装" class="headerlink" title="验证安装"></a>验证安装</h2><p>在浏览器中打开<a href="http://192.168.42.33:8500" target="_blank" rel="noopener">http://192.168.42.33:8500</a></p>
+<img src="/2018/01/15/consul-cluster/consul-cluster-ui.png">
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+  <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+    <div>坚持分享，您的支持将鼓励我继续创作！</div>
+    <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+      <span>赏</span>
+    </button>
+    <div id="QR" style="display: none;">
+      
+        <div id="wechat" style="display: inline-block">
+          <img id="wechat_qr" src="/images/wechatpay.png" alt="Soi WeChat Pay"/>
+          <p>微信打赏</p>
+        </div>
+      
+      
+        <div id="alipay" style="display: inline-block">
+          <img id="alipay_qr" src="/images/alipay.png" alt="Soi Alipay"/>
+          <p>支付宝打赏</p>
+        </div>
+      
+    </div>
+  </div>
+
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/服务注册/" rel="tag"># 服务注册</a>
+          
+            <a href="/tags/服务发现/" rel="tag"># 服务发现</a>
+          
+            <a href="/tags/KV存储/" rel="tag"># KV存储</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/07/consul-first-time/" rel="next" title="consul学习一-初见">
+                <i class="fa fa-chevron-left"></i> consul学习一-初见
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/13/cloud-labs/" rel="prev" title="使用Docker打造自己的云平台">
+                使用Docker打造自己的云平台 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div onclick="showGitment()" id="gitment_title" class="gitment_title">显示 Gitment 评论</div>
+      <div id="container" style="display:none"></div>
+      <link rel="stylesheet" href="https://imsun.github.io/gitment/style/default.css">
+      <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
+      <script>
+        var myTheme = {
+            render(state, instance) {
+                const container = document.createElement('div');
+                container.lang = "en-US";
+                container.className = 'gitment-container gitment-root-container';
+                container.appendChild(instance.renderHeader(state, instance));
+                container.appendChild(instance.renderEditor(state, instance));
+                container.appendChild(instance.renderComments(state, instance));
+                container.appendChild(instance.renderFooter(state, instance));
+                return container;
+            }
+        }
+        function showGitment() {
+            $("#gitment_title").attr("style", "display:none");
+            $("#container").attr("style", "").addClass("gitment_container");
+            var gitment = new Gitment({
+                id: window.location.pathname,
+                theme: myTheme,
+                owner: 'ycrxun',
+                repo: 'axiba',
+                oauth: {
+                    client_id: 'a2f917f5cb45d6dffe92',
+                    client_secret: '879169dfceea28b064c49ef7fd190cdafcc6e5a7'
+                }
+            });
+            gitment.render('container');
+        }
+    </script>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.png"
+               alt="Soi" />
+          <p class="site-author-name" itemprop="name">Soi</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+           
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">11</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">27</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/atom.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/ycrxun" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                  GitHub
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://gitlab.com/ycrxun" target="_blank" title="GitLab">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  GitLab
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="https://twitter.com/JeffYang57210446" target="_blank" title="Twitter">
+                  
+                    <i class="fa fa-fw fa-twitter"></i>
+                  
+                  Twitter
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+          <div class="links-of-blogroll motion-element links-of-blogroll-inline">
+            <div class="links-of-blogroll-title">
+              <i class="fa  fa-fw fa-link"></i>
+              友情连接
+            </div>
+            <ul class="links-of-blogroll-list">
+              
+                <li class="links-of-blogroll-item">
+                  <a href="http://blog.codedoge.com/" title="Codedoge" target="_blank">Codedoge</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://wolfdu.github.io/" title="Wolfdu" target="_blank">Wolfdu</a>
+                </li>
+              
+                <li class="links-of-blogroll-item">
+                  <a href="https://joya-z.github.io/" title="Joya" target="_blank">Joya</a>
+                </li>
+              
+            </ul>
+          </div>
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#环境准备"><span class="nav-number">1.</span> <span class="nav-text">环境准备</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装并配置"><span class="nav-number">2.</span> <span class="nav-text">安装并配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装"><span class="nav-number">2.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动leader"><span class="nav-number">2.2.</span> <span class="nav-text">启动leader</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建配置文件"><span class="nav-number">2.2.1.</span> <span class="nav-text">创建配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据目录"><span class="nav-number">2.2.2.</span> <span class="nav-text">数据目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动"><span class="nav-number">2.2.3.</span> <span class="nav-text">启动</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动server1"><span class="nav-number">2.3.</span> <span class="nav-text">启动server1</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建配置文件-1"><span class="nav-number">2.3.1.</span> <span class="nav-text">创建配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据目录-1"><span class="nav-number">2.3.2.</span> <span class="nav-text">数据目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动-1"><span class="nav-number">2.3.3.</span> <span class="nav-text">启动</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动server2"><span class="nav-number">2.4.</span> <span class="nav-text">启动server2</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建配置文件-2"><span class="nav-number">2.4.1.</span> <span class="nav-text">创建配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据目录-2"><span class="nav-number">2.4.2.</span> <span class="nav-text">数据目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动-2"><span class="nav-number">2.4.3.</span> <span class="nav-text">启动</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动client"><span class="nav-number">2.5.</span> <span class="nav-text">启动client</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建配置文件-3"><span class="nav-number">2.5.1.</span> <span class="nav-text">创建配置文件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据目录-3"><span class="nav-number">2.5.2.</span> <span class="nav-text">数据目录</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#启动-3"><span class="nav-number">2.5.3.</span> <span class="nav-text">启动</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#验证安装"><span class="nav-number">3.</span> <span class="nav-text">验证安装</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Soi</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  
+  <script type="text/javascript" src="/lib/canvas-ribbon/canvas-ribbon.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.1"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.1"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.1"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.1"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.1"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
