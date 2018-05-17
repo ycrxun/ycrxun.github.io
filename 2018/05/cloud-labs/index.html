@@ -1,0 +1,961 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.40.3 with theme Tranquilpeak 0.4.3-BETA">
+    <title>使用Docker打造自己的云平台</title>
+    <meta name="author" content="Soi">
+    <meta name="keywords" content=", Soi, Programming, Blog, ycrxun">
+
+    <link rel="icon" href="https://ronggle.com/images/favicon.ico">
+    
+
+    
+    <meta name="description" content="失踪人口回归，经过几个月的失踪，我又终于回归正轨了，前面没有更博客，主要原因是，因为我实在是太忙（懒）了。
+">
+    <meta property="og:description" content="失踪人口回归，经过几个月的失踪，我又终于回归正轨了，前面没有更博客，主要原因是，因为我实在是太忙（懒）了。
+">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="使用Docker打造自己的云平台">
+    <meta property="og:url" content="/2018/05/cloud-labs/">
+    <meta property="og:site_name" content="佛系程序员">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="佛系程序员">
+    <meta name="twitter:description" content="失踪人口回归，经过几个月的失踪，我又终于回归正轨了，前面没有更博客，主要原因是，因为我实在是太忙（懒）了。
+">
+    
+      <meta name="twitter:creator" content="@JeffYang57210446">
+    
+    
+
+    
+    
+
+    
+      <meta property="og:image" content="https://ronggle.com/images/avatar.jpg">
+    
+
+    
+      <meta property="og:image" content="https://ronggle.com/cloud-labs/monitor.png">
+    
+    
+    
+
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://ronggle.com/css/style-jsjn0006wyhpyzivf6yceb31gvpjatbcs3qzjvlumobfnugccvobqwxnnaj8.min.css" />
+    
+    
+      
+        <link rel="stylesheet"  href="https://ronggle.com/css/post-image.css">
+      
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://ronggle.com/">佛系程序员</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://ronggle.com/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://ronggle.com/images/avatar.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://ronggle.com/#about">
+          <img class="sidebar-profile-picture" src="https://ronggle.com/images/avatar.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Soi</h4>
+        
+          <h5 class="sidebar-profile-bio">一生二，二生三，三生万物</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/ycrxun" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://gitlab.com/ycrxun" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-gitlab"></i>
+      
+      <span class="sidebar-button-desc">Gitlab</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://twitter.com/JeffYang57210446" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-twitter"></i>
+      
+      <span class="sidebar-button-desc">Twitter</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      使用Docker打造自己的云平台
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2018-05-13T18:00:59Z">
+        
+  五月 13, 2018
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://ronggle.com/categories/cloud">Cloud</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>失踪人口回归，经过几个月的失踪，我又终于回归正轨了，前面没有更博客，主要原因是，因为我实在是太忙（懒）了。
+</p>
+
+<p>那么，既然回归，当然是要拿出干货咯。</p>
+
+<p>今天说点什么呢？沉寂了这么久，也一直在做与Docker相关的工作与学习，就记录下最近的一些内容，主要是为了防止自己又忘了，每次都要去找各种文档，没法快速复制出一份自己玩过的东西。</p>
+
+<h2 id="目标">目标</h2>
+
+<p>使用Docker搭建一个自己的”云平台“，大概就是，可以在上面部署应用，并且自动暴露出来。</p>
+
+<p><img src="https://ronggle.com/cloud-labs/monitor.png" alt="" /></p>
+
+<p><img src="https://ronggle.com/cloud-labs/console.png" alt="" /></p>
+
+<p><img src="https://ronggle.com/cloud-labs/console-services.png" alt="" /></p>
+
+<h2 id="前期准备">前期准备</h2>
+
+<ul>
+<li><a href="https://www.docker.com/">Docker</a></li>
+<li><a href="https://traefik.io/">Traefik</a></li>
+<li><a href="https://www.portainer.io/">Portainer</a></li>
+<li><a href="https://docs.docker.com/compose/">Docker Compose</a></li>
+<li><a href="https://docs.docker.com/engine/swarm/">Docker Swarm</a></li>
+</ul>
+
+<p>以上是我们需要前期准备好的，包括它们分别是什么、怎么安装、怎么使用？</p>
+
+<p>因为篇幅问题，在此不一一详细节介绍，如果你感兴趣，希望你能够自己通过搜索引擎自行了解，如果有什么问题，你可以联系我。</p>
+
+<h2 id="traefik">Traefik</h2>
+
+<p><strong>Træfɪk</strong> 是一个为了让部署微服务更加便捷而诞生的现代HTTP反向代理、负载均衡工具。 它支持多种后台 (Docker, Swarm, Kubernetes, Marathon, Mesos, Consul, Etcd, Zookeeper, BoltDB, Rest API, file…) 来自动化、动态的应用它的配置文件设置。</p>
+
+<p><img src="https://ronggle.com/cloud-labs/traefik.png" alt="" /></p>
+
+<p>我们用它作什么呢？没错，反向代理和负载均衡，同时因为其提供了好用的动态功能，使得我们可以用它配置域名动态的功能。</p>
+
+<p>怎么理解呢？假设我现在有了一个域名<code>cloud-labs.io</code>，然后为使用这个域名配置了一个“云平台”，然后为希望我在这个平台部署一个应用<code>nina</code>,部署完成后，为就可以使用<code>nina.cloud-labs.io</code>进行访问，并不在乎我的运用被具体部署到哪里。</p>
+
+<p>那么，要怎么做呢？</p>
+
+<p>如果使用了traefik，其实很简单，我们只需要将应用作为一个<code>backend</code>暴露给traefik即可。如果结合Docker使用，为们只需要在Label上加上对应的配置即可。</p>
+
+<p>下面我们一起来部署traefik吧！</p>
+
+<p>前提条件，你已经安装号Docker以及初始化完成Docker Swarm，当然你也可以只使用Docker模式，你可以参考traefik的<a href="https://docs.traefik.io/configuration/backends/docker/">官方文档</a>。</p>
+
+<h3 id="新建stack编排文件">新建stack编排文件</h3>
+
+<pre><code class="language-yaml">version: '3.3'
+services:
+  proxy:
+    image: traefik
+    command: --web --docker --docker.domain=cloud-labs.io --docker.watch --docker.swarmmode=true --logLevel=DEBUG
+    deploy:
+      labels:
+        - traefik.backend=traefik
+        - traefik.frontend.rule=Host:monitor.cloud-labs.io
+        - traefik.port=8080
+        - traefik.docker.network=traefik_proxy
+    networks:
+      - proxy
+    ports:
+      - &quot;80:80&quot;
+      - &quot;443:443&quot;
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /dev/null:/traefik.toml
+networks:
+  proxy
+</code></pre>
+
+<p>如上，我们开启了traefik的<code>web</code>、<code>docker</code>、<code>docker swarm</code>功能，并且把它的<code>web</code>功能暴露到<code>monitor.cloud-labs.io</code>，当我们部署完成后，就可以使用<code>monitor.cloud-labs.io</code>进行访问。</p>
+
+<h3 id="部署traefik">部署traefik</h3>
+
+<p>部署其实很简单，为采用的stack模式部署的traefik，命令如下：</p>
+
+<pre><code class="language-bash">$ ls
+traefik.yml
+
+$ docker stack deploy -c traefik.yml traefik
+
+</code></pre>
+
+<p>稍等一会儿，就可以在使用<code>monitor.cloud-labs.io</code>访问了。</p>
+
+<blockquote>
+<p>当然，<code>monitor.cloud-labs.io</code>是一个假定的域名，需要在你的host文件中进行配置。
+$ cat /etc/hosts
+127.0.0.1  monitor.cloud-labs.io</p>
+</blockquote>
+
+<h2 id="portainer">Portainer</h2>
+
+<p><strong>Portainer</strong>是一个轻量级管理用户界面，可让你轻松管理不同的Docker环境（Docker主机或Swarm集群）。其使用与部署一样简单，它包含一个可以在任何Docker引擎上运行的容器（可以作为Linux容器或Windows本机容器部署）。并允许你管理Docker容器，图像，卷，网络等等！它与独立的Docker引擎和Docker Swarm模式兼容。</p>
+
+<p>正如它的介绍那般，为们可以使用它作为我们的“云平台”的控制台，来作为我们平时的应用部署、管理、配置的WebUI，让我们的操作更加人性化。</p>
+
+<h3 id="新建stack编排文件-1">新建stack编排文件</h3>
+
+<pre><code class="language-yaml">version: '3.3'
+services:
+  server:
+    image: portainer/portainer
+    command: -H unix:///var/run/docker.sock
+    networks:
+      - traefik_proxy
+    deploy:
+      labels:
+        - traefik.backend=portainer
+        - traefik.frontend.rule=Host:console.cloud-labs.io
+        - traefik.docker.network=traefik_proxy
+        - traefik.port=9000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer:/data
+
+networks:
+  traefik_proxy:
+    external: true
+
+volumes:
+  portainer
+</code></pre>
+
+<p>如上，为们将会把Portainer部署到Docker环境中，同时将其暴露到了traefik中，使用<code>console.cloud-labs.io</code>进行访问。在这里，你可能会发现，为们并没有为portainer配置暴露的端口，这也是因为traefik给我们带来的一个好处，便是为们不需要在我们的物理机上开启那么多的端口映射，为们知道，如果端口映射过多时，我们会在难以管理、感知，往往会出现端口已经使用的情况下导致部署失败。</p>
+
+<blockquote>
+<p>值得注意的是，我们的Portainer的网络设置：</p>
+
+<pre><code class="language-yaml">&gt; networks:
+&gt;   traefik_proxy: 
+&gt;     external: true
+&gt; ```
+&gt; 是的，我们使用的是traefik的网络，因为我们希望它能够被traefik发现，并作反向代理和负载均衡。
+
+### 部署Portainer
+
+部署Portainer也很简单，为们使用stack进行部署：
+
+```bash
+$ ls
+portainer.yml
+
+$ docker stack deploy -c portainer.yml portainer
+</code></pre>
+
+<p>稍等一会儿，就可以在使用<code>monitor.cloud-labs.io</code>中发现我们的应用以及部署好了，并且被暴露在<code>console.cloud-labs.io</code>。</p>
+</blockquote>
+
+<p><img src="https://ronggle.com/cloud-labs/monitor-portainer.png" alt="" /></p>
+
+<blockquote>
+<p>同样的，<code>console.cloud-labs.io</code>是一个假定的域名，需要在你的host文件中进行配置。
+$ cat /etc/hosts
+127.0.0.1  console.cloud-labs.io</p>
+</blockquote>
+
+<h2 id="部署运用">部署运用</h2>
+
+<p>上面，我们已经把我们“云平台”的反向代理、负载均衡组件traefik，以及控制台portainer部署完毕，那么我们接下来就使用我们的“云平台”来部署一个应用吧！</p>
+
+<p>接下来，我们来部署一个比较简单的应用。</p>
+
+<h3 id="登入控制台">登入控制台</h3>
+
+<p>登陆我们“云平台”的控制台后，选择stack，为们来编排一下我们的应用。</p>
+
+<p><img src="https://ronggle.com/cloud-labs/portainer-stack-gitea.png" alt="" /></p>
+
+<h3 id="进入traefik">进入Traefik</h3>
+
+<p>当我们在控制台部署完成我们的gitea后，我们可以在Traefik的WebUI中看到，我们的gitea已经部署完成，并暴露在<code>git.cloud-labs.io</code>，这时我们可以访问<code>git.cloud-labs.io</code>来进行gitea的配置。</p>
+
+<h3 id="应用预览">应用预览</h3>
+
+<p>配置完成gitea后我们可以看到如下：</p>
+
+<p><img src="https://ronggle.com/cloud-labs/gitea.png" alt="" /></p>
+
+<h2 id="总结">总结</h2>
+
+<p>通过这次实战，你是否有收获呢？如果有，请为自己鼓掌，如果没有，那你也别责怪我，因为我其实真的是为了让自己记住。</p>
+
+<p>好吧，我会把最后的文件整理下，放到我的Github上，仓库为<a href="https://github.com/ycrxun/cloud-labs">cloud-labs</a>。</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/cloud/">Cloud</a>
+
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/docker/">Docker</a>
+
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/traefik/">Traefik</a>
+
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/portainer/">Portainer</a>
+
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/docker-ui/">Docker UI</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/05/love-2b-miss/" data-tooltip="2B小姐姐">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/01/consul-cluster/" data-tooltip="consul学习二-集群">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ronggle.com/2018/05/cloud-labs/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://ronggle.com/2018/05/cloud-labs/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://ronggle.com/2018/05/cloud-labs/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2018 Soi. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/05/love-2b-miss/" data-tooltip="2B小姐姐">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/01/consul-cluster/" data-tooltip="consul学习二-集群">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ronggle.com/2018/05/cloud-labs/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://ronggle.com/2018/05/cloud-labs/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://ronggle.com/2018/05/cloud-labs/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fronggle.com%2F2018%2F05%2Fcloud-labs%2F">
+          <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fronggle.com%2F2018%2F05%2Fcloud-labs%2F">
+          <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2Fronggle.com%2F2018%2F05%2Fcloud-labs%2F">
+          <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://ronggle.com/images/avatar.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Soi</h4>
+    
+      <div id="about-card-bio">一生二，二生三，三生万物</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Java 开发工程师
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/05/love-2b-miss/">
+                <h3 class="media-heading">2B小姐姐</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  May 5, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>2B是游戏《尼尔：机械纪元》中的可操作角色，全称：ヨルハ2号B型。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/05/cloud-labs/">
+                <h3 class="media-heading">使用Docker打造自己的云平台</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  May 5, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>失踪人口回归，经过几个月的失踪，我又终于回归正轨了，前面没有更博客，主要原因是，因为我实在是太忙（懒）了。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/01/consul-cluster/">
+                <h3 class="media-heading">consul学习二-集群</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jan 1, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>在前面我们已经介绍了<a href="https://ronggle.com/2018/01/07/consul-first-time/">什么是Consul</a>，接下来，我们将介绍下怎么搭建一个集群。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/01/consul-first-time/">
+                <h3 class="media-heading">consul学习一-初见</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jan 1, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><strong><a href="https://www.consul.io">Consul</a></strong>是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/01/2018-technology-plan/">
+                <h3 class="media-heading">2018年计划</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jan 1, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>弹指间，2017又浪费了，2018伊始，该做好计划，规划下自己的一年了。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2017/09/easy-mock-getting-and-started/">
+                <h3 class="media-heading">Easy Mock 试玩</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Sep 9, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>在过去的开发模式中，或许是一群人坐在一起，风风火火的一起码一个项目，大家在一起，口头沟通交流，并不太涉及到跨团队间的数据调用，基本上涉及的API也是不断沟通修改。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2017/08/fedora/">
+                <h3 class="media-heading">Fedora 桌面系统体验</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Aug 8, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>最开始安装Linux操作系统，那是三四年前了，那时候还在大学，当时安装了Debian，完了一段时间后为了耍游戏，还是换回了Windows。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2017/07/a-game-of-thinking/">
+                <h3 class="media-heading">一场王者农药引发的思考</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jul 7, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>最近手游届，王者农药应该算是比较火爆的了。当然，我也是其中的一名中毒者。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2017/07/what-is-zipkin/">
+                <h3 class="media-heading">什么是Zipkin</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jul 7, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><strong>Zipkin</strong>是一个分布式跟踪系统。 它有助于收集在微服务架构中排除延迟问题所需的时间数据。 它管理这些数据的收集和查找。 Zipkin是基于Google Dapper论文设计的。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2017/05/microservice-container-and-container-cloud/">
+                <h3 class="media-heading">微服务、容器与容器云-从入门到放弃</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  May 5, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>驱动技术的，从来都不应该是技术，也不是情怀，应该是不断变化的诉求。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         12 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('https://ronggle.com/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://ronggle.com/js/script-qi9wbxp2ya2j6p7wx1i6tgavftewndznf4v0hy2gvivk1rxgc3lm7njqb6bz.min.js"></script>
+
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/ronggle.com\/2018\/05\/cloud-labs\/';
+          
+            this.page.identifier = '\/2018\/05\/cloud-labs\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'tranquilpeak';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+    
+  </body>
+</html>
+

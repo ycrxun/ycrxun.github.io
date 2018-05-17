@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Consul on 佛系程序员</title>
+    <link>https://ronggle.com/categories/consul/</link>
+    <description>Recent content in Consul on 佛系程序员</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Mon, 15 Jan 2018 21:42:19 +0000</lastBuildDate>
+    
+	<atom:link href="https://ronggle.com/categories/consul/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>consul学习二-集群</title>
+      <link>https://ronggle.com/2018/01/consul-cluster/</link>
+      <pubDate>Mon, 15 Jan 2018 21:42:19 +0000</pubDate>
+      
+      <guid>https://ronggle.com/2018/01/consul-cluster/</guid>
+      <description>&lt;p&gt;在前面我们已经介绍了&lt;a href=&#34;https://ronggle.com/2018/01/07/consul-first-time/&#34;&gt;什么是Consul&lt;/a&gt;，接下来，我们将介绍下怎么搭建一个集群。
+&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>consul学习一-初见</title>
+      <link>https://ronggle.com/2018/01/consul-first-time/</link>
+      <pubDate>Sun, 07 Jan 2018 19:38:00 +0000</pubDate>
+      
+      <guid>https://ronggle.com/2018/01/consul-first-time/</guid>
+      <description>&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://www.consul.io&#34;&gt;Consul&lt;/a&gt;&lt;/strong&gt;是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置
+&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

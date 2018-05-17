@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>体验 on 佛系程序员</title>
+    <link>https://ronggle.com/tags/%E4%BD%93%E9%AA%8C/</link>
+    <description>Recent content in 体验 on 佛系程序员</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 03 Aug 2017 21:39:17 +0000</lastBuildDate>
+    
+	<atom:link href="https://ronggle.com/tags/%E4%BD%93%E9%AA%8C/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Fedora 桌面系统体验</title>
+      <link>https://ronggle.com/2017/08/fedora/</link>
+      <pubDate>Thu, 03 Aug 2017 21:39:17 +0000</pubDate>
+      
+      <guid>https://ronggle.com/2017/08/fedora/</guid>
+      <description>&lt;p&gt;最开始安装Linux操作系统，那是三四年前了，那时候还在大学，当时安装了Debian，完了一段时间后为了耍游戏，还是换回了Windows。
+&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
