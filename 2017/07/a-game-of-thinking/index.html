@@ -19,7 +19,7 @@
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="Hugo 0.40.3 with theme Tranquilpeak 0.4.3-BETA">
+    <meta name="generator" content="Hugo 0.37.1 with theme Tranquilpeak 0.4.3-BETA">
     <title>一场王者农药引发的思考</title>
     <meta name="author" content="Soi">
     <meta name="keywords" content=", Soi, Programming, Blog, ycrxun">
@@ -73,6 +73,9 @@
         <link rel="stylesheet"  href="https://ronggle.com/css/post-image.css">
       
     
+
+    
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
 
     
       
@@ -238,7 +241,7 @@
   
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2017-07-29T17:37:14Z">
+      <time itemprop="datePublished" datetime="2017-07-29T17:37:14&#43;08:00">
         
   七月 29, 2017
 
@@ -380,8 +383,9 @@
         
       
       
+      
         <li class="post-action">
-          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+          <a class="post-action-btn btn btn--default" href="#gitalk">
             <i class="fa fa-comment-o"></i>
           </a>
         </li>
@@ -399,11 +403,22 @@
 
             
               
-                <div id="disqus_thread">
-  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-</div>
-              
             
+            
+<div id="gitalk"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: "a2f917f5cb45d6dffe92",
+    clientSecret: '879169dfceea28b064c49ef7fd190cdafcc6e5a7',
+    repo: 'ycrxun.github.io',
+    owner: 'ycrxun',
+    admin: 'ycrxun',
+    distractionFreeMode: false
+  })
+  gitalk.render('gitalk')
+</script>
+
           </div>
         </article>
         <footer id="footer" class="main-content-wrap">
@@ -466,8 +481,9 @@
         
       
       
+      
         <li class="post-action">
-          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+          <a class="post-action-btn btn btn--default" href="#gitalk">
             <i class="fa fa-comment-o"></i>
           </a>
         </li>
@@ -784,28 +800,6 @@ $(document).ready(function() {
 
 
   
-    
-      <script>
-        var disqus_config = function () {
-          this.page.url = 'https:\/\/ronggle.com\/2017\/07\/a-game-of-thinking\/';
-          
-            this.page.identifier = '\/2017\/07\/a-game-of-thinking\/'
-          
-        };
-        (function() {
-          
-          
-          if (window.location.hostname == "localhost") {
-            return;
-          }
-          var d = document, s = d.createElement('script');
-          var disqus_shortname = 'tranquilpeak';
-          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-
-          s.setAttribute('data-timestamp', +new Date());
-          (d.head || d.body).appendChild(s);
-        })();
-      </script>
     
   
 
