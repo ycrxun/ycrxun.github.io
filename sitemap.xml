@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://ronggle.com/2018/07/traefik-https/</loc>
+    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ronggle.com/2018/05/love-2b-miss/</loc>
     <lastmod>2018-05-17T21:08:52+08:00</lastmod>
   </url>
@@ -85,13 +90,13 @@
   </url>
   
   <url>
-    <loc>https://ronggle.com/tags/cloud/</loc>
-    <lastmod>2018-05-13T18:00:59+08:00</lastmod>
+    <loc>https://ronggle.com/categories/cloud/</loc>
+    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://ronggle.com/categories/cloud/</loc>
+    <loc>https://ronggle.com/tags/cloud/</loc>
     <lastmod>2018-05-13T18:00:59+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -133,6 +138,12 @@
   </url>
   
   <url>
+    <loc>https://ronggle.com/tags/https/</loc>
+    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://ronggle.com/tags/java/</loc>
     <lastmod>2017-02-12T19:32:45+08:00</lastmod>
     <priority>0</priority>
@@ -141,6 +152,12 @@
   <url>
     <loc>https://ronggle.com/tags/kv%E5%AD%98%E5%82%A8/</loc>
     <lastmod>2018-01-15T21:42:19+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ronggle.com/tags/lets-encrypt/</loc>
+    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -170,7 +187,7 @@
   
   <url>
     <loc>https://ronggle.com/post/</loc>
-    <lastmod>2018-05-17T21:08:52+08:00</lastmod>
+    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -212,7 +229,7 @@
   
   <url>
     <loc>https://ronggle.com/tags/traefik/</loc>
-    <lastmod>2018-05-13T18:00:59+08:00</lastmod>
+    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -236,7 +253,13 @@
   
   <url>
     <loc>https://ronggle.com/</loc>
-    <lastmod>2018-05-17T21:08:52+08:00</lastmod>
+    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ronggle.com/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/</loc>
+    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -278,7 +301,7 @@
   
   <url>
     <loc>https://ronggle.com/tags/%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/</loc>
-    <lastmod>2018-01-15T21:42:19+08:00</lastmod>
+    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
     <priority>0</priority>
   </url>
   

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>反向代理 on 佛系程序员</title>
+    <link>https://ronggle.com/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/</link>
+    <description>Recent content in 反向代理 on 佛系程序员</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Thu, 26 Jul 2018 22:42:22 +0800</lastBuildDate>
+    
+	<atom:link href="https://ronggle.com/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>开启Traefik的https</title>
+      <link>https://ronggle.com/2018/07/traefik-https/</link>
+      <pubDate>Thu, 26 Jul 2018 22:42:22 +0800</pubDate>
+      
+      <guid>https://ronggle.com/2018/07/traefik-https/</guid>
+      <description>&lt;p&gt;在&lt;a href=&#34;https://ronggle.com/2018/05/cloud-labs/&#34;&gt;使用Docker打造自己的云平台&lt;/a&gt;中我们有提到&lt;strong&gt;Traefik&lt;/strong&gt;，并对其进行了简单的使用，后面在使用的过程中，需要使用https，所以也对traefik自动从&lt;a href=&#34;https://letsencrypt.org/&#34;&gt;Let&amp;rsquo;s Encrypt&lt;/a&gt;获取证书进行了验证与使用，所以在此记录下验证的过程。
+&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

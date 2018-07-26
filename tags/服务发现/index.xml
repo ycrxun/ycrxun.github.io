@@ -6,10 +6,20 @@
     <description>Recent content in 服务发现 on 佛系程序员</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Mon, 15 Jan 2018 21:42:19 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 26 Jul 2018 22:42:22 +0800</lastBuildDate>
     
 	<atom:link href="https://ronggle.com/tags/%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>开启Traefik的https</title>
+      <link>https://ronggle.com/2018/07/traefik-https/</link>
+      <pubDate>Thu, 26 Jul 2018 22:42:22 +0800</pubDate>
+      
+      <guid>https://ronggle.com/2018/07/traefik-https/</guid>
+      <description>&lt;p&gt;在&lt;a href=&#34;https://ronggle.com/2018/05/cloud-labs/&#34;&gt;使用Docker打造自己的云平台&lt;/a&gt;中我们有提到&lt;strong&gt;Traefik&lt;/strong&gt;，并对其进行了简单的使用，后面在使用的过程中，需要使用https，所以也对traefik自动从&lt;a href=&#34;https://letsencrypt.org/&#34;&gt;Let&amp;rsquo;s Encrypt&lt;/a&gt;获取证书进行了验证与使用，所以在此记录下验证的过程。
+&lt;/p&gt;</description>
+    </item>
     
     <item>
       <title>consul学习二-集群</title>

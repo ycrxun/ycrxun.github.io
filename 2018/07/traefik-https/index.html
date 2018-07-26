@@ -1,0 +1,873 @@
+
+
+  
+    
+  
+
+
+  
+
+
+
+
+
+  
+
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="Hugo 0.37.1 with theme Tranquilpeak 0.4.3-BETA">
+    <title>开启Traefik的https</title>
+    <meta name="author" content="Soi">
+    <meta name="keywords" content=", Soi, Programming, Blog, ycrxun">
+
+    <link rel="icon" href="https://ronggle.com/images/favicon.ico">
+    
+
+    
+    <meta name="description" content="在使用Docker打造自己的云平台中我们有提到Traefik，并对其进行了简单的使用，后面在使用的过程中，需要使用https，所以也对traefik自动从Let&rsquo;s Encrypt获取证书进行了验证与使用，所以在此记录下验证的过程。
+">
+    <meta property="og:description" content="在使用Docker打造自己的云平台中我们有提到Traefik，并对其进行了简单的使用，后面在使用的过程中，需要使用https，所以也对traefik自动从Let&rsquo;s Encrypt获取证书进行了验证与使用，所以在此记录下验证的过程。
+">
+    <meta property="og:type" content="blog">
+    <meta property="og:title" content="开启Traefik的https">
+    <meta property="og:url" content="/2018/07/traefik-https/">
+    <meta property="og:site_name" content="佛系程序员">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="佛系程序员">
+    <meta name="twitter:description" content="在使用Docker打造自己的云平台中我们有提到Traefik，并对其进行了简单的使用，后面在使用的过程中，需要使用https，所以也对traefik自动从Let&rsquo;s Encrypt获取证书进行了验证与使用，所以在此记录下验证的过程。
+">
+    
+      <meta name="twitter:creator" content="@JeffYang57210446">
+    
+    
+
+    
+    
+
+    
+      <meta property="og:image" content="https://ronggle.com/images/avatar.jpg">
+    
+
+    
+      <meta property="og:image" content="https://ronggle.com/traefik-https/traefik.svg">
+    
+    
+    
+
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://ronggle.com/css/style-jsjn0006wyhpyzivf6yceb31gvpjatbcs3qzjvlumobfnugccvobqwxnnaj8.min.css" />
+    
+    
+      
+        <link rel="stylesheet"  href="https://ronggle.com/css/post-image.css">
+      
+    
+
+    
+    <link rel="stylesheet" href="https://unpkg.com/gitalk/dist/gitalk.css">
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://ronggle.com/">佛系程序员</a>
+  </div>
+  
+    
+      <a class="header-right-picture "
+         href="https://ronggle.com/#about">
+    
+    
+    
+      
+        <img class="header-picture" src="https://ronggle.com/images/avatar.jpg" alt="作者的图片" />
+      
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://ronggle.com/#about">
+          <img class="sidebar-profile-picture" src="https://ronggle.com/images/avatar.jpg" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">Soi</h4>
+        
+          <h5 class="sidebar-profile-bio">一生二，二生三，三生万物</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/ycrxun" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://gitlab.com/ycrxun" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-gitlab"></i>
+      
+      <span class="sidebar-button-desc">Gitlab</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://twitter.com/JeffYang57210446" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-twitter"></i>
+      
+      <span class="sidebar-button-desc">Twitter</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://ronggle.com/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+
+      <div id="main" data-behavior="4"
+        class="
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+            <div class="post-header main-content-wrap text-left">
+  
+    <h1 class="post-title" itemprop="headline">
+      开启Traefik的https
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2018-07-26T22:42:22&#43;08:00">
+        
+  七月 26, 2018
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://ronggle.com/categories/cloud">Cloud</a>
+    
+  
+
+  </div>
+
+</div>
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>在<a href="https://ronggle.com/2018/05/cloud-labs/">使用Docker打造自己的云平台</a>中我们有提到<strong>Traefik</strong>，并对其进行了简单的使用，后面在使用的过程中，需要使用https，所以也对traefik自动从<a href="https://letsencrypt.org/">Let&rsquo;s Encrypt</a>获取证书进行了验证与使用，所以在此记录下验证的过程。
+</p>
+
+<h2 id="目标">目标</h2>
+
+<p>开启Traefik的https服务。
+<img src="https://ronggle.com/traefik-https/console.png" alt="" /></p>
+
+<h2 id="前期准备">前期准备</h2>
+
+<ul>
+<li><a href="https://www.docker.com/">Docker</a></li>
+<li><a href="https://traefik.io/">Traefik</a></li>
+<li><a href="https://www.portainer.io/">Portainer</a></li>
+<li><a href="https://docs.docker.com/compose/">Docker Compose</a></li>
+<li><a href="https://docs.docker.com/engine/swarm/">Docker Swarm</a></li>
+</ul>
+
+<h2 id="traefik">Traefik</h2>
+
+<p><strong>Traefik</strong>云原生边缘路由器,反向代理/负载均衡器，简单，动态，自动，快速，功能齐全，开源，经过生产验证，提供指标，并与各种主要集群技术集成&hellip;&hellip;难怪它如此受欢迎！</p>
+
+<p><img src="https://ronggle.com/traefik-https/traefik-architecture.svg" alt="架构" />
+<img src="https://ronggle.com/traefik-https/web.frontend.png" alt="WebUI" />
+<img src="https://ronggle.com/traefik-https/traefik-health.png" alt="Health" /></p>
+
+<h2 id="新建stack编排文件">新建stack编排文件</h2>
+
+<pre><code class="language-yaml">version: &quot;3.4&quot;
+services:
+  server:
+    image: traefik:latest
+    command:
+      - &quot;--api&quot;
+      - &quot;--api.dashboard&quot;
+      - &quot;--api.statistics&quot;
+      - &quot;--entrypoints=Name:http Address::80 Redirect.EntryPoint:https&quot;
+      - &quot;--entrypoints=Name:https Address::443 TLS&quot;
+      - &quot;--defaultentrypoints=http,https&quot;
+      - &quot;--acme&quot;
+      - &quot;--acme.storage=/acme.json&quot;
+      - &quot;--acme.entryPoint=https&quot;
+      - &quot;--acme.httpChallenge.entryPoint=http&quot;
+      - &quot;--acme.onHostRule=true&quot;
+      - &quot;--acme.onDemand=false&quot;
+      - &quot;--acme.email=example@mail.com&quot;
+      - &quot;--docker&quot;
+      - &quot;--docker.swarmMode&quot;
+      - &quot;--docker.domain=example.com&quot;
+      - &quot;--docker.watch&quot;
+    ports:
+      - &quot;80:80&quot;
+      - &quot;443:443&quot;
+    networks:
+      - proxy
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      update_config:
+        parallelism: 1
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+      labels:
+        - traefik.backend=traefik
+        - traefik.frontend.rule=Host:monitor.example.com
+        - traefik.docker.network=traefik_proxy
+        - traefik.port=8080
+
+networks:
+  proxy:
+
+</code></pre>
+
+<blockquote>
+<p>如上，我们开启了traefik的<code>api</code>、<code>docker</code>、<code>docker swarm</code>、<code>https</code>、<code>自动向Let's Encrypt申请证书</code>功能，并且把它的<code>web</code>功能暴露到<code>monitor.example.com</code>，当我们部署完成后，就可以使用<code>https://monitor.example.com</code>进行访问。</p>
+</blockquote>
+
+<h3 id="部署traefik">部署traefik</h3>
+
+<p>部署其实很简单，为采用的stack模式部署的traefik，命令如下：
+```bash
+$ ls
+traefik.yml</p>
+
+<p>$ sudo docker stack deploy -c traefik.yml traefik</p>
+
+<p>稍等一会儿就可以查看到我们已经完成了traefik的部署，并且使用traefik自动发现Docker上运行的应用时，以及是https了，查看证书详情，可以看到我们的证书使用的Let&rsquo;s Encrypt申请。
+<img src="https://ronggle.com/traefik-https/lets-encrypt.png" alt="证书详情" /></p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/traefik/">Traefik</a>
+
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/">服务发现</a>
+
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86/">反向代理</a>
+
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/lets-encrypt/">Let&#39;s Encrypt</a>
+
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/https/">Https</a>
+
+                  </div>
+                
+              
+            
+            
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/05/love-2b-miss/" data-tooltip="2B小姐姐">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ronggle.com/2018/07/traefik-https/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://ronggle.com/2018/07/traefik-https/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://ronggle.com/2018/07/traefik-https/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#gitalk">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+            
+              
+            
+            
+<div id="gitalk"></div>
+<script src="https://unpkg.com/gitalk/dist/gitalk.min.js"></script>
+<script>
+  var gitalk = new Gitalk({
+    clientID: "a2f917f5cb45d6dffe92",
+    clientSecret: '879169dfceea28b064c49ef7fd190cdafcc6e5a7',
+    repo: 'ycrxun.github.io',
+    owner: 'ycrxun',
+    admin: 'ycrxun',
+    distractionFreeMode: false
+  })
+  gitalk.render('gitalk')
+</script>
+
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2018 Soi. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        
+  <div class="post-actions-wrap">
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/05/love-2b-miss/" data-tooltip="2B小姐姐">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ronggle.com/2018/07/traefik-https/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://ronggle.com/2018/07/traefik-https/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://ronggle.com/2018/07/traefik-https/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#gitalk">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fronggle.com%2F2018%2F07%2Ftraefik-https%2F">
+          <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fronggle.com%2F2018%2F07%2Ftraefik-https%2F">
+          <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2Fronggle.com%2F2018%2F07%2Ftraefik-https%2F">
+          <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://ronggle.com/images/avatar.jpg" alt="作者的图片" />
+    
+    <h4 id="about-card-name">Soi</h4>
+    
+      <div id="about-card-bio">一生二，二生三，三生万物</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Java 开发工程师
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        China
+      </div>
+    
+  </div>
+</div>
+
+    <div id="algolia-search-modal" class="modal-container">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="close-button"><i class="fa fa-close"></i></span>
+      <a href="https://algolia.com" target="_blank" rel="noopener" class="searchby-algolia text-color-light link-unstyled">
+        <span class="searchby-algolia-text text-color-light text-small">by</span>
+        <img class="searchby-algolia-logo" src="https://www.algolia.com/static_assets/images/press/downloads/algolia-light.svg">
+      </a>
+      <i class="search-icon fa fa-search"></i>
+      <form id="algolia-search-form">
+        <input type="text" id="algolia-search-input" name="search"
+          class="form-control input--large search-input" placeholder="搜索" />
+      </form>
+    </div>
+    <div class="modal-body">
+      <div class="no-result text-color-light text-center"></div>
+      <div class="results">
+        
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/07/traefik-https/">
+                <h3 class="media-heading">开启Traefik的https</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jul 7, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>在<a href="https://ronggle.com/2018/05/cloud-labs/">使用Docker打造自己的云平台</a>中我们有提到<strong>Traefik</strong>，并对其进行了简单的使用，后面在使用的过程中，需要使用https，所以也对traefik自动从<a href="https://letsencrypt.org/">Let&rsquo;s Encrypt</a>获取证书进行了验证与使用，所以在此记录下验证的过程。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/05/love-2b-miss/">
+                <h3 class="media-heading">2B小姐姐</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  May 5, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>2B是游戏《尼尔：机械纪元》中的可操作角色，全称：ヨルハ2号B型。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/05/cloud-labs/">
+                <h3 class="media-heading">使用Docker打造自己的云平台</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  May 5, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>失踪人口回归，经过几个月的失踪，我又终于回归正轨了，前面没有更博客，主要原因是，因为我实在是太忙（懒）了。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/01/consul-cluster/">
+                <h3 class="media-heading">consul学习二-集群</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jan 1, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>在前面我们已经介绍了<a href="https://ronggle.com/2018/01/07/consul-first-time/">什么是Consul</a>，接下来，我们将介绍下怎么搭建一个集群。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/01/consul-first-time/">
+                <h3 class="media-heading">consul学习一-初见</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jan 1, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><strong><a href="https://www.consul.io">Consul</a></strong>是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/01/2018-technology-plan/">
+                <h3 class="media-heading">2018年计划</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jan 1, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>弹指间，2017又浪费了，2018伊始，该做好计划，规划下自己的一年了。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2017/09/easy-mock-getting-and-started/">
+                <h3 class="media-heading">Easy Mock 试玩</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Sep 9, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>在过去的开发模式中，或许是一群人坐在一起，风风火火的一起码一个项目，大家在一起，口头沟通交流，并不太涉及到跨团队间的数据调用，基本上涉及的API也是不断沟通修改。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2017/08/fedora/">
+                <h3 class="media-heading">Fedora 桌面系统体验</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Aug 8, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>最开始安装Linux操作系统，那是三四年前了，那时候还在大学，当时安装了Debian，完了一段时间后为了耍游戏，还是换回了Windows。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2017/07/a-game-of-thinking/">
+                <h3 class="media-heading">一场王者农药引发的思考</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jul 7, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>最近手游届，王者农药应该算是比较火爆的了。当然，我也是其中的一名中毒者。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2017/07/what-is-zipkin/">
+                <h3 class="media-heading">什么是Zipkin</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Jul 7, 2017
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p><strong>Zipkin</strong>是一个分布式跟踪系统。 它有助于收集在微服务架构中排除延迟问题所需的时间数据。 它管理这些数据的收集和查找。 Zipkin是基于Google Dapper论文设计的。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+      </div>
+    </div>
+    <div class="modal-footer">
+      <p class="results-count text-medium"
+         data-message-zero=""
+         data-message-one=""
+         data-message-other="">
+         13 posts found
+      </p>
+    </div>
+  </div>
+</div>
+    
+  
+    
+    <div id="cover" style="background-image:url('https://ronggle.com/images/cover.jpg');"></div>
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://ronggle.com/js/script-qi9wbxp2ya2j6p7wx1i6tgavftewndznf4v0hy2gvivk1rxgc3lm7njqb6bz.min.js"></script>
+
+
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+  
+
+
+
+<script>
+  (function(f, a, t, h, o, m){
+    a[h]=a[h]||function(){
+      (a[h].q=a[h].q||[]).push(arguments)
+    };
+    o=f.createElement('script'),
+    m=f.getElementsByTagName('script')[0];
+    o.async=1; o.src=t; o.id='fathom-script';
+    m.parentNode.insertBefore(o,m)
+  })(document, window, 'https://usefathom.cloud.ronggle.com/tracker.js', 'fathom');
+  fathom('trackPageview');
+ </script>
+ 
+
+    
+  </body>
+</html>
+
