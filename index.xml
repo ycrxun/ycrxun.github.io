@@ -141,5 +141,14 @@
 &lt;/p&gt;</description>
     </item>
     
+    <item>
+      <title></title>
+      <link>https://ronggle.com/resume/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://ronggle.com/resume/</guid>
+      <description>best-resume-ever .fa { display: inline-block; font: normal normal normal 14px/1 FontAwesome; font-size: inherit; text-rendering: auto; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; } /* makes the font 33% larger relative to the icon container */ .fa-lg { font-size: 1.33333333em; line-height: 0.75em; vertical-align: -15%; } .fa-2x { font-size: 2em; } .fa-3x { font-size: 3em; } .fa-4x { font-size: 4em; } .fa-5x { font-size: 5em; } .fa-fw { width: 1.28571429em; text-align: center; } .</description>
+    </item>
+    
   </channel>
 </rss>
