@@ -20,7 +20,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="generator" content="Hugo 0.37.1 with theme Tranquilpeak 0.4.3-BETA">
-    <title>consul学习二-集群</title>
+    <title>使用gRPC开发微服务-服务注册与发现</title>
     <meta name="author" content="Soi">
     <meta name="keywords" content=", Soi, Programming, Blog, ycrxun">
 
@@ -28,17 +28,17 @@
     
 
     
-    <meta name="description" content="在前面我们已经介绍了什么是Consul，接下来，我们将介绍下怎么搭建一个集群。
+    <meta name="description" content="谈到微服务，就不免会提及服务注册，我们上一节中已经实现了gRPC的服务开发，以及客户端开发，在我们的客户端中，我们调用服务端时，需要指定服务端的IP，端口等信息，而在我们的编排系统中，我们的IP是不固定的，所以我们需要通过服务的发现，自己去发现服务端的配置。
 ">
-    <meta property="og:description" content="在前面我们已经介绍了什么是Consul，接下来，我们将介绍下怎么搭建一个集群。
+    <meta property="og:description" content="谈到微服务，就不免会提及服务注册，我们上一节中已经实现了gRPC的服务开发，以及客户端开发，在我们的客户端中，我们调用服务端时，需要指定服务端的IP，端口等信息，而在我们的编排系统中，我们的IP是不固定的，所以我们需要通过服务的发现，自己去发现服务端的配置。
 ">
     <meta property="og:type" content="blog">
-    <meta property="og:title" content="consul学习二-集群">
-    <meta property="og:url" content="/2018/01/consul-cluster/">
+    <meta property="og:title" content="使用gRPC开发微服务-服务注册与发现">
+    <meta property="og:url" content="/2018/08/registry-microservies-via-grpc/">
     <meta property="og:site_name" content="佛系程序员">
     <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="佛系程序员">
-    <meta name="twitter:description" content="在前面我们已经介绍了什么是Consul，接下来，我们将介绍下怎么搭建一个集群。
+    <meta name="twitter:description" content="谈到微服务，就不免会提及服务注册，我们上一节中已经实现了gRPC的服务开发，以及客户端开发，在我们的客户端中，我们调用服务端时，需要指定服务端的IP，端口等信息，而在我们的编排系统中，我们的IP是不固定的，所以我们需要通过服务的发现，自己去发现服务端的配置。
 ">
     
       <meta name="twitter:creator" content="@JeffYang57210446">
@@ -53,7 +53,7 @@
     
 
     
-      <meta property="og:image" content="https://ronggle.com/consul-first-time/consul-ui.png">
+      <meta property="og:image" content="https://ronggle.com/registry-microservies-via-grpc/grpc_inverse.svg">
     
     
     
@@ -245,15 +245,15 @@
             <div class="post-header main-content-wrap text-left">
   
     <h1 class="post-title" itemprop="headline">
-      consul学习二-集群
+      使用gRPC开发微服务-服务注册与发现
     </h1>
   
   
   <div class="postShorten-meta post-meta">
     
-      <time itemprop="datePublished" datetime="2018-01-15T21:42:19&#43;08:00">
+      <time itemprop="datePublished" datetime="2018-08-12T20:04:08&#43;08:00">
         
-  一月 15, 2018
+  八月 12, 2018
 
       </time>
     
@@ -262,7 +262,7 @@
   
     <span>发布在</span>
     
-      <a class="category-link" href="https://ronggle.com/categories/consul">Consul</a>
+      <a class="category-link" href="https://ronggle.com/categories/grpc">gRPC</a>
     
   
 
@@ -272,180 +272,314 @@
           
           <div class="post-content markdown" itemprop="articleBody">
             <div class="main-content-wrap">
-              <p>在前面我们已经介绍了<a href="https://ronggle.com/2018/01/07/consul-first-time/">什么是Consul</a>，接下来，我们将介绍下怎么搭建一个集群。
+              <p>谈到微服务，就不免会提及服务注册，我们上一节中已经实现了gRPC的服务开发，以及客户端开发，在我们的客户端中，我们调用服务端时，需要指定服务端的IP，端口等信息，而在我们的编排系统中，我们的IP是不固定的，所以我们需要通过服务的发现，自己去发现服务端的配置。
 </p>
 
-<h2 id="环境准备">环境准备</h2>
+<h2 id="前提">前提</h2>
 
-<table>
-<thead>
-<tr>
-<th>节点名称</th>
-<th>ip</th>
-<th>角色</th>
-</tr>
-</thead>
+<ul>
+<li><a href="https://www.consul.io/">Consul</a></li>
+<li>Docker</li>
+<li>Golang</li>
+</ul>
 
-<tbody>
-<tr>
-<td>ams1</td>
-<td>192.168.42.33</td>
-<td>leader</td>
-</tr>
+<h2 id="服务注册">服务注册</h2>
 
-<tr>
-<td>ams2</td>
-<td>192.168.42.198</td>
-<td>server</td>
-</tr>
+<p>首先，我们来定义服务注册的接口：</p>
 
-<tr>
-<td>ams3</td>
-<td>192.168.42.85</td>
-<td>server</td>
-</tr>
-
-<tr>
-<td>ams4</td>
-<td>192.168.42.252</td>
-<td>client</td>
-</tr>
-</tbody>
-</table>
-
-<h2 id="安装并配置">安装并配置</h2>
-
-<h3 id="安装">安装</h3>
-
-<p>分别在4个节点安装</p>
-
-<pre><code class="language-shell">$ wget https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip
-$ unzip onsul_1.0.2_linux_amd64.zip -d /usr/bin
-$ consul version
-Consul v1.0.2
-Protocol 2 spoken by default, understands 2 to 3 (agent will automatically use protocol &gt;2 when speaking to compatible agents)
-</code></pre>
-
-<p>Consul安装之后，运行Agent。
-Agent可以在server或client模式下运行。每个数据中心都必须至少有一个运行于serve，但推荐使用3台或5台服务器。
-<img src="https://ronggle.com/consul-cluster/consul-cluster.svg" alt="" /></p>
-
-<h3 id="启动leader">启动leader</h3>
-
-<h4 id="创建配置文件">创建配置文件</h4>
-
-<pre><code class="language-shell"># cat /etc/consul.d/server.json
-{
-  &quot;datacenter&quot;: &quot;ams&quot;,
-  &quot;data_dir&quot;: &quot;/data/consul&quot;,
-  &quot;node_name&quot;: &quot;consul-leader&quot;,
-  &quot;server&quot;: true,
-  &quot;ui&quot;: true,
-  &quot;bootstrap_expect&quot;: 1,
-  &quot;client_addr&quot;: &quot;0.0.0.0&quot;,
-  &quot;advertise_addr&quot;: &quot;192.168.42.33&quot;
+<pre><code class="language-golang">// Registry interface for extend
+type Registry interface {
+	Register(id string, name string, port int, tags ...string) error
+	DeRegister(string) error
 }
 </code></pre>
 
-<h4 id="数据目录">数据目录</h4>
+<p>服务注册主要有两个接口，一个用于注册服务的<code>Register</code>，一个用于取消注册的<code>DeRegister</code>,当我们注册服务的时候，我们需要提供当前服务的ID，名称，端口等信息。</p>
 
-<pre><code class="language-shell"># mkdir -p /data/consul
-# mkdir -p /data/consul/log 
-</code></pre>
+<h3 id="注册中心consul">注册中心Consul</h3>
 
-<h4 id="启动">启动</h4>
+<p>为了方便我们的服务注册，我则使用<a href="https://www.consul.io/">Consul</a>作为注册中心，如果你还不知道什么是Consul，你可以看我之前的博客[consul学习一-初见]()以及Consul的官网进行了解。</p>
 
-<pre><code class="language-shell">nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;
-</code></pre>
+<p>实现Registry：</p>
 
-<h3 id="启动server1">启动server1</h3>
+<pre><code class="language-golang">type consul struct {
+	client *api.Client
+	addr   string
+}
 
-<h4 id="创建配置文件-1">创建配置文件</h4>
+// NewConsulRegistry returns a registryClient interface for given consul address
+func NewConsulRegistry(c Config) (Registry, error) {
+	addr := fmt.Sprintf(&quot;%s:%s&quot;, c.Host, c.Port)
+	if addr == &quot;&quot; {
+		addr = &quot;consul:8500&quot;
+	}
+	cfg := api.DefaultConfig()
+	cfg.Address = addr
+	cl, err := api.NewClient(cfg)
+	if err != nil {
+		logrus.Errorf(&quot;Can't connect to consul server at %s&quot;, addr)
+		return nil, err
+	}
+	return consul{client: cl, addr: addr}, nil
+}
 
-<pre><code class="language-shell"># cat /etc/consul.d/server.json
-{
-  &quot;datacenter&quot;: &quot;ams&quot;,
-  &quot;data_dir&quot;: &quot;/data/consul&quot;,
-  &quot;node_name&quot;: &quot;consul-server1&quot;,
-  &quot;server&quot;: true,
-  &quot;ui&quot;: true,
-  &quot;client_addr&quot;: &quot;0.0.0.0&quot;,
-  &quot;advertise_addr&quot;: &quot;192.168.42.198&quot;,
-  &quot;retry_join&quot;: [&quot;192.168.42.33&quot;]
+func (r consul) Register(id string, name string, port int, tags ...string) error {
+	conn, err := net.Dial(&quot;udp&quot;, &quot;8.8.8.8:80&quot;)
+	if err != nil {
+		return fmt.Errorf(&quot;unable to determine local addr: %v&quot;, err)
+	}
+	defer conn.Close()
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+	asr := &amp;api.AgentServiceRegistration{
+		ID:                name,
+		Name:              name,
+		Port:              port,
+		EnableTagOverride: false,
+		Tags:              tags,
+		Address:           localAddr.IP.String(),
+	}
+	err = r.client.Agent().ServiceRegister(asr)
+	if err != nil {
+		logrus.Errorf(&quot;Failed to register service at '%s'. error: %v&quot;, r.addr, err)
+	} else {
+		logrus.Infof(&quot;Regsitered service '%s' at consul.&quot;, id)
+	}
+	return err
+}
+
+func (r consul) DeRegister(name string) error {
+	err := r.client.Agent().ServiceDeregister(name)
+
+	if err != nil {
+		logrus.Errorf(&quot;Failed to deregister service by id: '%s'. Error: %v&quot;, name, err)
+	} else {
+		logrus.Infof(&quot;Deregistered service '%s' at consul.&quot;, name)
+	}
+	return err
 }
 </code></pre>
 
-<h4 id="数据目录-1">数据目录</h4>
+<blockquote>
+<p>完整代码可以查看<a href="https://github.com/ycrxun/gf/tree/master/registry">gf</a></p>
+</blockquote>
 
-<pre><code class="language-shell"># mkdir -p /data/consul
-# mkdir -p /data/consul/log 
-</code></pre>
+<h2 id="服务发现">服务发现</h2>
 
-<h4 id="启动-1">启动</h4>
+<p>同样，我们定义一个接口：</p>
 
-<pre><code class="language-shell">nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;
-</code></pre>
-
-<h3 id="启动server2">启动server2</h3>
-
-<h4 id="创建配置文件-2">创建配置文件</h4>
-
-<pre><code class="language-shell"># cat /etc/consul.d/server.json
-{
-  &quot;datacenter&quot;: &quot;ams&quot;,
-  &quot;data_dir&quot;: &quot;/data/consul&quot;,
-  &quot;node_name&quot;: &quot;consul-server2&quot;,
-  &quot;server&quot;: true,
-  &quot;ui&quot;: true,
-  &quot;client_addr&quot;: &quot;0.0.0.0&quot;,
-  &quot;advertise_addr&quot;: &quot;192.168.42.85&quot;,
-  &quot;retry_join&quot;: [&quot;192.168.42.33&quot;]
+<pre><code class="language-golang">// Discovery service
+type Discovery interface {
+	Dial(name string, opts ...grpc.DialOption) (*grpc.ClientConn, error)
 }
 </code></pre>
 
-<h4 id="数据目录-2">数据目录</h4>
+<h3 id="基于consul发现服务">基于Consul发现服务</h3>
 
-<pre><code class="language-shell"># mkdir -p /data/consul
-# mkdir -p /data/consul/log 
-</code></pre>
+<p>基于Consul发现服务其实简单，就是使用Consul提供的API，我们去注册中心读取服务的信息（IP，port等）。</p>
 
-<h4 id="启动-2">启动</h4>
-
-<pre><code class="language-shell">nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;
-</code></pre>
-
-<h3 id="启动client">启动client</h3>
-
-<h4 id="创建配置文件-3">创建配置文件</h4>
-
-<pre><code class="language-shell"># cat /etc/consul.d/server.json
-{
-  &quot;datacenter&quot;: &quot;ams&quot;,
-  &quot;data_dir&quot;: &quot;/data/consul&quot;,
-  &quot;node_name&quot;: &quot;consul-client&quot;,
-  &quot;server&quot;: true,
-  &quot;client_addr&quot;: &quot;0.0.0.0&quot;,
-  &quot;advertise_addr&quot;: &quot;192.168.42.252&quot;,
-  &quot;retry_join&quot;: [&quot;192.168.42.33&quot;]
+<pre><code class="language-golang">// discovery provider
+type discovery struct {
+	*api.Client
+	dialopts []grpc.DialOption
 }
+
+// NewConsulDiscovery returns discovery
+func NewConsulDiscovery(cfg Config) (Discovery, error) {
+	config := api.DefaultConfig()
+	config.Address = fmt.Sprintf(&quot;%s:%s&quot;, cfg.Host, cfg.Port)
+	c, err := api.NewClient(config)
+	if err != nil {
+		return nil, err
+	}
+
+	opts := []grpc.DialOption{
+		grpc.WithInsecure(),
+		grpc.WithBlock(),
+	}
+
+	if cfg.Tracer != nil {
+		opts = append(opts, grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(cfg.Tracer)))
+		opts = append(opts, grpc.WithStreamInterceptor(otgrpc.OpenTracingStreamClientInterceptor(cfg.Tracer)))
+	}
+
+	return discovery{c, opts}, nil
+}
+
+// Dial grpc server
+func (c discovery) Dial(name string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+	r, err := lb.NewResolver(c.Client, name, &quot;&quot;)
+
+	if err != nil {
+		return nil, fmt.Errorf(&quot;Create balancer resolver for service %s failed. Error: %v&quot;, name, err)
+	}
+	c.dialopts = append(c.dialopts, grpc.WithBalancer(grpc.RoundRobin(r)))
+	c.dialopts = append(c.dialopts, opts...)
+
+	conn, err := grpc.Dial(&quot;&quot;, c.dialopts...)
+	if err != nil {
+		return nil, fmt.Errorf(&quot;Failed to dial %s: %v&quot;, name, err)
+	}
+	return conn, nil
+}
+
 </code></pre>
 
-<h4 id="数据目录-3">数据目录</h4>
+<blockquote>
+<p>完整代码可以查看<a href="https://github.com/ycrxun/gf/tree/master/discovery">gf</a></p>
+</blockquote>
 
-<pre><code class="language-shell"># mkdir -p /data/consul
-# mkdir -p /data/consul/log 
+<h2 id="使用">使用</h2>
+
+<h3 id="注册与取消注册">注册与取消注册</h3>
+
+<p>根据上篇中，我们只需要在启动gRPC server的时候，把我们的服务注册到Consul即可：</p>
+
+<pre><code class="language-golang">package cmd
+
+import (
+	&quot;github.com/ycrxun/add&quot;
+	&quot;github.com/ycrxun/add/server&quot;
+	&quot;github.com/ycrxun/gf/registry&quot;
+
+	&quot;github.com/sirupsen/logrus&quot;
+	&quot;github.com/spf13/cobra&quot;
+	&quot;google.golang.org/grpc&quot;
+	&quot;github.com/ycrxun/gf&quot;
+)
+
+var serveCmd = &amp;cobra.Command{
+	Use:   &quot;serve&quot;,
+	Short: &quot;Run the RPC server&quot;,
+	Run: func(cmd *cobra.Command, args []string) {
+		logrus.Fatal(runServe())
+	},
+}
+
+func runServe() error {
+
+	r, err := registry.NewRegistry(registry.Config{
+		Provider: registry.Consul,
+		Host:     &quot;192.168.31.70&quot;,
+		Port:     &quot;8500&quot;,
+	})
+	if err != nil {
+		return err
+	}
+	s := gf.NewService(&quot;add&quot;)
+
+	s.GRPCImplementation(func(g *grpc.Server) {
+		add.RegisterAddServiceServer(g, server.AddServer{})
+	})
+
+	s.UseRegistry(r)
+
+	s.Run()
+
+	return nil
+
+}
+
+func init() {
+	rootCmd.AddCommand(serveCmd)
+}
+
 </code></pre>
 
-<h4 id="启动-3">启动</h4>
+<h3 id="发现服务">发现服务</h3>
 
-<pre><code class="language-shell">nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;
+<p>通过上面的代码改造，我们会在服务端启动时把服务注册到Consul，那么在客户端使用时，我们只需要去Consul发现服务即可。</p>
+
+<pre><code class="language-golang">package cmd
+
+import (
+	&quot;context&quot;
+
+	&quot;github.com/kataras/iris&quot;
+	&quot;github.com/sirupsen/logrus&quot;
+	&quot;github.com/spf13/cobra&quot;
+	&quot;github.com/ycrxun/add&quot;
+	&quot;github.com/ycrxun/gf/discovery&quot;
+)
+
+var clientCmd = &amp;cobra.Command{
+	Use:   &quot;client&quot;,
+	Short: &quot;Run the RPC client&quot;,
+	Run: func(cmd *cobra.Command, args []string) {
+		logrus.Fatal(runClient())
+	},
+}
+
+func runClient() error {
+
+    // Define discovery
+	d, err := discovery.NewDiscovery(discovery.Config{
+		Provider: discovery.Consul,
+		Host:     &quot;192.168.31.70&quot;,
+		Port:     &quot;8500&quot;,
+	})
+	if err != nil {
+		return err
+	}
+
+    // discovery service via name.
+	cc, err := d.Dial(&quot;add&quot;)
+	if err != nil {
+		return err
+	}
+
+	cl := add.NewAddServiceClient(cc)
+
+	app := iris.New()
+
+	app.Get(&quot;/:a/:b&quot;, func(ctx iris.Context) {
+		a, _ := ctx.Params().GetInt64(&quot;a&quot;)
+		b, _ := ctx.Params().GetInt64(&quot;b&quot;)
+
+		c := context.Background()
+		rs, err := cl.Add(c, &amp;add.AddRequest{A: uint64(a), B: uint64(b)})
+		if err != nil {
+			ctx.Text(err.Error())
+			return
+		}
+		ctx.JSON(rs)
+	})
+	return app.Run(iris.Addr(&quot;:8100&quot;))
+}
+
+func init() {
+	rootCmd.AddCommand(clientCmd)
+}
+
 </code></pre>
 
-<h2 id="验证安装">验证安装</h2>
+<h3 id="启动">启动</h3>
 
-<p>在浏览器中打开<a href="http://192.168.42.33:8500">http://192.168.42.33:8500</a></p>
+<p>编译并依次启动</p>
 
-<p><img src="https://ronggle.com/consul-cluster/consul-cluster-ui.png" alt="" /></p>
+<pre><code class="language-bash">$ pwd
+/home/soi/golang/src/github.com/ycrxun/add/add
+
+$ go build 
+
+$ ./add serve
+INFO[0000] add serve at 0.0.0.0:8000                    
+INFO[0000] Regsitered service 'add' at consul.
+</code></pre>
+
+<p>此时，我们打开consul的控制面板，可以看到服务已经注册到上面了
+<img src="https://ronggle.com/registry-microservies-via-grpc/consul.png" alt="" /></p>
+
+<p>在另一个终端启动client</p>
+
+<pre><code class="language-bash">$ ./add client
+Now listening on: http://localhost:8100
+Application started. Press CTRL+C to shut down.
+</code></pre>
+
+<p>打开浏览器，输入<code>http://localhost:8100/1/1</code></p>
+
+<pre><code class="language-json">{&quot;result&quot;:2}
+</code></pre>
               
             </div>
           </div>
@@ -457,11 +591,17 @@ Agent可以在server或client模式下运行。每个数据中心都必须至少
                   <div class="post-footer-tags">
                     <span class="text-color-light text-small">标签</span><br/>
                     
-  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C/">服务注册</a>
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务</a>
+
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/grpc/">gRPC</a>
+
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/%E5%AE%B9%E5%99%A8/">容器</a>
 
   <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/">服务发现</a>
 
-  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/kv%E5%AD%98%E5%82%A8/">KV存储</a>
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C/">服务注册</a>
+
+  <a class="tag tag--primary tag--small" href="https://ronggle.com/tags/%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E6%94%BE%E5%BC%83/">从入门到放弃</a>
 
                   </div>
                 
@@ -474,7 +614,7 @@ Agent可以在server或client模式下运行。每个数据中心都必须至少
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/05/cloud-labs/" data-tooltip="使用Docker打造自己的云平台">
+                <a class="post-action-btn btn btn--disabled">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
@@ -482,7 +622,7 @@ Agent可以在server或client模式下运行。每个数据中心都必须至少
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/01/consul-first-time/" data-tooltip="consul学习一-初见">
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/08/setup-microservies-via-grpc/" data-tooltip="使用gRPC开发微服务-开始">
               
                   <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
                   <i class="fa fa-angle-right"></i>
@@ -500,19 +640,19 @@ Agent可以在server或client模式下运行。每个数据中心都必须至少
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ronggle.com/2018/01/consul-cluster/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ronggle.com/2018/08/registry-microservies-via-grpc/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://ronggle.com/2018/01/consul-cluster/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://ronggle.com/2018/08/registry-microservies-via-grpc/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://ronggle.com/2018/01/consul-cluster/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://ronggle.com/2018/08/registry-microservies-via-grpc/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -572,7 +712,7 @@ Agent可以在server或client模式下运行。每个数据中心都必须至少
           
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/05/cloud-labs/" data-tooltip="使用Docker打造自己的云平台">
+                <a class="post-action-btn btn btn--disabled">
               
                   <i class="fa fa-angle-left"></i>
                   <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
@@ -580,7 +720,7 @@ Agent可以在server或client模式下运行。每个数据中心都必须至少
             </li>
             <li class="post-action">
               
-                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/01/consul-first-time/" data-tooltip="consul学习一-初见">
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://ronggle.com/2018/08/setup-microservies-via-grpc/" data-tooltip="使用gRPC开发微服务-开始">
               
                   <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
                   <i class="fa fa-angle-right"></i>
@@ -598,19 +738,19 @@ Agent可以在server或client模式下运行。每个数据中心都必须至少
         </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ronggle.com/2018/01/consul-cluster/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ronggle.com/2018/08/registry-microservies-via-grpc/">
               <i class="fa fa-facebook-official"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://ronggle.com/2018/01/consul-cluster/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://ronggle.com/2018/08/registry-microservies-via-grpc/">
               <i class="fa fa-twitter"></i>
             </a>
           </li>
         
           <li class="post-action hide-xs">
-            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://ronggle.com/2018/01/consul-cluster/">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://ronggle.com/2018/08/registry-microservies-via-grpc/">
               <i class="fa fa-google-plus"></i>
             </a>
           </li>
@@ -641,19 +781,19 @@ Agent可以在server或client模式下运行。每个数据中心都必须至少
   <ul class="share-options">
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fronggle.com%2F2018%2F01%2Fconsul-cluster%2F">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fronggle.com%2F2018%2F08%2Fregistry-microservies-via-grpc%2F">
           <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fronggle.com%2F2018%2F01%2Fconsul-cluster%2F">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2Fronggle.com%2F2018%2F08%2Fregistry-microservies-via-grpc%2F">
           <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
         </a>
       </li>
     
       <li class="share-option">
-        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2Fronggle.com%2F2018%2F01%2Fconsul-cluster%2F">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2Fronggle.com%2F2018%2F08%2Fregistry-microservies-via-grpc%2F">
           <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
         </a>
       </li>
