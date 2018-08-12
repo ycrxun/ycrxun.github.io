@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://ronggle.com/2018/08/setup-microservies-via-grpc/</loc>
+    <lastmod>2018-08-12T17:44:33+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://ronggle.com/2018/07/traefik-https/</loc>
     <lastmod>2018-07-26T22:42:22+08:00</lastmod>
   </url>
@@ -142,6 +147,18 @@
   </url>
   
   <url>
+    <loc>https://ronggle.com/tags/grpc/</loc>
+    <lastmod>2018-08-12T17:44:33+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://ronggle.com/categories/grpc/</loc>
+    <lastmod>2018-08-12T17:44:33+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://ronggle.com/tags/https/</loc>
     <lastmod>2018-07-26T22:42:22+08:00</lastmod>
     <priority>0</priority>
@@ -191,7 +208,7 @@
   
   <url>
     <loc>https://ronggle.com/post/</loc>
-    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
+    <lastmod>2018-08-12T17:44:33+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -245,7 +262,7 @@
   
   <url>
     <loc>https://ronggle.com/tags/%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E6%94%BE%E5%BC%83/</loc>
-    <lastmod>2017-05-22T21:26:33+08:00</lastmod>
+    <lastmod>2018-08-12T17:44:33+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -257,7 +274,7 @@
   
   <url>
     <loc>https://ronggle.com/</loc>
-    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
+    <lastmod>2018-08-12T17:44:33+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -281,7 +298,7 @@
   
   <url>
     <loc>https://ronggle.com/tags/%E5%AE%B9%E5%99%A8/</loc>
-    <lastmod>2018-01-04T21:48:48+08:00</lastmod>
+    <lastmod>2018-08-12T17:44:33+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -293,7 +310,7 @@
   
   <url>
     <loc>https://ronggle.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/</loc>
-    <lastmod>2018-01-04T21:48:48+08:00</lastmod>
+    <lastmod>2018-08-12T17:44:33+08:00</lastmod>
     <priority>0</priority>
   </url>
   
