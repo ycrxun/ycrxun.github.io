@@ -104,14 +104,14 @@
   </url>
   
   <url>
-    <loc>https://ronggle.com/tags/cloud/</loc>
-    <lastmod>2018-05-13T18:00:59+08:00</lastmod>
+    <loc>https://ronggle.com/categories/cloud/</loc>
+    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://ronggle.com/categories/cloud/</loc>
-    <lastmod>2018-07-26T22:42:22+08:00</lastmod>
+    <loc>https://ronggle.com/tags/cloud/</loc>
+    <lastmod>2018-05-13T18:00:59+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -152,13 +152,13 @@
   </url>
   
   <url>
-    <loc>https://ronggle.com/tags/grpc/</loc>
+    <loc>https://ronggle.com/categories/grpc/</loc>
     <lastmod>2018-08-12T20:04:08+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>https://ronggle.com/categories/grpc/</loc>
+    <loc>https://ronggle.com/tags/grpc/</loc>
     <lastmod>2018-08-12T20:04:08+08:00</lastmod>
     <priority>0</priority>
   </url>
