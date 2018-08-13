@@ -302,10 +302,13 @@
         
         <footer id="footer" class="main-content-wrap">
   <span class="copyrights">
-    &copy; 2018 Soi. All Rights Reserved
+      &copy; 2018 Soi. All Rights Reserved
   </span>
+  <div>
+      黔ICP备15015267号
+  </div>
 </footer>
-
+      
       </div>
     </div>
     
@@ -586,22 +589,25 @@ $(document).ready(function() {
 
 
 <script>
-  (function(f, a, t, h, o, m){
-    a[h]=a[h]||function(){
-      (a[h].q=a[h].q||[]).push(arguments)
-    };
-    o=f.createElement('script'),
-    m=f.getElementsByTagName('script')[0];
-    o.async=1; o.src=t; o.id='fathom-script';
-    m.parentNode.insertBefore(o,m)
-  })(document, window, 'https://usefathom.cloud.ronggle.com/tracker.js', 'fathom');
-  fathom('trackPageview');
+  if (window.location.hostname !== "localhost") {
+    (function(f, a, t, h, o, m){
+      a[h]=a[h]||function(){
+        (a[h].q=a[h].q||[]).push(arguments)
+      };
+      o=f.createElement('script'),
+      m=f.getElementsByTagName('script')[0];
+      o.async=1; o.src=t; o.id='fathom-script';
+      m.parentNode.insertBefore(o,m)
+    })(document, window, 'https://usefathom.cloud.ronggle.com/tracker.js', 'fathom');
+    fathom('trackPageview');
+  }
  </script>
  
 
  
  <script>
-  (function(){
+  if (window.location.hostname !== "localhost") {
+    (function(){
       var bp = document.createElement('script');
       var curProtocol = window.location.protocol.split(':')[0];
       if (curProtocol === 'https') {
@@ -612,7 +618,8 @@ $(document).ready(function() {
       }
       var s = document.getElementsByTagName("script")[0];
       s.parentNode.insertBefore(bp, s);
-  })();
+    })();
+  }
   </script>
 
     
