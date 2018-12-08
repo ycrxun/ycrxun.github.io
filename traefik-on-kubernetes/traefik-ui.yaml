@@ -1,0 +1,31 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: traefik-dashboard
+  labels:
+    app: traefik
+  annotations:
+spec:
+  rules:
+  - host: traefik.cloud-labs.io
+    http:
+      paths:
+      - backend:
+          serviceName: traefik-dashboard
+          servicePort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-dashboard
+  labels:
+    app: traefik
+  annotations:
+spec:
+  selector:
+    app: traefik
+    release: traefik
+  ports:
+  - port: 80
+    targetPort: 8080

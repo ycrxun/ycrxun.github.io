@@ -80,33 +80,35 @@
     
 
     <script type='text/javascript'>
-      
-      var Countly = Countly || {};
-      Countly.q = Countly.q || [];
-      
-      
-      Countly.app_key = 'f6b0afe179831b95e5b92911939bcbae09dc8fed';
-      Countly.url = 'https://countly.cloud-labs.io';
-      
-      Countly.q.push(['track_sessions']);
-      Countly.q.push(['track_pageview']);
-      Countly.q.push(['track_clicks']);
-      Countly.q.push(['track_scrolls']);
-      Countly.q.push(['track_errors']);
-      Countly.q.push(['track_links']);
-      Countly.q.push(['track_forms']);
-      Countly.q.push(['collect_from_forms']);
-      
-      
-      (function() {
-         var cly = document.createElement('script'); cly.type = 'text/javascript';
-         cly.async = true;
-         
-         cly.src = 'https://countly.cloud-labs.io/sdk/web/countly.min.js';
-         cly.onload = function(){Countly.init()};
-         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(cly, s);
-      })();
-      </script>
+      if(window.location.hostname !== "localhost") {
+        
+        var Countly = Countly || {};
+        Countly.q = Countly.q || [];
+        
+        
+        Countly.app_key = 'f6b0afe179831b95e5b92911939bcbae09dc8fed';
+        Countly.url = 'https://countly.cloud-labs.io';
+        
+        Countly.q.push(['track_sessions']);
+        Countly.q.push(['track_pageview']);
+        Countly.q.push(['track_clicks']);
+        Countly.q.push(['track_scrolls']);
+        Countly.q.push(['track_errors']);
+        Countly.q.push(['track_links']);
+        Countly.q.push(['track_forms']);
+        Countly.q.push(['collect_from_forms']);
+        
+        
+        (function() {
+          var cly = document.createElement('script'); cly.type = 'text/javascript';
+          cly.async = true;
+          
+          cly.src = 'https://countly.cloud-labs.io/sdk/web/countly.min.js';
+          cly.onload = function(){Countly.init()};
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(cly, s);
+        })();
+      }
+    </script>
   </head>
 
   <body>
@@ -452,6 +454,24 @@
           <div class="media">
             
             <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/11/traefik-on-kubernetes/">
+                <h3 class="media-heading">Traefik on Kubernetes</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>之前同事问我在Kubernetes上使用，他按照Traefik文档上的部署，不能使用。后面我自己把我整理的配置发给他，成功在Kubernetes上部署，记录下，方便遇到同样疑问的朋友，大神请略过。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
+        
+          <div class="media">
+            
+            <div class="media-body">
               <a class="link-unstyled" href="https://ronggle.com/2018/08/registry-microservies-via-grpc/">
                 <h3 class="media-heading">使用gRPC开发微服务-服务注册与发现</h3>
               </a>
@@ -613,24 +633,6 @@
             <hr>
           </div>
         
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://ronggle.com/2017/08/fedora/">
-                <h3 class="media-heading">Fedora 桌面系统体验</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Aug 8, 2017
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><p>最开始安装Linux操作系统，那是三四年前了，那时候还在大学，当时安装了Debian，完了一段时间后为了耍游戏，还是换回了Windows。
-</p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
       </div>
     </div>
     <div class="modal-footer">
@@ -638,7 +640,7 @@
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         15 posts found
+         16 posts found
       </p>
     </div>
   </div>
@@ -713,17 +715,19 @@ $(document).ready(function() {
 
 
   <script type="text/javascript">
-    var _paq = _paq || [];
-     
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-    (function() {
-      var u="https://matomo.cloud-labs.io/";
-      _paq.push(['setTrackerUrl', u+'piwik.php']);
-      _paq.push(['setSiteId', '1']);
-      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-    })();
+    if(window.location.hostname !== "localhost") {
+      var _paq = _paq || [];
+       
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u="https://matomo.cloud-labs.io/";
+        _paq.push(['setTrackerUrl', u+'piwik.php']);
+        _paq.push(['setSiteId', '1']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+      })();
+    }
   </script>
 
 

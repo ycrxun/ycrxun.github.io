@@ -80,33 +80,35 @@
     
 
     <script type='text/javascript'>
-      
-      var Countly = Countly || {};
-      Countly.q = Countly.q || [];
-      
-      
-      Countly.app_key = 'f6b0afe179831b95e5b92911939bcbae09dc8fed';
-      Countly.url = 'https://countly.cloud-labs.io';
-      
-      Countly.q.push(['track_sessions']);
-      Countly.q.push(['track_pageview']);
-      Countly.q.push(['track_clicks']);
-      Countly.q.push(['track_scrolls']);
-      Countly.q.push(['track_errors']);
-      Countly.q.push(['track_links']);
-      Countly.q.push(['track_forms']);
-      Countly.q.push(['collect_from_forms']);
-      
-      
-      (function() {
-         var cly = document.createElement('script'); cly.type = 'text/javascript';
-         cly.async = true;
-         
-         cly.src = 'https://countly.cloud-labs.io/sdk/web/countly.min.js';
-         cly.onload = function(){Countly.init()};
-         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(cly, s);
-      })();
-      </script>
+      if(window.location.hostname !== "localhost") {
+        
+        var Countly = Countly || {};
+        Countly.q = Countly.q || [];
+        
+        
+        Countly.app_key = 'f6b0afe179831b95e5b92911939bcbae09dc8fed';
+        Countly.url = 'https://countly.cloud-labs.io';
+        
+        Countly.q.push(['track_sessions']);
+        Countly.q.push(['track_pageview']);
+        Countly.q.push(['track_clicks']);
+        Countly.q.push(['track_scrolls']);
+        Countly.q.push(['track_errors']);
+        Countly.q.push(['track_links']);
+        Countly.q.push(['track_forms']);
+        Countly.q.push(['collect_from_forms']);
+        
+        
+        (function() {
+          var cly = document.createElement('script'); cly.type = 'text/javascript';
+          cly.async = true;
+          
+          cly.src = 'https://countly.cloud-labs.io/sdk/web/countly.min.js';
+          cly.onload = function(){Countly.init()};
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(cly, s);
+        })();
+      }
+    </script>
   </head>
 
   <body>
@@ -281,12 +283,16 @@
                   微服务
                 </a>
               
+                <a class="tag tag--primary tag--small" href="#%25E6%259C%258D%25E5%258A%25A1%25E5%258F%2591%25E7%258E%25B0-list" data-tag="服务发现">
+                  服务发现
+                </a>
+              
                 <a class="tag tag--primary tag--small" href="#%25E5%25AE%25B9%25E5%2599%25A8-list" data-tag="容器">
                   容器
                 </a>
               
-                <a class="tag tag--primary tag--small" href="#%25E6%259C%258D%25E5%258A%25A1%25E5%258F%2591%25E7%258E%25B0-list" data-tag="服务发现">
-                  服务发现
+                <a class="tag tag--primary tag--small" href="#traefik-list" data-tag="traefik">
+                  traefik
                 </a>
               
                 <a class="tag tag--primary tag--small" href="#%25E4%25BB%258E%25E5%2585%25A5%25E9%2597%25A8%25E5%2588%25B0%25E6%2594%25BE%25E5%25BC%2583-list" data-tag="从入门到放弃">
@@ -305,8 +311,8 @@
                   kv存储
                 </a>
               
-                <a class="tag tag--primary tag--small" href="#traefik-list" data-tag="traefik">
-                  traefik
+                <a class="tag tag--primary tag--small" href="#%25E5%258F%258D%25E5%2590%2591%25E4%25BB%25A3%25E7%2590%2586-list" data-tag="反向代理">
+                  反向代理
                 </a>
               
                 <a class="tag tag--primary tag--small" href="#%25E5%25AE%25B9%25E5%2599%25A8%25E4%25BA%2591-list" data-tag="容器云">
@@ -353,6 +359,10 @@
                   java
                 </a>
               
+                <a class="tag tag--primary tag--small" href="#kubernetes-list" data-tag="kubernetes">
+                  kubernetes
+                </a>
+              
                 <a class="tag tag--primary tag--small" href="#lets-encrypt-list" data-tag="lets-encrypt">
                   lets-encrypt
                 </a>
@@ -387,10 +397,6 @@
               
                 <a class="tag tag--primary tag--small" href="#%25E4%25BD%2593%25E9%25AA%258C-list" data-tag="体验">
                   体验
-                </a>
-              
-                <a class="tag tag--primary tag--small" href="#%25E5%258F%258D%25E5%2590%2591%25E4%25BB%25A3%25E7%2590%2586-list" data-tag="反向代理">
-                  反向代理
                 </a>
               
                 <a class="tag tag--primary tag--small" href="#%25E5%259B%25A2%25E9%2598%259F-list" data-tag="团队">
@@ -468,6 +474,62 @@
                   </ul>
                 </div>
               
+                <div id="%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0-list" class="archive box" data-tag="服务发现">
+                  <h4 class="archive-title">
+                    <a class="link-unstyled" href="%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0">
+                      服务发现 (5)
+                    </a>
+                  </h4>
+                  <ul class="archive-posts">
+                    
+                      <li class="archive-post">
+                        <a class="archive-post-title" href="https://ronggle.com/2018/01/consul-first-time/">
+                          consul学习一-初见
+                        </a>
+                        <span class="archive-post-date"> - 
+  一月 7, 2018
+</span>
+                      </li>
+                    
+                      <li class="archive-post">
+                        <a class="archive-post-title" href="https://ronggle.com/2018/01/consul-cluster/">
+                          consul学习二-集群
+                        </a>
+                        <span class="archive-post-date"> - 
+  一月 15, 2018
+</span>
+                      </li>
+                    
+                      <li class="archive-post">
+                        <a class="archive-post-title" href="https://ronggle.com/2018/07/traefik-https/">
+                          开启Traefik的https
+                        </a>
+                        <span class="archive-post-date"> - 
+  七月 26, 2018
+</span>
+                      </li>
+                    
+                      <li class="archive-post">
+                        <a class="archive-post-title" href="https://ronggle.com/2018/08/registry-microservies-via-grpc/">
+                          使用gRPC开发微服务-服务注册与发现
+                        </a>
+                        <span class="archive-post-date"> - 
+  八月 12, 2018
+</span>
+                      </li>
+                    
+                      <li class="archive-post">
+                        <a class="archive-post-title" href="https://ronggle.com/2018/11/traefik-on-kubernetes/">
+                          Traefik on Kubernetes
+                        </a>
+                        <span class="archive-post-date"> - 
+  十一月 10, 2018
+</span>
+                      </li>
+                    
+                  </ul>
+                </div>
+              
                 <div id="%E5%AE%B9%E5%99%A8-list" class="archive box" data-tag="容器">
                   <h4 class="archive-title">
                     <a class="link-unstyled" href="%E5%AE%B9%E5%99%A8">
@@ -515,29 +577,20 @@
                   </ul>
                 </div>
               
-                <div id="%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0-list" class="archive box" data-tag="服务发现">
+                <div id="traefik-list" class="archive box" data-tag="traefik">
                   <h4 class="archive-title">
-                    <a class="link-unstyled" href="%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0">
-                      服务发现 (4)
+                    <a class="link-unstyled" href="traefik">
+                      traefik (3)
                     </a>
                   </h4>
                   <ul class="archive-posts">
                     
                       <li class="archive-post">
-                        <a class="archive-post-title" href="https://ronggle.com/2018/01/consul-first-time/">
-                          consul学习一-初见
+                        <a class="archive-post-title" href="https://ronggle.com/2018/05/cloud-labs/">
+                          使用Docker打造自己的云平台
                         </a>
                         <span class="archive-post-date"> - 
-  一月 7, 2018
-</span>
-                      </li>
-                    
-                      <li class="archive-post">
-                        <a class="archive-post-title" href="https://ronggle.com/2018/01/consul-cluster/">
-                          consul学习二-集群
-                        </a>
-                        <span class="archive-post-date"> - 
-  一月 15, 2018
+  五月 13, 2018
 </span>
                       </li>
                     
@@ -551,11 +604,11 @@
                       </li>
                     
                       <li class="archive-post">
-                        <a class="archive-post-title" href="https://ronggle.com/2018/08/registry-microservies-via-grpc/">
-                          使用gRPC开发微服务-服务注册与发现
+                        <a class="archive-post-title" href="https://ronggle.com/2018/11/traefik-on-kubernetes/">
+                          Traefik on Kubernetes
                         </a>
                         <span class="archive-post-date"> - 
-  八月 12, 2018
+  十一月 10, 2018
 </span>
                       </li>
                     
@@ -696,22 +749,13 @@
                   </ul>
                 </div>
               
-                <div id="traefik-list" class="archive box" data-tag="traefik">
+                <div id="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86-list" class="archive box" data-tag="反向代理">
                   <h4 class="archive-title">
-                    <a class="link-unstyled" href="traefik">
-                      traefik (2)
+                    <a class="link-unstyled" href="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86">
+                      反向代理 (2)
                     </a>
                   </h4>
                   <ul class="archive-posts">
-                    
-                      <li class="archive-post">
-                        <a class="archive-post-title" href="https://ronggle.com/2018/05/cloud-labs/">
-                          使用Docker打造自己的云平台
-                        </a>
-                        <span class="archive-post-date"> - 
-  五月 13, 2018
-</span>
-                      </li>
                     
                       <li class="archive-post">
                         <a class="archive-post-title" href="https://ronggle.com/2018/07/traefik-https/">
@@ -719,6 +763,15 @@
                         </a>
                         <span class="archive-post-date"> - 
   七月 26, 2018
+</span>
+                      </li>
+                    
+                      <li class="archive-post">
+                        <a class="archive-post-title" href="https://ronggle.com/2018/11/traefik-on-kubernetes/">
+                          Traefik on Kubernetes
+                        </a>
+                        <span class="archive-post-date"> - 
+  十一月 10, 2018
 </span>
                       </li>
                     
@@ -963,6 +1016,26 @@
                   </ul>
                 </div>
               
+                <div id="kubernetes-list" class="archive box" data-tag="kubernetes">
+                  <h4 class="archive-title">
+                    <a class="link-unstyled" href="kubernetes">
+                      kubernetes (1)
+                    </a>
+                  </h4>
+                  <ul class="archive-posts">
+                    
+                      <li class="archive-post">
+                        <a class="archive-post-title" href="https://ronggle.com/2018/11/traefik-on-kubernetes/">
+                          Traefik on Kubernetes
+                        </a>
+                        <span class="archive-post-date"> - 
+  十一月 10, 2018
+</span>
+                      </li>
+                    
+                  </ul>
+                </div>
+              
                 <div id="lets-encrypt-list" class="archive box" data-tag="lets-encrypt">
                   <h4 class="archive-title">
                     <a class="link-unstyled" href="lets-encrypt">
@@ -1137,26 +1210,6 @@
                         </a>
                         <span class="archive-post-date"> - 
   八月 3, 2017
-</span>
-                      </li>
-                    
-                  </ul>
-                </div>
-              
-                <div id="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86-list" class="archive box" data-tag="反向代理">
-                  <h4 class="archive-title">
-                    <a class="link-unstyled" href="%E5%8F%8D%E5%90%91%E4%BB%A3%E7%90%86">
-                      反向代理 (1)
-                    </a>
-                  </h4>
-                  <ul class="archive-posts">
-                    
-                      <li class="archive-post">
-                        <a class="archive-post-title" href="https://ronggle.com/2018/07/traefik-https/">
-                          开启Traefik的https
-                        </a>
-                        <span class="archive-post-date"> - 
-  七月 26, 2018
 </span>
                       </li>
                     
@@ -1356,17 +1409,19 @@ $(document).ready(function() {
 
 
   <script type="text/javascript">
-    var _paq = _paq || [];
-     
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-    (function() {
-      var u="https://matomo.cloud-labs.io/";
-      _paq.push(['setTrackerUrl', u+'piwik.php']);
-      _paq.push(['setSiteId', '1']);
-      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-    })();
+    if(window.location.hostname !== "localhost") {
+      var _paq = _paq || [];
+       
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u="https://matomo.cloud-labs.io/";
+        _paq.push(['setTrackerUrl', u+'piwik.php']);
+        _paq.push(['setSiteId', '1']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+      })();
+    }
   </script>
 
 

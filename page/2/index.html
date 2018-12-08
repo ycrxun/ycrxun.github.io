@@ -80,33 +80,35 @@
     
 
     <script type='text/javascript'>
-      
-      var Countly = Countly || {};
-      Countly.q = Countly.q || [];
-      
-      
-      Countly.app_key = 'f6b0afe179831b95e5b92911939bcbae09dc8fed';
-      Countly.url = 'https://countly.cloud-labs.io';
-      
-      Countly.q.push(['track_sessions']);
-      Countly.q.push(['track_pageview']);
-      Countly.q.push(['track_clicks']);
-      Countly.q.push(['track_scrolls']);
-      Countly.q.push(['track_errors']);
-      Countly.q.push(['track_links']);
-      Countly.q.push(['track_forms']);
-      Countly.q.push(['collect_from_forms']);
-      
-      
-      (function() {
-         var cly = document.createElement('script'); cly.type = 'text/javascript';
-         cly.async = true;
-         
-         cly.src = 'https://countly.cloud-labs.io/sdk/web/countly.min.js';
-         cly.onload = function(){Countly.init()};
-         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(cly, s);
-      })();
-      </script>
+      if(window.location.hostname !== "localhost") {
+        
+        var Countly = Countly || {};
+        Countly.q = Countly.q || [];
+        
+        
+        Countly.app_key = 'f6b0afe179831b95e5b92911939bcbae09dc8fed';
+        Countly.url = 'https://countly.cloud-labs.io';
+        
+        Countly.q.push(['track_sessions']);
+        Countly.q.push(['track_pageview']);
+        Countly.q.push(['track_clicks']);
+        Countly.q.push(['track_scrolls']);
+        Countly.q.push(['track_errors']);
+        Countly.q.push(['track_links']);
+        Countly.q.push(['track_forms']);
+        Countly.q.push(['collect_from_forms']);
+        
+        
+        (function() {
+          var cly = document.createElement('script'); cly.type = 'text/javascript';
+          cly.async = true;
+          
+          cly.src = 'https://countly.cloud-labs.io/sdk/web/countly.min.js';
+          cly.onload = function(){Countly.init()};
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(cly, s);
+        })();
+      }
+    </script>
   </head>
 
   <body>
@@ -268,6 +270,63 @@
                ">
         <section class="postShorten-group main-content-wrap">
           
+          
+            
+  
+    
+  
+
+
+  
+
+<article class="postShorten postShorten--thumbnailimg-left" itemscope itemType="http://schema.org/BlogPosting">
+  <div class="postShorten-wrap">
+    
+    <div class="postShorten-header">
+      <h1 class="postShorten-title" itemprop="headline">
+        <a class="link-unstyled" href="https://ronggle.com/2018/01/consul-first-time/">
+          consul学习一-初见
+        </a>
+      </h1>
+      
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2018-01-07T19:38:00&#43;08:00">
+        
+  一月 7, 2018
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://ronggle.com/categories/consul">Consul</a>
+    
+  
+
+  </div>
+
+    </div>
+    <div class="postShorten-excerpt" itemprop="articleBody">
+      <p><strong><a href="https://www.consul.io">Consul</a></strong>是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置
+</p>
+      <p>
+        <a href="https://ronggle.com/2018/01/consul-first-time/" class="postShorten-excerpt_link link">阅读全文</a>
+        
+      </p>
+    </div>
+  </div>
+  
+    <a href="https://ronggle.com/2018/01/consul-first-time/">
+      <div class="postShorten-thumbnailimg">
+        <img alt="" itemprop="image" src="https://ronggle.com/consul-first-time/consul-ui.png"/>
+      </div>
+    </a>
+  
+</article>
+
           
             
   
@@ -609,61 +668,6 @@
 </article>
 
           
-            
-  
-    
-      
-        
-      
-    
-  
-
-
-  
-
-<article class="postShorten postShorten--thumbnailimg-left" itemscope itemType="http://schema.org/BlogPosting">
-  <div class="postShorten-wrap">
-    
-    <div class="postShorten-header">
-      <h1 class="postShorten-title" itemprop="headline">
-        <a class="link-unstyled" href="https://ronggle.com/2017/02/webservice-hello-world/">
-          WebService学习记录
-        </a>
-      </h1>
-      
-  <div class="postShorten-meta post-meta">
-    
-      <time itemprop="datePublished" datetime="2017-02-12T19:32:45&#43;08:00">
-        
-  二月 12, 2017
-
-      </time>
-    
-    
-  
-  
-    <span>发布在</span>
-    
-      <a class="category-link" href="https://ronggle.com/categories/programming">Programming</a>
-    
-  
-
-  </div>
-
-    </div>
-    <div class="postShorten-excerpt" itemprop="articleBody">
-      <p>最近项目要使用WebService，正在学习中，做个记录。
-</p>
-      <p>
-        <a href="https://ronggle.com/2017/02/webservice-hello-world/" class="postShorten-excerpt_link link">阅读全文</a>
-        
-      </p>
-    </div>
-  </div>
-  
-</article>
-
-          
           
   <div class="pagination-bar">
     <ul class="pagination">
@@ -750,6 +754,24 @@
       <div class="no-result text-color-light text-center"></div>
       <div class="results">
         
+        
+          <div class="media">
+            
+            <div class="media-body">
+              <a class="link-unstyled" href="https://ronggle.com/2018/11/traefik-on-kubernetes/">
+                <h3 class="media-heading">Traefik on Kubernetes</h3>
+              </a>
+              <span class="media-meta">
+                <span class="media-date text-small">
+                  Nov 11, 2018
+                </span>
+              </span>
+              <div class="media-content hide-xs font-merryweather"><p>之前同事问我在Kubernetes上使用，他按照Traefik文档上的部署，不能使用。后面我自己把我整理的配置发给他，成功在Kubernetes上部署，记录下，方便遇到同样疑问的朋友，大神请略过。
+</p></div>
+            </div>
+            <div style="clear:both;"></div>
+            <hr>
+          </div>
         
           <div class="media">
             
@@ -915,24 +937,6 @@
             <hr>
           </div>
         
-          <div class="media">
-            
-            <div class="media-body">
-              <a class="link-unstyled" href="https://ronggle.com/2017/08/fedora/">
-                <h3 class="media-heading">Fedora 桌面系统体验</h3>
-              </a>
-              <span class="media-meta">
-                <span class="media-date text-small">
-                  Aug 8, 2017
-                </span>
-              </span>
-              <div class="media-content hide-xs font-merryweather"><p>最开始安装Linux操作系统，那是三四年前了，那时候还在大学，当时安装了Debian，完了一段时间后为了耍游戏，还是换回了Windows。
-</p></div>
-            </div>
-            <div style="clear:both;"></div>
-            <hr>
-          </div>
-        
       </div>
     </div>
     <div class="modal-footer">
@@ -940,7 +944,7 @@
          data-message-zero=""
          data-message-one=""
          data-message-other="">
-         15 posts found
+         16 posts found
       </p>
     </div>
   </div>
@@ -1015,17 +1019,19 @@ $(document).ready(function() {
 
 
   <script type="text/javascript">
-    var _paq = _paq || [];
-     
-    _paq.push(['trackPageView']);
-    _paq.push(['enableLinkTracking']);
-    (function() {
-      var u="https://matomo.cloud-labs.io/";
-      _paq.push(['setTrackerUrl', u+'piwik.php']);
-      _paq.push(['setSiteId', '1']);
-      var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
-      g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
-    })();
+    if(window.location.hostname !== "localhost") {
+      var _paq = _paq || [];
+       
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function() {
+        var u="https://matomo.cloud-labs.io/";
+        _paq.push(['setTrackerUrl', u+'piwik.php']);
+        _paq.push(['setSiteId', '1']);
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'piwik.js'; s.parentNode.insertBefore(g,s);
+      })();
+    }
   </script>
 
 
