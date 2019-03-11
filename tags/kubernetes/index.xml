@@ -17,8 +17,7 @@
       <pubDate>Sat, 10 Nov 2018 21:34:29 +0800</pubDate>
       
       <guid>https://ronggle.com/2018/11/traefik-on-kubernetes/</guid>
-      <description>&lt;p&gt;之前同事问我在Kubernetes上使用，他按照Traefik文档上的部署，不能使用。后面我自己把我整理的配置发给他，成功在Kubernetes上部署，记录下，方便遇到同样疑问的朋友，大神请略过。
-&lt;/p&gt;</description>
+      <description>&lt;p&gt;之前同事问我在Kubernetes上使用，他按照Traefik文档上的部署，不能使用。后面我自己把我整理的配置发给他，成功在Kubernetes上部署，记录下，方便遇到同样疑问的朋友，大神请略过。&lt;/p&gt;</description>
     </item>
     
   </channel>

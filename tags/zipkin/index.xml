@@ -17,8 +17,7 @@
       <pubDate>Sat, 22 Jul 2017 23:30:22 +0800</pubDate>
       
       <guid>https://ronggle.com/2017/07/what-is-zipkin/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Zipkin&lt;/strong&gt;是一个分布式跟踪系统。 它有助于收集在微服务架构中排除延迟问题所需的时间数据。 它管理这些数据的收集和查找。 Zipkin是基于Google Dapper论文设计的。
-&lt;/p&gt;</description>
+      <description>&lt;p&gt;&lt;strong&gt;Zipkin&lt;/strong&gt;是一个分布式跟踪系统。 它有助于收集在微服务架构中排除延迟问题所需的时间数据。 它管理这些数据的收集和查找。 Zipkin是基于Google Dapper论文设计的。&lt;/p&gt;</description>
     </item>
     
   </channel>

@@ -17,8 +17,7 @@
       <pubDate>Sat, 22 Jul 2017 23:30:22 +0800</pubDate>
       
       <guid>https://ronggle.com/2017/07/what-is-zipkin/</guid>
-      <description>&lt;p&gt;&lt;strong&gt;Zipkin&lt;/strong&gt;是一个分布式跟踪系统。 它有助于收集在微服务架构中排除延迟问题所需的时间数据。 它管理这些数据的收集和查找。 Zipkin是基于Google Dapper论文设计的。
-&lt;/p&gt;</description>
+      <description>&lt;p&gt;&lt;strong&gt;Zipkin&lt;/strong&gt;是一个分布式跟踪系统。 它有助于收集在微服务架构中排除延迟问题所需的时间数据。 它管理这些数据的收集和查找。 Zipkin是基于Google Dapper论文设计的。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -27,8 +26,7 @@
       <pubDate>Mon, 22 May 2017 21:26:33 +0800</pubDate>
       
       <guid>https://ronggle.com/2017/05/microservice-container-and-container-cloud/</guid>
-      <description>&lt;p&gt;驱动技术的，从来都不应该是技术，也不是情怀，应该是不断变化的诉求。
-&lt;/p&gt;</description>
+      <description>&lt;p&gt;驱动技术的，从来都不应该是技术，也不是情怀，应该是不断变化的诉求。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -37,8 +35,7 @@
       <pubDate>Sun, 12 Feb 2017 19:32:45 +0800</pubDate>
       
       <guid>https://ronggle.com/2017/02/webservice-hello-world/</guid>
-      <description>&lt;p&gt;最近项目要使用WebService，正在学习中，做个记录。
-&lt;/p&gt;</description>
+      <description>&lt;p&gt;最近项目要使用WebService，正在学习中，做个记录。&lt;/p&gt;</description>
     </item>
     
   </channel>
