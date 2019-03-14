@@ -116,6 +116,18 @@
         })();
       }
     </script>
+    <style>
+      .postShorten .postShorten-header .postShorten-title {
+        margin: 0;
+        word-break: initial;
+        overflow: hidden;
+        letter-spacing: -.04em;
+        font-weight: 700;
+        line-height: 1.45em;
+        color: #4a4a4a;
+        font-size: 26.5px;
+      }
+    </style>
   </head>
 
   <body>
@@ -311,7 +323,7 @@
 
 <p>将应用程序用于向Zipkin报告时序数据。 Zipkin UI还提供了一个依赖关系图，显示了每个应用程序中跟踪的请求数量。 如果要解决延迟问题或错误，可以根据应用程序，跟踪长度，注释或时间戳来过滤或排序所有跟踪。 选择跟踪后，您可以看到每个跨度所需的总跟踪时间的百分比，从而允许您识别问题应用程序。</p>
 
-<p><img src="https://ronggle.com/what-is-zipkin/index.png" alt="" /></p>
+<p><img src="https://ronggle.com/what-is-zipkin/index.png" alt="index" /></p>
 
 <h2 id="快速开始">快速开始</h2>
 
@@ -494,19 +506,19 @@ eureka:
 
 <p>首先，我分别启动了这几个模块，我们可以在Eureka的UI中看到：</p>
 
-<p><img src="https://ronggle.com/what-is-zipkin/eureka.png" alt="" /></p>
+<p><img src="https://ronggle.com/what-is-zipkin/eureka.png" alt="eureka" /></p>
 
 <p>然后我分别在浏览器中访问API Getaway中映射的API<code>http://localhost:9200/account/accounts/1</code>和<code>http://localhost:9200/config/platform/zuul/dev</code>，然后在打开Zipkin页面。</p>
 
-<p><img src="https://ronggle.com/what-is-zipkin/trace.png" alt="" /></p>
+<p><img src="https://ronggle.com/what-is-zipkin/trace.png" alt="trace" /></p>
 
 <p>我们可以看到服务调用的依赖关系：</p>
 
-<p><img src="https://ronggle.com/what-is-zipkin/dependencies.png" alt="" /></p>
+<p><img src="https://ronggle.com/what-is-zipkin/dependencies.png" alt="dependencies" /></p>
 
 <p>还可以看到调用的详细信息：</p>
 
-<p><img src="https://ronggle.com/what-is-zipkin/traces_detail.png" alt="" /></p>
+<p><img src="https://ronggle.com/what-is-zipkin/traces_detail.png" alt="traces detail" /></p>
 
 <h2 id="总结">总结</h2>
 
@@ -801,7 +813,7 @@ eureka:
               </span>
               <div class="media-content hide-xs font-merryweather"><h2 id="关系型数据库">关系型数据库</h2>
 
-<p>关系数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。现实世界中的各种实体以及实体之间的各种联系均用关系模型来表示。关系模型是由埃德加·科德于1970年首先提出的，并配合“科德十二定律”。现如今虽然对此模型有一些批评意见，但它还是数据存储的传统标准。标准数据查询语言SQL就是一种基于关系数据库的语言，这种语言执行对关系数据库中数据的检索和操作。 关系模型由关系数据结构、关系操作集合、关系完整性约束三部分组成。</p></div>
+<p>关系数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。现实世界中的各种实体以及实体之间的各种联系均用关系模型来表示。</p></div>
             </div>
             <div style="clear:both;"></div>
             <hr>

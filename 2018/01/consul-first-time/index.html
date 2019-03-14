@@ -116,6 +116,18 @@
         })();
       }
     </script>
+    <style>
+      .postShorten .postShorten-header .postShorten-title {
+        margin: 0;
+        word-break: initial;
+        overflow: hidden;
+        letter-spacing: -.04em;
+        font-weight: 700;
+        line-height: 1.45em;
+        color: #4a4a4a;
+        font-size: 26.5px;
+      }
+    </style>
   </head>
 
   <body>
@@ -320,7 +332,7 @@
 <h2 id="基本架构">基本架构</h2>
 
 <p>Consul是一个分布式，高度可用的系统。
-<img src="https://www.consul.io/assets/images/consul-arch-420ce04a.png" alt="" /></p>
+<img src="https://www.consul.io/assets/images/consul-arch-420ce04a.png" alt="consul" /></p>
 
 <p>向Consul提供服务的每个节点都运行一个Consul代理。 发现其他服务或获取/设置键/值数据不需要运行代理。 代理负责健康检查节点上的服务以及节点本身。</p>
 
@@ -456,7 +468,7 @@ bootstrap = true: do not enable unless necessary
 
 <p>在浏览器中打开<a href="http://localhost:8500">http://localhost:8500</a></p>
 
-<p><img src="https://ronggle.com/consul-first-time/consul-ui.png" alt="" /></p>
+<p><img src="https://ronggle.com/consul-first-time/consul-ui.png" alt="consul ui" /></p>
               
             </div>
           </div>
@@ -743,7 +755,7 @@ bootstrap = true: do not enable unless necessary
               </span>
               <div class="media-content hide-xs font-merryweather"><h2 id="关系型数据库">关系型数据库</h2>
 
-<p>关系数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。现实世界中的各种实体以及实体之间的各种联系均用关系模型来表示。关系模型是由埃德加·科德于1970年首先提出的，并配合“科德十二定律”。现如今虽然对此模型有一些批评意见，但它还是数据存储的传统标准。标准数据查询语言SQL就是一种基于关系数据库的语言，这种语言执行对关系数据库中数据的检索和操作。 关系模型由关系数据结构、关系操作集合、关系完整性约束三部分组成。</p></div>
+<p>关系数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。现实世界中的各种实体以及实体之间的各种联系均用关系模型来表示。</p></div>
             </div>
             <div style="clear:both;"></div>
             <hr>

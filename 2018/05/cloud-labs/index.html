@@ -116,6 +116,18 @@
         })();
       }
     </script>
+    <style>
+      .postShorten .postShorten-header .postShorten-title {
+        margin: 0;
+        word-break: initial;
+        overflow: hidden;
+        letter-spacing: -.04em;
+        font-weight: 700;
+        line-height: 1.45em;
+        color: #4a4a4a;
+        font-size: 26.5px;
+      }
+    </style>
   </head>
 
   <body>
@@ -317,11 +329,11 @@
 
 <p>使用Docker搭建一个自己的”云平台“，大概就是，可以在上面部署应用，并且自动暴露出来。</p>
 
-<p><img src="https://ronggle.com/cloud-labs/monitor.png" alt="" /></p>
+<p><img src="https://ronggle.com/cloud-labs/monitor.png" alt="traefik" /></p>
 
-<p><img src="https://ronggle.com/cloud-labs/console.png" alt="" /></p>
+<p><img src="https://ronggle.com/cloud-labs/console.png" alt="potainer" /></p>
 
-<p><img src="https://ronggle.com/cloud-labs/console-services.png" alt="" /></p>
+<p><img src="https://ronggle.com/cloud-labs/console-services.png" alt="potainer services" /></p>
 
 <h2 id="前期准备">前期准备</h2>
 
@@ -341,7 +353,7 @@
 
 <p><strong>Træfɪk</strong> 是一个为了让部署微服务更加便捷而诞生的现代HTTP反向代理、负载均衡工具。 它支持多种后台 (Docker, Swarm, Kubernetes, Marathon, Mesos, Consul, Etcd, Zookeeper, BoltDB, Rest API, file…) 来自动化、动态的应用它的配置文件设置。</p>
 
-<p><img src="https://ronggle.com/cloud-labs/traefik.png" alt="" /></p>
+<p><img src="https://ronggle.com/cloud-labs/traefik.png" alt="traefik" /></p>
 
 <p>我们用它作什么呢？没错，反向代理和负载均衡，同时因为其提供了好用的动态功能，使得我们可以用它配置域名动态的功能。</p>
 
@@ -459,7 +471,7 @@ $ docker stack deploy -c portainer.yml portainer
 <p>稍等一会儿，就可以在使用<code>monitor.cloud-labs.io</code>中发现我们的应用以及部署好了，并且被暴露在<code>console.cloud-labs.io</code>。</p>
 </blockquote>
 
-<p><img src="https://ronggle.com/cloud-labs/monitor-portainer.png" alt="" /></p>
+<p><img src="https://ronggle.com/cloud-labs/monitor-portainer.png" alt="traefik monitor portainer" /></p>
 
 <blockquote>
 <p>同样的，<code>console.cloud-labs.io</code>是一个假定的域名，需要在你的host文件中进行配置。
@@ -477,7 +489,7 @@ $ cat /etc/hosts
 
 <p>登陆我们“云平台”的控制台后，选择stack，为们来编排一下我们的应用。</p>
 
-<p><img src="https://ronggle.com/cloud-labs/portainer-stack-gitea.png" alt="" /></p>
+<p><img src="https://ronggle.com/cloud-labs/portainer-stack-gitea.png" alt="portainer stack gitea" /></p>
 
 <h3 id="进入traefik">进入Traefik</h3>
 
@@ -487,7 +499,7 @@ $ cat /etc/hosts
 
 <p>配置完成gitea后我们可以看到如下：</p>
 
-<p><img src="https://ronggle.com/cloud-labs/gitea.png" alt="" /></p>
+<p><img src="https://ronggle.com/cloud-labs/gitea.png" alt="gitea" /></p>
 
 <h2 id="总结">总结</h2>
 
@@ -784,7 +796,7 @@ $ cat /etc/hosts
               </span>
               <div class="media-content hide-xs font-merryweather"><h2 id="关系型数据库">关系型数据库</h2>
 
-<p>关系数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。现实世界中的各种实体以及实体之间的各种联系均用关系模型来表示。关系模型是由埃德加·科德于1970年首先提出的，并配合“科德十二定律”。现如今虽然对此模型有一些批评意见，但它还是数据存储的传统标准。标准数据查询语言SQL就是一种基于关系数据库的语言，这种语言执行对关系数据库中数据的检索和操作。 关系模型由关系数据结构、关系操作集合、关系完整性约束三部分组成。</p></div>
+<p>关系数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。现实世界中的各种实体以及实体之间的各种联系均用关系模型来表示。</p></div>
             </div>
             <div style="clear:both;"></div>
             <hr>
