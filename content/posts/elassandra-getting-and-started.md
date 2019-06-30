@@ -1,6 +1,6 @@
 ---
 title: "Elassandra简单介绍"
-date: 2019-03-08T11:27:29+08:00
+date: 2019-06-30T16:27:29+08:00
 description: "Elassandra是Elasticsearch的一个分支，经过修改，可以作为Apache Cassandra的插件运行，具有可扩展和灵活的点对点架构。"
 featured_image: /elassandra-getting-and-started/elassandra-logo.png
 categories: 
