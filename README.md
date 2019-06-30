@@ -1,1 +1,2 @@
-# ycrxun.github.io for ronggle.com
+# hugo.ronggle.com build on gohugo
+This is my blog site [ronggle.com](https://ronggle.com) source code repo
