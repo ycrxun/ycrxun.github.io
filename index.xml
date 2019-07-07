@@ -1,0 +1,2237 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>凉都小道 on 凉都小道</title><link>https://ronggle.com/</link><description>Recent content in 凉都小道 on 凉都小道</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 30 Jun 2019 16:27:29 +0800</lastBuildDate><atom:link href="https://ronggle.com/" rel="self" type="application/rss+xml"/><item><title>Elassandra简单介绍</title><link>https://ronggle.com/2019/elassandra-getting-and-started/</link><pubDate>Sun, 30 Jun 2019 16:27:29 +0800</pubDate><guid>https://ronggle.com/2019/elassandra-getting-and-started/</guid><description>&lt;h2 id=&#34;elassandra&#34;&gt;Elassandra&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;http://www.elassandra.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Elassandra&lt;/a&gt;是&lt;a href=&#34;https://github.com/elastic/elasticsearch&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Elasticsearch&lt;/a&gt;的一个分支，经过修改，可以作为&lt;a href=&#34;http://cassandra.apache.org/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Apache Cassandra&lt;/a&gt;的插件运行，具有可扩展和灵活的点对点架构。 Elasticsearch代码嵌入在Cassanda节点中，在Cassandra表上提供高级搜索功能，Cassandra用作Elasticsearch数据和配置存储。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/elassandra-getting-and-started/elassandra-arch.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Elassandra支持Cassandra vnodes，并通过添加更多节点进行水平扩展。&lt;/p&gt;
+&lt;p&gt;项目文档可在&lt;a href=&#34;https://doc.elassandra.io&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;doc.elassandra.io&lt;/a&gt;上获得。&lt;/p&gt;
+&lt;h2 id=&#34;elassandra的好处&#34;&gt;Elassandra的好处&lt;/h2&gt;
+&lt;p&gt;对于Cassandra用户，elassandra提供Elasticsearch功能：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在Elasticsearch中更新Cassandra索引。&lt;/li&gt;
+&lt;li&gt;对Cassandra数据进行全文和空间搜索。&lt;/li&gt;
+&lt;li&gt;实时聚合（不需要Spark或Hadoop来完成GROUP BY）&lt;/li&gt;
+&lt;li&gt;在一个查询中提供对多个键空间和表的搜索。&lt;/li&gt;
+&lt;li&gt;使用“用户定义的类型”提供自动模式创建和支持嵌套文档。&lt;/li&gt;
+&lt;li&gt;提供JSON REST API对Cassandra数据的读/写访问。&lt;/li&gt;
+&lt;li&gt;许多Elasticsearch插件和Kibana等产品。&lt;/li&gt;
+&lt;li&gt;管理并发弹性搜索映射更改并应用批处理原子CQL架构更改。&lt;/li&gt;
+&lt;li&gt;支持Elasticsearch摄取处理器，允许转换输入数据。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;对于Elasticsearch用户，elassandra提供了有用的功能：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Elassandra是无主的。群集状态通过cassandra轻量级事务进行管理。&lt;/li&gt;
+&lt;li&gt;Elassandra是一个分片的多主数据库，其中Elasticsearch是分片主从。因此，Elassandra没有单点写入，有助于实现高可用性。&lt;/li&gt;
+&lt;li&gt;Elassandra继承了Cassandra数据修复机制（暗示切换，读取修复和nodetool修复），为跨数据中心复制提供支持。&lt;/li&gt;
+&lt;li&gt;将节点添加到Elassandra集群时，只有从现有节点提取的数据才会在Elasticsearch中重新编制索引。&lt;/li&gt;
+&lt;li&gt;Cassandra可能是您索引和非索引数据的唯一数据存储区。它更易于管理和保护。源文档现在存储在Cassandra中，如果您需要NoSQL数据库和Elasticsearch，则会减少磁盘空间。&lt;/li&gt;
+&lt;li&gt;写操作不限于一个主分片，而是分布在虚拟数据中心的所有Cassandra节点上。分片数量不会限制您的写入吞吐量。添加elassandra节点会增加读写吞吐量。&lt;/li&gt;
+&lt;li&gt;Elasticsearch索引可以在许多Cassandra数据中心之间复制，允许写入最近的数据中心并进行全局搜索。&lt;/li&gt;
+&lt;li&gt;cassandra驱动程序可识别数据中心和令牌，提供自动负载平衡和故障转移。&lt;/li&gt;
+&lt;li&gt;Elassandra有效地将Elasticsearch文档存储在二进制SSTable中，而不会产生任何JSON开销。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;快速开始&#34;&gt;快速开始&lt;/h2&gt;
+&lt;p&gt;使用docker启动单节点的Elassandra集群：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;# 下载docker镜像
+$ docker pull docker.io/strapdata/elassandra:latest
+# 启动
+$ docker run -d --rm \
+--name elassandra \
+-p 9042:9042 \
+-p 9200:9200 \
+-e JVM_OPTS=&amp;quot;-Dcassandra.custom_query_handler_class=org.elassandra.index.ElasticQueryHandler&amp;quot; \
+docker.io/strapdata/elassandra:latest
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;检查Elassandra集群状态：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ docker exec -i elassandra nodetool status
+Datacenter: DC1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+-- Address Load Tokens Owns (effective) Host ID Rack
+UN 172.17.0.3 80.97 KiB 8 100.0% 81a9e4e0-efe4-458d-861e-8d527835372d r1
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;从cassandra表创建elasticsearch索引&#34;&gt;从Cassandra表创建Elasticsearch索引&lt;/h3&gt;
+&lt;p&gt;使用cassandra CQLSH创建一个cassandra Keyspace，一个User Defined Type，一个Table并添加两行：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ docker exec -i elassandra cqlsh &amp;lt;&amp;lt;EOF
+CREATE KEYSPACE IF NOT EXISTS test WITH replication = {&#39;class&#39;: &#39;NetworkTopologyStrategy&#39;, &#39;DC1&#39;: 1};
+CREATE TYPE IF NOT EXISTS test.user_type (first text, last text);
+CREATE TABLE IF NOT EXISTS test.docs (uid int, username frozen&amp;lt;user_type&amp;gt;, login text, PRIMARY KEY (uid));
+INSERT INTO test.docs (uid, username, login) VALUES (1, {first:&#39;vince&#39;,last:&#39;royer&#39;}, &#39;vroyer&#39;);
+INSERT INTO test.docs (uid, username, login) VALUES (2, {first:&#39;barthelemy&#39;,last:&#39;delemotte&#39;}, &#39;barth&#39;);
+EOF
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;通过发现CQL结构从Cassandra表架构创建Elasticsearch索引：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ curl -XPUT -H &#39;Content-Type: application/json&#39; http://localhost:9200/test -d&#39;{&amp;quot;mappings&amp;quot;:{&amp;quot;docs&amp;quot;:{&amp;quot;discover&amp;quot;:&amp;quot;.*&amp;quot;}}}&#39;
+{&amp;quot;acknowledged&amp;quot;:true,&amp;quot;shards_acknowledged&amp;quot;:true,&amp;quot;index&amp;quot;:&amp;quot;test&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;此命令发现与提供的正则表达式匹配的所有列，并创建Eslasticsearch索引。&lt;/p&gt;
+&lt;h3 id=&#34;从头开始创建elasticsearch索引&#34;&gt;从头开始创建Elasticsearch索引&lt;/h3&gt;
+&lt;p&gt;Elassandra在创建索引或使用新字段更新映射时自动生成基础CQL结构。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ curl -XPUT -H &#39;Content-Type: application/json&#39; http://localhost:9200/test2 -d&#39;{
+&amp;quot;mappings&amp;quot;:{
+&amp;quot;docs&amp;quot;:{
+&amp;quot;properties&amp;quot;: {
+&amp;quot;first&amp;quot;: {
+&amp;quot;type&amp;quot;:&amp;quot;text&amp;quot;
+},
+&amp;quot;last&amp;quot;: {
+&amp;quot;type&amp;quot;:&amp;quot;text&amp;quot;,
+&amp;quot;cql_collection&amp;quot;:&amp;quot;singleton&amp;quot;
+}
+}
+}
+}
+}&#39;
+{&amp;quot;acknowledged&amp;quot;:true,&amp;quot;shards_acknowledged&amp;quot;:true,&amp;quot;index&amp;quot;:&amp;quot;test2&amp;quot;}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;生成的CQL结构：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ docker exec -it elassandra cqlsh
+Connected to Test Cluster at 127.0.0.1:9042.
+[cqlsh 5.0.1 | Cassandra 3.11.4.2 | CQL spec 3.4.4 | Native protocol v4]
+Use HELP for help.
+cqlsh&amp;gt; desc KEYSPACE test2;
+CREATE KEYSPACE test2 WITH replication = {&#39;class&#39;: &#39;NetworkTopologyStrategy&#39;, &#39;DC1&#39;: &#39;1&#39;} AND durable_writes = true;
+CREATE TABLE test2.docs (
+&amp;quot;_id&amp;quot; text PRIMARY KEY,
+first list&amp;lt;text&amp;gt;,
+last text
+) WITH bloom_filter_fp_chance = 0.01
+AND caching = {&#39;keys&#39;: &#39;ALL&#39;, &#39;rows_per_partition&#39;: &#39;NONE&#39;}
+AND comment = &#39;&#39;
+AND compaction = {&#39;class&#39;: &#39;org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy&#39;, &#39;max_threshold&#39;: &#39;32&#39;, &#39;min_threshold&#39;: &#39;4&#39;}
+AND compression = {&#39;chunk_length_in_kb&#39;: &#39;64&#39;, &#39;class&#39;: &#39;org.apache.cassandra.io.compress.LZ4Compressor&#39;}
+AND crc_check_chance = 1.0
+AND dclocal_read_repair_chance = 0.1
+AND default_time_to_live = 0
+AND gc_grace_seconds = 864000
+AND max_index_interval = 2048
+AND memtable_flush_period_in_ms = 0
+AND min_index_interval = 128
+AND read_repair_chance = 0.0
+AND speculative_retry = &#39;99PERCENTILE&#39;;
+CREATE CUSTOM INDEX elastic_docs_idx ON test2.docs () USING &#39;org.elassandra.index.ExtendedElasticSecondaryIndex&#39;;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;搜索文档&#34;&gt;搜索文档&lt;/h3&gt;
+&lt;p&gt;通过Elasticsearch API搜索文档：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ curl &amp;quot;http://localhost:9200/test/_search?pretty&amp;quot;
+{
+&amp;quot;took&amp;quot; : 53,
+&amp;quot;timed_out&amp;quot; : false,
+&amp;quot;_shards&amp;quot; : {
+&amp;quot;total&amp;quot; : 1,
+&amp;quot;successful&amp;quot; : 1,
+&amp;quot;skipped&amp;quot; : 0,
+&amp;quot;failed&amp;quot; : 0
+},
+&amp;quot;hits&amp;quot; : {
+&amp;quot;total&amp;quot; : 2,
+&amp;quot;max_score&amp;quot; : 1.0,
+&amp;quot;hits&amp;quot; : [
+{
+&amp;quot;_index&amp;quot; : &amp;quot;test&amp;quot;,
+&amp;quot;_type&amp;quot; : &amp;quot;docs&amp;quot;,
+&amp;quot;_id&amp;quot; : &amp;quot;1&amp;quot;,
+&amp;quot;_score&amp;quot; : 1.0,
+&amp;quot;_source&amp;quot; : {
+&amp;quot;uid&amp;quot; : 1,
+&amp;quot;login&amp;quot; : &amp;quot;vroyer&amp;quot;,
+&amp;quot;username&amp;quot; : {
+&amp;quot;last&amp;quot; : &amp;quot;royer&amp;quot;,
+&amp;quot;first&amp;quot; : &amp;quot;vince&amp;quot;
+}
+}
+},
+{
+&amp;quot;_index&amp;quot; : &amp;quot;test&amp;quot;,
+&amp;quot;_type&amp;quot; : &amp;quot;docs&amp;quot;,
+&amp;quot;_id&amp;quot; : &amp;quot;2&amp;quot;,
+&amp;quot;_score&amp;quot; : 1.0,
+&amp;quot;_source&amp;quot; : {
+&amp;quot;uid&amp;quot; : 2,
+&amp;quot;login&amp;quot; : &amp;quot;barth&amp;quot;,
+&amp;quot;username&amp;quot; : {
+&amp;quot;last&amp;quot; : &amp;quot;delemotte&amp;quot;,
+&amp;quot;first&amp;quot; : &amp;quot;barthelemy&amp;quot;
+}
+}
+}
+]
+}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;要通过CQL驱动程序搜索文档，请在表模式中添加以下两个虚拟列。 然后，执行Elasticsearch嵌套查询。 伪列允许您在索引名称与键空间名称不匹配时指定目标索引。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ docker exec -it elassandra cqlsh
+Connected to Test Cluster at 127.0.0.1:9042.
+[cqlsh 5.0.1 | Cassandra 3.11.4.2 | CQL spec 3.4.4 | Native protocol v4]
+Use HELP for help.
+cqlsh&amp;gt; ALTER TABLE test.docs ADD es_query text;
+cqlsh&amp;gt; ALTER TABLE test.docs ADD es_options text;
+cqlsh&amp;gt; SELECT uid, login, username FROM test.docs WHERE es_query=&#39;{ &amp;quot;query&amp;quot;:{&amp;quot;nested&amp;quot;:{&amp;quot;path&amp;quot;:&amp;quot;username&amp;quot;,&amp;quot;query&amp;quot;:{&amp;quot;term&amp;quot;:{&amp;quot;username.first&amp;quot;:&amp;quot;barthelemy&amp;quot;}}}}}&#39; AND es_options=&#39;indices=test&#39; ALLOW FILTERING;
+uid | login | username
+-----+-------+------------------------------------------
+2 | barth | {first: &#39;barthelemy&#39;, last: &#39;delemotte&#39;}
+(1 rows)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;管理elasticsearch索引&#34;&gt;管理Elasticsearch索引&lt;/h3&gt;
+&lt;p&gt;获取Elasticsearch集群状态：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ curl &amp;quot;http://localhost:9200/_cluster/state?pretty&amp;quot;
+{
+&amp;quot;cluster_name&amp;quot; : &amp;quot;Test Cluster&amp;quot;,
+&amp;quot;compressed_size_in_bytes&amp;quot; : 730,
+&amp;quot;version&amp;quot; : 14,
+&amp;quot;state_uuid&amp;quot; : &amp;quot;tMqNt8PpS5ySuaRxHUGc1w&amp;quot;,
+&amp;quot;master_node&amp;quot; : &amp;quot;81a9e4e0-efe4-458d-861e-8d527835372d&amp;quot;,
+&amp;quot;blocks&amp;quot; : { },
+&amp;quot;nodes&amp;quot; : {
+&amp;quot;81a9e4e0-efe4-458d-861e-8d527835372d&amp;quot; : {
+&amp;quot;name&amp;quot; : &amp;quot;172.17.0.3&amp;quot;,
+&amp;quot;status&amp;quot; : &amp;quot;ALIVE&amp;quot;,
+&amp;quot;ephemeral_id&amp;quot; : &amp;quot;81a9e4e0-efe4-458d-861e-8d527835372d&amp;quot;,
+&amp;quot;transport_address&amp;quot; : &amp;quot;172.17.0.3:9300&amp;quot;,
+&amp;quot;attributes&amp;quot; : {
+&amp;quot;rack&amp;quot; : &amp;quot;r1&amp;quot;,
+&amp;quot;dc&amp;quot; : &amp;quot;DC1&amp;quot;
+}
+}
+},
+&amp;quot;metadata&amp;quot; : {
+&amp;quot;version&amp;quot; : 4,
+&amp;quot;cluster_uuid&amp;quot; : &amp;quot;81a9e4e0-efe4-458d-861e-8d527835372d&amp;quot;,
+&amp;quot;templates&amp;quot; : { },
+&amp;quot;indices&amp;quot; : {
+&amp;quot;test&amp;quot; : {
+&amp;quot;state&amp;quot; : &amp;quot;open&amp;quot;,
+&amp;quot;settings&amp;quot; : {
+&amp;quot;index&amp;quot; : {
+&amp;quot;creation_date&amp;quot; : &amp;quot;1561883488853&amp;quot;,
+&amp;quot;number_of_shards&amp;quot; : &amp;quot;1&amp;quot;,
+&amp;quot;number_of_replicas&amp;quot; : &amp;quot;0&amp;quot;,
+&amp;quot;uuid&amp;quot; : &amp;quot;h34je53mSVqojho2gIH91A&amp;quot;,
+&amp;quot;version&amp;quot; : {
+&amp;quot;created&amp;quot; : &amp;quot;6020399&amp;quot;
+},
+&amp;quot;provided_name&amp;quot; : &amp;quot;test&amp;quot;
+}
+},
+&amp;quot;mappings&amp;quot; : {
+&amp;quot;docs&amp;quot; : {
+&amp;quot;properties&amp;quot; : {
+&amp;quot;uid&amp;quot; : {
+&amp;quot;cql_partition_key&amp;quot; : true,
+&amp;quot;cql_primary_key_order&amp;quot; : 0,
+&amp;quot;type&amp;quot; : &amp;quot;integer&amp;quot;,
+&amp;quot;cql_collection&amp;quot; : &amp;quot;singleton&amp;quot;
+},
+&amp;quot;login&amp;quot; : {
+&amp;quot;type&amp;quot; : &amp;quot;keyword&amp;quot;,
+&amp;quot;cql_collection&amp;quot; : &amp;quot;singleton&amp;quot;
+},
+&amp;quot;username&amp;quot; : {
+&amp;quot;cql_udt_name&amp;quot; : &amp;quot;user_type&amp;quot;,
+&amp;quot;type&amp;quot; : &amp;quot;nested&amp;quot;,
+&amp;quot;properties&amp;quot; : {
+&amp;quot;last&amp;quot; : {
+&amp;quot;type&amp;quot; : &amp;quot;keyword&amp;quot;,
+&amp;quot;cql_collection&amp;quot; : &amp;quot;singleton&amp;quot;
+},
+&amp;quot;first&amp;quot; : {
+&amp;quot;type&amp;quot; : &amp;quot;keyword&amp;quot;,
+&amp;quot;cql_collection&amp;quot; : &amp;quot;singleton&amp;quot;
+}
+},
+&amp;quot;cql_collection&amp;quot; : &amp;quot;singleton&amp;quot;
+}
+}
+}
+},
+&amp;quot;aliases&amp;quot; : [ ],
+&amp;quot;primary_terms&amp;quot; : {
+&amp;quot;0&amp;quot; : 0
+},
+&amp;quot;in_sync_allocations&amp;quot; : {
+&amp;quot;0&amp;quot; : [ ]
+}
+},
+&amp;quot;test2&amp;quot; : {
+&amp;quot;state&amp;quot; : &amp;quot;open&amp;quot;,
+&amp;quot;settings&amp;quot; : {
+&amp;quot;index&amp;quot; : {
+&amp;quot;creation_date&amp;quot; : &amp;quot;1561883720880&amp;quot;,
+&amp;quot;number_of_shards&amp;quot; : &amp;quot;1&amp;quot;,
+&amp;quot;number_of_replicas&amp;quot; : &amp;quot;0&amp;quot;,
+&amp;quot;uuid&amp;quot; : &amp;quot;u7BgODwuT_idHbcuenvi6g&amp;quot;,
+&amp;quot;version&amp;quot; : {
+&amp;quot;created&amp;quot; : &amp;quot;6020399&amp;quot;
+},
+&amp;quot;provided_name&amp;quot; : &amp;quot;test2&amp;quot;
+}
+},
+&amp;quot;mappings&amp;quot; : {
+&amp;quot;docs&amp;quot; : {
+&amp;quot;properties&amp;quot; : {
+&amp;quot;last&amp;quot; : {
+&amp;quot;type&amp;quot; : &amp;quot;text&amp;quot;,
+&amp;quot;cql_collection&amp;quot; : &amp;quot;singleton&amp;quot;
+},
+&amp;quot;first&amp;quot; : {
+&amp;quot;type&amp;quot; : &amp;quot;text&amp;quot;
+}
+}
+}
+},
+&amp;quot;aliases&amp;quot; : [ ],
+&amp;quot;primary_terms&amp;quot; : {
+&amp;quot;0&amp;quot; : 0
+},
+&amp;quot;in_sync_allocations&amp;quot; : {
+&amp;quot;0&amp;quot; : [ ]
+}
+}
+},
+&amp;quot;index-graveyard&amp;quot; : {
+&amp;quot;tombstones&amp;quot; : [ ]
+}
+},
+&amp;quot;routing_table&amp;quot; : {
+&amp;quot;indices&amp;quot; : {
+&amp;quot;test&amp;quot; : {
+&amp;quot;shards&amp;quot; : {
+&amp;quot;0&amp;quot; : [
+{
+&amp;quot;state&amp;quot; : &amp;quot;STARTED&amp;quot;,
+&amp;quot;primary&amp;quot; : true,
+&amp;quot;node&amp;quot; : &amp;quot;81a9e4e0-efe4-458d-861e-8d527835372d&amp;quot;,
+&amp;quot;relocating_node&amp;quot; : null,
+&amp;quot;shard&amp;quot; : 0,
+&amp;quot;index&amp;quot; : &amp;quot;test&amp;quot;,
+&amp;quot;token_ranges&amp;quot; : [
+&amp;quot;(-9223372036854775808,9223372036854775807]&amp;quot;
+],
+&amp;quot;allocation_id&amp;quot; : {
+&amp;quot;id&amp;quot; : &amp;quot;dummy_alloc_id&amp;quot;
+}
+}
+]
+}
+},
+&amp;quot;test2&amp;quot; : {
+&amp;quot;shards&amp;quot; : {
+&amp;quot;0&amp;quot; : [
+{
+&amp;quot;state&amp;quot; : &amp;quot;STARTED&amp;quot;,
+&amp;quot;primary&amp;quot; : true,
+&amp;quot;node&amp;quot; : &amp;quot;81a9e4e0-efe4-458d-861e-8d527835372d&amp;quot;,
+&amp;quot;relocating_node&amp;quot; : null,
+&amp;quot;shard&amp;quot; : 0,
+&amp;quot;index&amp;quot; : &amp;quot;test2&amp;quot;,
+&amp;quot;token_ranges&amp;quot; : [
+&amp;quot;(-9223372036854775808,9223372036854775807]&amp;quot;
+],
+&amp;quot;allocation_id&amp;quot; : {
+&amp;quot;id&amp;quot; : &amp;quot;dummy_alloc_id&amp;quot;
+}
+}
+]
+}
+}
+}
+},
+&amp;quot;routing_nodes&amp;quot; : {
+&amp;quot;unassigned&amp;quot; : [ ],
+&amp;quot;nodes&amp;quot; : {
+&amp;quot;81a9e4e0-efe4-458d-861e-8d527835372d&amp;quot; : [
+{
+&amp;quot;state&amp;quot; : &amp;quot;STARTED&amp;quot;,
+&amp;quot;primary&amp;quot; : true,
+&amp;quot;node&amp;quot; : &amp;quot;81a9e4e0-efe4-458d-861e-8d527835372d&amp;quot;,
+&amp;quot;relocating_node&amp;quot; : null,
+&amp;quot;shard&amp;quot; : 0,
+&amp;quot;index&amp;quot; : &amp;quot;test&amp;quot;,
+&amp;quot;token_ranges&amp;quot; : [
+&amp;quot;(-9223372036854775808,9223372036854775807]&amp;quot;
+],
+&amp;quot;allocation_id&amp;quot; : {
+&amp;quot;id&amp;quot; : &amp;quot;dummy_alloc_id&amp;quot;
+}
+},
+{
+&amp;quot;state&amp;quot; : &amp;quot;STARTED&amp;quot;,
+&amp;quot;primary&amp;quot; : true,
+&amp;quot;node&amp;quot; : &amp;quot;81a9e4e0-efe4-458d-861e-8d527835372d&amp;quot;,
+&amp;quot;relocating_node&amp;quot; : null,
+&amp;quot;shard&amp;quot; : 0,
+&amp;quot;index&amp;quot; : &amp;quot;test2&amp;quot;,
+&amp;quot;token_ranges&amp;quot; : [
+&amp;quot;(-9223372036854775808,9223372036854775807]&amp;quot;
+],
+&amp;quot;allocation_id&amp;quot; : {
+&amp;quot;id&amp;quot; : &amp;quot;dummy_alloc_id&amp;quot;
+}
+}
+]
+}
+},
+&amp;quot;snapshots&amp;quot; : {
+&amp;quot;snapshots&amp;quot; : [ ]
+},
+&amp;quot;restore&amp;quot; : {
+&amp;quot;snapshots&amp;quot; : [ ]
+},
+&amp;quot;snapshot_deletions&amp;quot; : {
+&amp;quot;snapshot_deletions&amp;quot; : [ ]
+}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;获取Elasticsearch索引信息：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ curl &amp;quot;http://localhost:9200/_cat/indices?v&amp;quot;
+health status index uuid pri rep docs.count docs.deleted store.size pri.store.size
+green open test2 u7BgODwuT_idHbcuenvi6g 1 0 0 0 208b 208b
+green open test h34je53mSVqojho2gIH91A 1 0 4 0 4kb 4kb
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;删除Elasticsearch索引（默认情况下不删除底层的Cassandra表）：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;curl -XDELETE http://localhost:9200/test
+{&amp;quot;acknowledged&amp;quot;:true}
+&lt;/code&gt;&lt;/pre&gt;</description></item><item><title>图形数据库简单介绍</title><link>https://ronggle.com/2019/graph-db-getting-and-started/</link><pubDate>Fri, 08 Mar 2019 11:27:29 +0800</pubDate><guid>https://ronggle.com/2019/graph-db-getting-and-started/</guid><description>&lt;h2 id=&#34;关系型数据库&#34;&gt;关系型数据库&lt;/h2&gt;
+&lt;p&gt;关系数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。&lt;/p&gt;
+&lt;p&gt;现实世界中的各种实体以及实体之间的各种联系均用关系模型来表示。关系模型是由埃德加·科德于1970年首先提出的，并配合“科德十二定律”。现如今虽然对此模型有一些批评意见，但它还是数据存储的传统标准。标准数据查询语言SQL就是一种基于关系数据库的语言，这种语言执行对关系数据库中数据的检索和操作。 关系模型由关系数据结构、关系操作集合、关系完整性约束三部分组成。&lt;/p&gt;
+&lt;p&gt;简单说，关系型数据库是由多张能互相联接的二维行列表格组成的数据库。&lt;/p&gt;
+&lt;h2 id=&#34;nosql&#34;&gt;NoSQL&lt;/h2&gt;
+&lt;p&gt;NoSQL(Not Only SQL)，泛指非关系型的数据库。&lt;/p&gt;
+&lt;p&gt;随着互联网Web2.0网站的兴起，传统的关系数据库在应付Web2.0网站，特别是超大规模和高并发的SNS类型的Web2.0纯动态网站已经显得力不从心，暴露了很多难以克服的问题，而非关系型的数据库则由于其本身的特点得到了非常迅速的发展。NoSQL数据库的产生就是为了解决大规模数据集合多重数据种类带来的挑战，尤其是大数据应用难题。&lt;/p&gt;
+&lt;p&gt;NoSQL数据库的四大分类:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;KV数据库&lt;/li&gt;
+&lt;li&gt;图型数据库&lt;/li&gt;
+&lt;li&gt;文档型数据库&lt;/li&gt;
+&lt;li&gt;列存储数据库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;今天我们要说的，便是图形数据库。&lt;/p&gt;
+&lt;h2 id=&#34;图形数据库&#34;&gt;图形数据库&lt;/h2&gt;
+&lt;p&gt;图形数据库是NoSQL数据库的一种类型，它应用图形理论存储实体之间的关系信息。图形数据库是一种非关系型数据库，它应用图形理论存储实体之间的关系信息。最常见例子就是社会网络中人与人之间的关系。关系型数据库用于存储“关系型”数据的效果并不好，其查询复杂、缓慢、超出预期，而图形数据库的独特设计恰恰弥补了这个缺陷。&lt;/p&gt;
+&lt;p&gt;和其他以列、行或者KV等形式存储数据的数据库不同，图形数据库以节点（Node）和边（Edge）的网络存储所有信息。边表示那些代表对象的节点之间的联系。因为边和节点都可以被描述为对象，开发者可以为其指定属性（Attribute，或者 property）。为边增加方向最终会创建一个属性图，它代表图形数据库中的明确结构。&lt;/p&gt;
+&lt;h2 id=&#34;我们为什么需要图形数据库&#34;&gt;我们为什么需要图形数据库？&lt;/h2&gt;
+&lt;p&gt;图形数据库可以通过使用操作、所有权和父项关系等来表示实体之间的关联关系。如果实体间的连接或关系是您正在尝试建模的数据的核心，那就适合使用图形数据库。因此，图形数据库对于建模和查询社交网络、推荐引擎、知识图谱、驾驶方向 (路线查找)、业务关系、依赖关系、货物移动等类似项目非常有用。&lt;/p&gt;
+&lt;h3 id=&#34;社交网络&#34;&gt;社交网络&lt;/h3&gt;
+&lt;p&gt;适合采用图形的常见使用案例的一个示例就是社交网络数据。
+&lt;img src=&#34;https://ronggle.com/graph-db-getting-and-started/friend-likes.png&#34; alt=&#34;graph db friend links&#34; /&gt;&lt;/p&gt;
+&lt;h3 id=&#34;推荐引擎&#34;&gt;推荐引擎&lt;/h3&gt;
+&lt;p&gt;可以在图形数据库中存储客户兴趣、好友和购买历史等信息类别之间的关系。然后，快速查询它以提出个性化和相关的建议。例如，可以使用高度可用的图形数据库，根据关注相同运动内容且具有类似购买历史记录的其他人购买的产品，向用户提供产品推荐。或者，可以识别有共同好友但还不认识对方的人员，然后提供好友推荐。&lt;/p&gt;
+&lt;h3 id=&#34;知识图谱&#34;&gt;知识图谱&lt;/h3&gt;
+&lt;p&gt;利用知识图形，您可以将信息存储在图形模型中，并可以使用图形查询帮助用户更轻松地导航高度关联的数据集。例如，如果用户对 Leonardo da Vinci 创作的 Mona Lisa 感兴趣，您可以帮助他们发现同一艺术家的其他艺术作品或发现在卢浮宫展览的其他作品。
+利用知识图谱，您可以将主题信息添加到产品目录，构建和查询复杂的监管规则模型，或者进行一般信息建模 (如维基数据)。&lt;/p&gt;
+&lt;h2 id=&#34;neo4j&#34;&gt;Neo4j&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://neo4j.com/docs/getting-started/current/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Neo4j&lt;/a&gt;是世界领先的图形数据库。 它是一个高性能的图形存储，具有成熟和强大的数据库所需的所有功能，如友好的查询语言和ACID事务。 程序员使用灵活的节点和关系网络结构而不是静态表 - 但享受企业级数据库的所有好处。 对于许多应用程序，与关系数据库相比，Neo4j提供了数量级的性能优势。&lt;/p&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
+&lt;p&gt;老样子，我依旧会适用Docker来进行安装。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ docker run -d \
+--name neo4j \
+-p 7474:7474 -p 7687:7687 \
+-v $HOME/neo4j/data:/data \
+-v $HOME/neo4j/logs:/logs \
+neo4j
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/graph-db-getting-and-started/neo4j-dashboard.png&#34; alt=&#34;neo4j-dashboard&#34; /&gt;&lt;/p&gt;
+&lt;h3 id=&#34;实例&#34;&gt;实例&lt;/h3&gt;
+&lt;h4 id=&#34;添加依赖&#34;&gt;添加依赖&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-gradle&#34;&gt;dependencies {
+compile(&amp;quot;org.neo4j:neo4j-ogm-core:3.1.7&amp;quot;)
+compile(&amp;quot;org.neo4j:neo4j-ogm-http-driver:3.1.7&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;代码&#34;&gt;代码&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package team.soi.demo;
+import lombok.Getter;
+import lombok.Setter;
+import org.neo4j.ogm.annotation.GeneratedValue;
+import org.neo4j.ogm.annotation.Id;
+import org.neo4j.ogm.annotation.NodeEntity;
+import org.neo4j.ogm.annotation.Relationship;
+import org.neo4j.ogm.config.Configuration;
+import org.neo4j.ogm.session.Session;
+import org.neo4j.ogm.session.SessionFactory;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+public class App {
+public static void main(String[] args) {
+Configuration configuration = new Configuration.Builder()
+.uri(&amp;quot;http://neo4j:qazplm@localhost:7474&amp;quot;)
+.build();
+SessionFactory sessionFactory = new SessionFactory(configuration, &amp;quot;team.soi.demo&amp;quot;);
+Session session = sessionFactory.openSession();
+User tom = new User();
+tom.setName(&amp;quot;Tom&amp;quot;);
+User bobby = new User();
+bobby.setName(&amp;quot;Bobby&amp;quot;);
+User linda = new User();
+linda.setName(&amp;quot;Linda&amp;quot;);
+linda.setFriends(Arrays.asList(tom, bobby));
+session.save(linda);
+}
+}
+@NodeEntity
+@Getter
+@Setter
+class User implements Serializable {
+@Id
+@GeneratedValue
+private Long id;
+private String name;
+@Relationship(type = &amp;quot;friend&amp;quot;)
+private List&amp;lt;User&amp;gt; friends = new ArrayList&amp;lt;&amp;gt;();
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/graph-db-getting-and-started/neo4j-friend.png&#34; alt=&#34;neo4j-friend&#34; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://www.w3cschool.cn/neo4j/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;neo4j教程&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;dgraph&#34;&gt;Dgraph&lt;/h2&gt;
+&lt;p&gt;Dgraph是一个水平可扩展的分布式图形数据库，提供ACID事务，一致的复制和线性化读取。 它是从头开始构建的，用于执行丰富的查询。 作为本机图形数据库，它严格控制数据在磁盘上的排列方式，以优化查询性能和吞吐量，减少磁盘搜索和群集中的网络调用。&lt;/p&gt;
+&lt;p&gt;Dgraph的目标是提供谷歌生产水平的规模和吞吐量，具有足够低的延迟，可以提供超过数TB的结构化数据的实时用户查询。 Dgraph支持类似GraphQL的查询语法，并通过GRPC和HTTP响应JSON和Protocol Buffers。&lt;/p&gt;
+&lt;h3 id=&#34;安装-1&#34;&gt;安装&lt;/h3&gt;
+&lt;p&gt;由于Dgraph至少要有一个zero和一个server才能使用，所以我们采用docker-compose.yaml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;version: &amp;quot;3.2&amp;quot;
+services:
+zero:
+image: dgraph/dgraph:latest
+volumes:
+- type: volume
+source: dgraph
+target: /dgraph
+volume:
+nocopy: true
+ports:
+- 5080:5080
+- 6080:6080
+restart: on-failure
+command: dgraph zero --my=zero:5080
+server:
+image: dgraph/dgraph:latest
+volumes:
+- type: volume
+source: dgraph
+target: /dgraph
+volume:
+nocopy: true
+ports:
+- 8080:8080
+- 9080:9080
+restart: on-failure
+command: dgraph alpha --my=server:7080 --lru_mb=2048 --zero=zero:5080
+ratel:
+image: dgraph/dgraph:latest
+volumes:
+- type: volume
+source: dgraph
+target: /dgraph
+volume:
+nocopy: true
+ports:
+- 8000:8000
+command: dgraph-ratel
+volumes:
+dgraph:
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;实例-1&#34;&gt;实例&lt;/h3&gt;
+&lt;h4 id=&#34;依赖&#34;&gt;依赖&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;compile(&amp;quot;io.dgraph:dgraph4j:1.7.1&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;代码-1&#34;&gt;代码&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package team.soi.demo;
+import com.google.gson.Gson;
+import com.google.gson.annotations.SerializedName;
+import com.google.protobuf.ByteString;
+import io.dgraph.DgraphClient;
+import io.dgraph.DgraphGrpc;
+import io.dgraph.DgraphProto;
+import io.dgraph.Transaction;
+import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
+import lombok.Getter;
+import lombok.Setter;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.*;
+public class DgraphApp {
+public static void main(String[] args) {
+ManagedChannel channel = ManagedChannelBuilder
+.forAddress(&amp;quot;localhost&amp;quot;, 9080)
+.usePlaintext()
+.build();
+DgraphGrpc.DgraphStub stub = DgraphGrpc.newStub(channel);
+DgraphClient dgraph = new DgraphClient(stub);
+//
+dgraph.alter(DgraphProto.Operation.newBuilder().setDropAll(true).build());
+Gson gson = new Gson();
+Transaction tx = dgraph.newTransaction();
+try {
+Tag database = new Tag();
+database.setName(&amp;quot;Database&amp;quot;);
+Tag graph = new Tag();
+graph.setName(&amp;quot;Graph&amp;quot;);
+Category category = new Category();
+category.setName(&amp;quot;GraphDB&amp;quot;);
+Post post = new Post();
+post.setTitle(&amp;quot;Hello dgraph&amp;quot;);
+post.setDigest(&amp;quot;Dgraph demo.&amp;quot;);
+post.setContent(&amp;quot;Hello dgraph,this is a demo.&amp;quot;);
+post.setViews(0);
+post.setCreated(LocalDateTime.now().toString());
+post.setTags(Arrays.asList(database, graph));
+post.setCategories(Collections.singletonList(category));
+String json = gson.toJson(post);
+DgraphProto.Mutation mu = DgraphProto.Mutation
+.newBuilder()
+.setSetJson(ByteString.copyFromUtf8(json))
+.build();
+tx.mutate(mu);
+tx.commit();
+} finally {
+tx.discard();
+}
+// query
+String query = &amp;quot;query posts($offset: int, $count: int){\n&amp;quot; +
+&amp;quot;\t\tposts(func: has(title), orderdesc: created, orderdesc: views, offset: $offset, first: $count){\n&amp;quot; +
+&amp;quot;\t\t\tuid\n&amp;quot; +
+&amp;quot;\t\t\ttitle\n&amp;quot; +
+&amp;quot;\t\t\tcategories {\n&amp;quot; +
+&amp;quot;\t\t\t\tuid\n&amp;quot; +
+&amp;quot;\t\t\t\tname\n&amp;quot; +
+&amp;quot;\t\t\t}\n&amp;quot; +
+&amp;quot;\t\t\ttags {\n&amp;quot; +
+&amp;quot;\t\t\t\tuid\n&amp;quot; +
+&amp;quot;\t\t\t\tname\n&amp;quot; +
+&amp;quot;\t\t\t}\n&amp;quot; +
+&amp;quot;\t\t\tdigest\n&amp;quot; +
+&amp;quot;\t\t\tcreated\n&amp;quot; +
+&amp;quot;\t\t}\n&amp;quot; +
+&amp;quot;\t}&amp;quot;;
+Map&amp;lt;String, String&amp;gt; vars = new HashMap&amp;lt;&amp;gt;();
+vars.put(&amp;quot;$offset&amp;quot;, &amp;quot;0&amp;quot;);
+vars.put(&amp;quot;$count&amp;quot;, &amp;quot;25&amp;quot;);
+DgraphProto.Response response = dgraph.newReadOnlyTransaction().queryWithVars(query, vars);
+Posts posts = gson.fromJson(response.getJson().toStringUtf8(), Posts.class);
+System.out.printf(&amp;quot;Found hot post: %d\n&amp;quot;, posts.getPosts().size());
+posts.getPosts().forEach(post -&amp;gt; System.out.println(post.getTitle()));
+}
+}
+@Getter
+@Setter
+class Posts implements Serializable {
+List&amp;lt;Post&amp;gt; posts;
+}
+@Getter
+@Setter
+class Post implements Serializable {
+@SerializedName(&amp;quot;uid&amp;quot;)
+private String id;
+private String title;
+private String digest;
+private String content;
+private String created;
+private Integer views;
+private List&amp;lt;Tag&amp;gt; tags = new ArrayList&amp;lt;&amp;gt;();
+private List&amp;lt;Category&amp;gt; categories = new ArrayList&amp;lt;&amp;gt;();
+}
+@Getter
+@Setter
+class Tag implements Serializable {
+@SerializedName(&amp;quot;uid&amp;quot;)
+private String id;
+private String name;
+}
+@Setter
+@Getter
+class Category implements Serializable {
+@SerializedName(&amp;quot;uid&amp;quot;)
+private String id;
+private String name;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/graph-db-getting-and-started/dgraph-post.png&#34; alt=&#34;dgraph-post&#34; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://dgraph-zh.cn/#/home/index&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Dgraph中文文档&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;结束语&#34;&gt;结束语&lt;/h2&gt;
+&lt;p&gt;当然，本次知识粗略介绍了下图数据库，如果有时间，后续我应该会找一个场景来实际应用，先挖个坑，后续努力补上 😄 。&lt;/p&gt;</description></item><item><title>Traefik on Kubernetes</title><link>https://ronggle.com/2018/traefik-on-kubernetes/</link><pubDate>Sat, 10 Nov 2018 21:34:29 +0800</pubDate><guid>https://ronggle.com/2018/traefik-on-kubernetes/</guid><description>&lt;p&gt;之前同事问我在Kubernetes上使用，他按照Traefik文档上的部署，不能使用。后面我自己把我整理的配置发给他，成功在Kubernetes上部署，记录下，方便遇到同样疑问的朋友，大神请略过。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/traefik-on-kubernetes/traefik_on_k8s.svg&#34; alt=&#34;traefik on kubernetes&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;如上图，为称之为部署架构。用户使用域名通过LB访问部署在K8S上的应用，LB通过负载均衡反向代理暴露在NodePort上的Traefik服务，Traefik则在K8S内部使用域名发现K8S上通过Ingress暴露出来的应用。&lt;/p&gt;
+&lt;h2 id=&#34;部署traefik&#34;&gt;部署Traefik&lt;/h2&gt;
+&lt;h3 id=&#34;traefik-rbac-yaml-traefik-on-kubernetes-traefik-rbac-yaml&#34;&gt;&lt;a href=&#34;https://ronggle.com/traefik-on-kubernetes/traefik-rbac.yaml&#34;&gt;traefik-rbac.yaml&lt;/a&gt;&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+name: traefik
+labels:
+app: traefik
+data:
+traefik.toml: |
+# traefik.toml
+logLevel = &amp;quot;INFO&amp;quot;
+defaultEntryPoints = [&amp;quot;http&amp;quot;, &amp;quot;httpn&amp;quot;]
+[entryPoints]
+[entryPoints.http]
+address = &amp;quot;:80&amp;quot;
+compress = true
+[entryPoints.httpn]
+address = &amp;quot;:8880&amp;quot;
+compress = true
+[entryPoints.traefik]
+address = &amp;quot;:8080&amp;quot;
+[kubernetes]
+[traefikLog]
+format = &amp;quot;json&amp;quot;
+[api]
+entryPoint = &amp;quot;traefik&amp;quot;
+dashboard = true
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+name: traefik
+labels:
+app: traefik
+spec:
+replicas: 1
+selector:
+matchLabels:
+app: traefik
+release: traefik
+template:
+metadata:
+annotations:
+checksum/config: 55a29204986001f01835269242a08a68d59bc276658728cc28c5543e34f26d0b
+labels:
+app: traefik
+spec:
+serviceAccountName: traefik
+terminationGracePeriodSeconds: 60
+containers:
+- image: traefik:1.7.4
+name: traefik
+resources:
+requests:
+cpu: &amp;quot;100m&amp;quot;
+memory: &amp;quot;20Mi&amp;quot;
+limits:
+cpu: &amp;quot;100m&amp;quot;
+memory: &amp;quot;30Mi&amp;quot;
+readinessProbe:
+tcpSocket:
+port: 80
+failureThreshold: 1
+initialDelaySeconds: 10
+periodSeconds: 10
+successThreshold: 1
+timeoutSeconds: 2
+livenessProbe:
+tcpSocket:
+port: 80
+failureThreshold: 3
+initialDelaySeconds: 10
+periodSeconds: 10
+successThreshold: 1
+timeoutSeconds: 2
+volumeMounts:
+- mountPath: /config
+name: config
+ports:
+- name: http
+containerPort: 80
+protocol: TCP
+- name: httpn
+containerPort: 8880
+protocol: TCP
+- name: https
+containerPort: 443
+protocol: TCP
+- name: dash
+containerPort: 8080
+protocol: TCP
+args:
+- --configfile=/config/traefik.toml
+volumes:
+- name: config
+configMap:
+name: traefik
+---
+apiVersion: v1
+kind: Service
+metadata:
+name: traefik
+labels:
+app: traefik
+annotations:
+spec:
+type: NodePort
+selector:
+app: traefik
+release: traefik
+ports:
+- port: 80
+name: http
+targetPort: http
+- port: 443
+name: https
+targetPort: httpn
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+name: traefik
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+name: traefik
+rules:
+- apiGroups:
+- &amp;quot;&amp;quot;
+resources:
+- pods
+- services
+- endpoints
+- secrets
+verbs:
+- get
+- list
+- watch
+- apiGroups:
+- extensions
+resources:
+- ingresses
+verbs:
+- get
+- list
+- watch
+- apiGroups:
+- extensions
+resources:
+- ingresses/status
+verbs:
+- update
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+name: traefik
+roleRef:
+apiGroup: rbac.authorization.k8s.io
+kind: ClusterRole
+name: traefik
+subjects:
+- kind: ServiceAccount
+name: traefik
+namespace: kube-system
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ kubectl apply -f traefik-rbac.yaml -n traefik
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;traefik-ui-yaml-traefik-on-kubernetes-traefik-ui-yaml&#34;&gt;&lt;a href=&#34;https://ronggle.com/traefik-on-kubernetes/traefik-ui.yaml&#34;&gt;traefik-ui.yaml&lt;/a&gt;&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+name: traefik-dashboard
+labels:
+app: traefik
+annotations:
+spec:
+rules:
+- host: traefik.cloud-labs.io
+http:
+paths:
+- backend:
+serviceName: traefik-dashboard
+servicePort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+name: traefik-dashboard
+labels:
+app: traefik
+annotations:
+spec:
+selector:
+app: traefik
+release: traefik
+ports:
+- port: 80
+targetPort: 8080
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ kubectl apply -f traefik-ui.yaml -n traefik
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;lb&#34;&gt;LB&lt;/h2&gt;
+&lt;p&gt;这边将使用nginx作为LB，使用其的反向代理，将请求反向代理到traefik所在的NodePort上，nginx配置&lt;a href=&#34;https://ronggle.com/traefik-on-kubernetes/defauult.conf&#34;&gt;default.conf&lt;/a&gt;如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-conf&#34;&gt;upstream k8s {
+server 192.168.100.100:30080;
+server 192.168.100.101:30080;
+server 192.168.100.102:30080;
+}
+server {
+listen 80;
+server_name cloud-labs.io;
+#access_log logs/quancha.access.log main;
+#error_log logs/quancha.error.log;
+root html;
+index index.html index.htm index.php;
+## send request back to apache ##
+location / {
+proxy_pass http://k8s;
+#Proxy Settings
+proxy_redirect off;
+proxy_set_header Host $host;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504;
+proxy_max_temp_file_size 0;
+proxy_connect_timeout 90;
+proxy_send_timeout 90;
+proxy_read_timeout 90;
+proxy_buffer_size 4k;
+proxy_buffers 4 32k;
+proxy_busy_buffers_size 64k;
+proxy_temp_file_write_size 64k;
+}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;配置hosts&#34;&gt;配置hosts&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ cat /etc/hosts
+192.168.100.100 traefik.cloud-labs.io
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;验证&#34;&gt;验证&lt;/h2&gt;
+&lt;p&gt;打开浏览器，输入&lt;code&gt;traefik.cloud-labs.io&lt;/code&gt;可以看到如下：
+&lt;img src=&#34;https://ronggle.com/traefik-on-kubernetes/traefik-dashboard.png&#34; alt=&#34;traefik dashboard&#34; /&gt;&lt;/p&gt;
+&lt;h3 id=&#34;部署一个应用&#34;&gt;部署一个应用&lt;/h3&gt;
+&lt;p&gt;为了简单方便起见，我在这里将部署一个nginx，并使用域名&lt;code&gt;nginx.cloud-labs.io&lt;/code&gt;来访问它。配置文件&lt;a href=&#34;https://ronggle.com/traefik-on-kubernetes/nginx-apps.yaml&#34;&gt;nginx-apps.yaml&lt;/a&gt;如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+name: nginx
+labels:
+app: nginx
+role: web
+spec:
+replicas: 1
+selector:
+matchLabels:
+app: nginx
+template:
+metadata:
+labels:
+app: nginx
+spec:
+containers:
+- name: nginx
+image: nginx:latest
+imagePullPolicy: IfNotPresent
+ports:
+- name: http
+containerPort: 80
+protocol: TCP
+- name: https
+containerPort: 443
+protocol: TCP
+---
+apiVersion: v1
+kind: Service
+metadata:
+name: nginx
+labels:
+app: nginx
+annotations:
+spec:
+type: ClusterIP
+selector:
+app: nginx
+ports:
+- port: 80
+name: http
+targetPort: http
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+name: nginx
+labels:
+app: nginx
+annotations:
+spec:
+rules:
+- host: nginx.cloud-labs.io
+http:
+paths:
+- backend:
+serviceName: nginx
+servicePort: 80
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ kubectl apply -f nginx-apps.yaml
+$ cat /etc/hosts
+192.168.100.100 traefik.cloud-labs.io
+192.168.100.100 nginx.cloud-labs.io
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;打开浏览器&lt;code&gt;http://nginx.cloud-labs.io/&lt;/code&gt;：
+&lt;img src=&#34;https://ronggle.com/traefik-on-kubernetes/nginx-apps.png&#34; alt=&#34;nginx-apps.png&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;结束语&#34;&gt;结束语&lt;/h2&gt;
+&lt;p&gt;一篇水文，到此结束，本文重点记录了在kubernetes上使用traefik作为ingress使用，不为别的，就是为了记录下。&lt;/p&gt;</description></item><item><title>使用gRPC开发微服务-服务注册与发现</title><link>https://ronggle.com/2018/registry-microservies-via-grpc/</link><pubDate>Sun, 12 Aug 2018 20:04:08 +0800</pubDate><guid>https://ronggle.com/2018/registry-microservies-via-grpc/</guid><description>&lt;p&gt;谈到微服务，就不免会提及服务注册，我们上一节中已经实现了gRPC的服务开发，以及客户端开发，在我们的客户端中，我们调用服务端时，需要指定服务端的IP，端口等信息，而在我们的编排系统中，我们的IP是不固定的，所以我们需要通过服务的发现，自己去发现服务端的配置。&lt;/p&gt;
+&lt;h2 id=&#34;前提&#34;&gt;前提&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.consul.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Consul&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Docker&lt;/li&gt;
+&lt;li&gt;Golang&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;服务注册&#34;&gt;服务注册&lt;/h2&gt;
+&lt;p&gt;首先，我们来定义服务注册的接口：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;// Registry interface for extend
+type Registry interface {
+Register(id string, name string, port int, tags ...string) error
+DeRegister(string) error
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;服务注册主要有两个接口，一个用于注册服务的&lt;code&gt;Register&lt;/code&gt;，一个用于取消注册的&lt;code&gt;DeRegister&lt;/code&gt;,当我们注册服务的时候，我们需要提供当前服务的ID，名称，端口等信息。&lt;/p&gt;
+&lt;h3 id=&#34;注册中心consul&#34;&gt;注册中心Consul&lt;/h3&gt;
+&lt;p&gt;为了方便我们的服务注册，我则使用&lt;a href=&#34;https://www.consul.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Consul&lt;/a&gt;作为注册中心，如果你还不知道什么是Consul，你可以看我之前的博客[consul学习一-初见]()以及Consul的官网进行了解。&lt;/p&gt;
+&lt;p&gt;实现Registry：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;type consul struct {
+client *api.Client
+addr string
+}
+// NewConsulRegistry returns a registryClient interface for given consul address
+func NewConsulRegistry(c Config) (Registry, error) {
+addr := fmt.Sprintf(&amp;quot;%s:%s&amp;quot;, c.Host, c.Port)
+if addr == &amp;quot;&amp;quot; {
+addr = &amp;quot;consul:8500&amp;quot;
+}
+cfg := api.DefaultConfig()
+cfg.Address = addr
+cl, err := api.NewClient(cfg)
+if err != nil {
+logrus.Errorf(&amp;quot;Can&#39;t connect to consul server at %s&amp;quot;, addr)
+return nil, err
+}
+return consul{client: cl, addr: addr}, nil
+}
+func (r consul) Register(id string, name string, port int, tags ...string) error {
+conn, err := net.Dial(&amp;quot;udp&amp;quot;, &amp;quot;8.8.8.8:80&amp;quot;)
+if err != nil {
+return fmt.Errorf(&amp;quot;unable to determine local addr: %v&amp;quot;, err)
+}
+defer conn.Close()
+localAddr := conn.LocalAddr().(*net.UDPAddr)
+asr := &amp;amp;api.AgentServiceRegistration{
+ID: name,
+Name: name,
+Port: port,
+EnableTagOverride: false,
+Tags: tags,
+Address: localAddr.IP.String(),
+}
+err = r.client.Agent().ServiceRegister(asr)
+if err != nil {
+logrus.Errorf(&amp;quot;Failed to register service at &#39;%s&#39;. error: %v&amp;quot;, r.addr, err)
+} else {
+logrus.Infof(&amp;quot;Regsitered service &#39;%s&#39; at consul.&amp;quot;, id)
+}
+return err
+}
+func (r consul) DeRegister(name string) error {
+err := r.client.Agent().ServiceDeregister(name)
+if err != nil {
+logrus.Errorf(&amp;quot;Failed to deregister service by id: &#39;%s&#39;. Error: %v&amp;quot;, name, err)
+} else {
+logrus.Infof(&amp;quot;Deregistered service &#39;%s&#39; at consul.&amp;quot;, name)
+}
+return err
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;完整代码可以查看&lt;a href=&#34;https://github.com/ycrxun/gf/tree/master/registry&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;gf&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;服务发现&#34;&gt;服务发现&lt;/h2&gt;
+&lt;p&gt;同样，我们定义一个接口：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;// Discovery service
+type Discovery interface {
+Dial(name string, opts ...grpc.DialOption) (*grpc.ClientConn, error)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;基于consul发现服务&#34;&gt;基于Consul发现服务&lt;/h3&gt;
+&lt;p&gt;基于Consul发现服务其实简单，就是使用Consul提供的API，我们去注册中心读取服务的信息（IP，port等）。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;// discovery provider
+type discovery struct {
+*api.Client
+dialopts []grpc.DialOption
+}
+// NewConsulDiscovery returns discovery
+func NewConsulDiscovery(cfg Config) (Discovery, error) {
+config := api.DefaultConfig()
+config.Address = fmt.Sprintf(&amp;quot;%s:%s&amp;quot;, cfg.Host, cfg.Port)
+c, err := api.NewClient(config)
+if err != nil {
+return nil, err
+}
+opts := []grpc.DialOption{
+grpc.WithInsecure(),
+grpc.WithBlock(),
+}
+if cfg.Tracer != nil {
+opts = append(opts, grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(cfg.Tracer)))
+opts = append(opts, grpc.WithStreamInterceptor(otgrpc.OpenTracingStreamClientInterceptor(cfg.Tracer)))
+}
+return discovery{c, opts}, nil
+}
+// Dial grpc server
+func (c discovery) Dial(name string, opts ...grpc.DialOption) (*grpc.ClientConn, error) {
+r, err := lb.NewResolver(c.Client, name, &amp;quot;&amp;quot;)
+if err != nil {
+return nil, fmt.Errorf(&amp;quot;Create balancer resolver for service %s failed. Error: %v&amp;quot;, name, err)
+}
+c.dialopts = append(c.dialopts, grpc.WithBalancer(grpc.RoundRobin(r)))
+c.dialopts = append(c.dialopts, opts...)
+conn, err := grpc.Dial(&amp;quot;&amp;quot;, c.dialopts...)
+if err != nil {
+return nil, fmt.Errorf(&amp;quot;Failed to dial %s: %v&amp;quot;, name, err)
+}
+return conn, nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;完整代码可以查看&lt;a href=&#34;https://github.com/ycrxun/gf/tree/master/discovery&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;gf&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;h3 id=&#34;注册与取消注册&#34;&gt;注册与取消注册&lt;/h3&gt;
+&lt;p&gt;根据上篇中，我们只需要在启动gRPC server的时候，把我们的服务注册到Consul即可：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;package cmd
+import (
+&amp;quot;github.com/ycrxun/add&amp;quot;
+&amp;quot;github.com/ycrxun/add/server&amp;quot;
+&amp;quot;github.com/ycrxun/gf/registry&amp;quot;
+&amp;quot;github.com/sirupsen/logrus&amp;quot;
+&amp;quot;github.com/spf13/cobra&amp;quot;
+&amp;quot;google.golang.org/grpc&amp;quot;
+&amp;quot;github.com/ycrxun/gf&amp;quot;
+)
+var serveCmd = &amp;amp;cobra.Command{
+Use: &amp;quot;serve&amp;quot;,
+Short: &amp;quot;Run the RPC server&amp;quot;,
+Run: func(cmd *cobra.Command, args []string) {
+logrus.Fatal(runServe())
+},
+}
+func runServe() error {
+r, err := registry.NewRegistry(registry.Config{
+Provider: registry.Consul,
+Host: &amp;quot;192.168.31.70&amp;quot;,
+Port: &amp;quot;8500&amp;quot;,
+})
+if err != nil {
+return err
+}
+s := gf.NewService(&amp;quot;add&amp;quot;)
+s.GRPCImplementation(func(g *grpc.Server) {
+add.RegisterAddServiceServer(g, server.AddServer{})
+})
+s.UseRegistry(r)
+s.Run()
+return nil
+}
+func init() {
+rootCmd.AddCommand(serveCmd)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;发现服务&#34;&gt;发现服务&lt;/h3&gt;
+&lt;p&gt;通过上面的代码改造，我们会在服务端启动时把服务注册到Consul，那么在客户端使用时，我们只需要去Consul发现服务即可。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;package cmd
+import (
+&amp;quot;context&amp;quot;
+&amp;quot;github.com/kataras/iris&amp;quot;
+&amp;quot;github.com/sirupsen/logrus&amp;quot;
+&amp;quot;github.com/spf13/cobra&amp;quot;
+&amp;quot;github.com/ycrxun/add&amp;quot;
+&amp;quot;github.com/ycrxun/gf/discovery&amp;quot;
+)
+var clientCmd = &amp;amp;cobra.Command{
+Use: &amp;quot;client&amp;quot;,
+Short: &amp;quot;Run the RPC client&amp;quot;,
+Run: func(cmd *cobra.Command, args []string) {
+logrus.Fatal(runClient())
+},
+}
+func runClient() error {
+// Define discovery
+d, err := discovery.NewDiscovery(discovery.Config{
+Provider: discovery.Consul,
+Host: &amp;quot;192.168.31.70&amp;quot;,
+Port: &amp;quot;8500&amp;quot;,
+})
+if err != nil {
+return err
+}
+// discovery service via name.
+cc, err := d.Dial(&amp;quot;add&amp;quot;)
+if err != nil {
+return err
+}
+cl := add.NewAddServiceClient(cc)
+app := iris.New()
+app.Get(&amp;quot;/:a/:b&amp;quot;, func(ctx iris.Context) {
+a, _ := ctx.Params().GetInt64(&amp;quot;a&amp;quot;)
+b, _ := ctx.Params().GetInt64(&amp;quot;b&amp;quot;)
+c := context.Background()
+rs, err := cl.Add(c, &amp;amp;add.AddRequest{A: uint64(a), B: uint64(b)})
+if err != nil {
+ctx.Text(err.Error())
+return
+}
+ctx.JSON(rs)
+})
+return app.Run(iris.Addr(&amp;quot;:8100&amp;quot;))
+}
+func init() {
+rootCmd.AddCommand(clientCmd)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;启动&#34;&gt;启动&lt;/h3&gt;
+&lt;p&gt;编译并依次启动&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ pwd
+/home/soi/golang/src/github.com/ycrxun/add/add
+$ go build
+$ ./add serve
+INFO[0000] add serve at 0.0.0.0:8000
+INFO[0000] Regsitered service &#39;add&#39; at consul.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;此时，我们打开consul的控制面板，可以看到服务已经注册到上面了
+&lt;img src=&#34;https://ronggle.com/registry-microservies-via-grpc/consul.png&#34; alt=&#34;consul&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;在另一个终端启动client&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ ./add client
+Now listening on: http://localhost:8100
+Application started. Press CTRL+C to shut down.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;打开浏览器，输入&lt;code&gt;http://localhost:8100/1/1&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{&amp;quot;result&amp;quot;:2}
+&lt;/code&gt;&lt;/pre&gt;</description></item><item><title>使用gRPC开发微服务-开始</title><link>https://ronggle.com/2018/setup-microservies-via-grpc/</link><pubDate>Sun, 12 Aug 2018 17:44:33 +0800</pubDate><guid>https://ronggle.com/2018/setup-microservies-via-grpc/</guid><description>&lt;h2 id=&#34;什么是grpc&#34;&gt;什么是gRPC&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&#34;https://grpc.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;gRPC&lt;/a&gt;是一个现代的开源高性能RPC框架，可以在任何环境中运行。它可以有效地连接数据中心内和跨数据中心的服务，并提供可插拔的支持，以实现负载平衡，跟踪，健康检查和身份验证。它支持多种语言。&lt;/p&gt;
+&lt;p&gt;gRPC使用&lt;a href=&#34;https://developers.google.com/protocol-buffers/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Protocol Buffers&lt;/a&gt;作为IDL定义服务，Protocol Buffers是一个功能强大的二进制序列化工具集和语言。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/setup-microservies-via-grpc/grpc.svg&#34; alt=&#34;grpc.io&#34; /&gt;&lt;/p&gt;
+&lt;h3 id=&#34;主要使用场景&#34;&gt;主要使用场景&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;在微服务式架构中有效地连接多语言服务&lt;/li&gt;
+&lt;li&gt;将移动设备，浏览器客户端连接到后端服务&lt;/li&gt;
+&lt;li&gt;生成高效的客户端库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;核心功能&#34;&gt;核心功能&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;10种语言的客户端库&lt;/li&gt;
+&lt;li&gt;高效和简单的服务定义框架&lt;/li&gt;
+&lt;li&gt;基于http/2的传输的双向流&lt;/li&gt;
+&lt;li&gt;可插拔身份验证，跟踪，负载平衡和健康检查&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;安装和前期准备请参阅官方文档。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;前置条件&#34;&gt;前置条件&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://developers.google.com/protocol-buffers/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Protocol Buffers&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://golang.org/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Golang&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;一个简单的开始&#34;&gt;一个简单的开始&lt;/h2&gt;
+&lt;h3 id=&#34;使用protocol-buffers定义服务&#34;&gt;使用Protocol Buffers定义服务&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-proto&#34;&gt;syntax = &amp;quot;proto3&amp;quot;;
+package add;
+message AddRequest {
+uint64 a = 1;
+uint64 b = 2;
+}
+message AddResponse {
+uint64 result = 1;
+}
+service AddService {
+rpc Add (AddRequest) returns (AddResponse) {}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;项目结构&#34;&gt;项目结构&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;.
+├── add
+│   ├── cmd
+│   │   ├── client.go
+│   │   ├── root.go
+│   │   └── server.go
+│   └── main.go
+├── add.pb.go
+├── add.proto
+└── server
+└── server.go
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;生成代码&#34;&gt;生成代码&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ pwd
+/home/soi/golang/src/github.com/ycrxun/add
+$ protoc -I . add.proto --go_out=plugins=grpc:.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;当我们执行完命令后，会在当前文件夹上生成一个&lt;code&gt;add.pb.go&lt;/code&gt;文件，这个文件我们不需要去动，但是我们生成的这个文件中有我们定义的AddServiceServer的接口，需要我们去实现。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;// AddServiceServer is the server API for AddService service.
+type AddServiceServer interface {
+Add(context.Context, *AddRequest) (*AddResponse, error)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;实现addserviceserver&#34;&gt;实现AddServiceServer&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ pwd
+/home/soi/golang/src/github.com/ycrxun/add
+$ mkdir server
+$ touch server/server.go
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;然后在&lt;code&gt;server.go&lt;/code&gt;中定义一个struct&lt;code&gt;AddServer&lt;/code&gt;,并且实现&lt;code&gt;AddServiceServer&lt;/code&gt;的&lt;code&gt;Add&lt;/code&gt;方法。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;package server
+import (
+&amp;quot;context&amp;quot;
+&amp;quot;github.com/ycrxun/add&amp;quot;
+)
+// AddServer struct for AddService
+type AddServer struct {
+}
+// Add method
+func (a AddServer) Add(ctx context.Context, r *add.AddRequest) (*add.AddResponse, error) {
+rs := r.A + r.B
+s := add.AddResponse{
+Result: uint64(rs),
+}
+return &amp;amp;s, nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;到此，我们已经实现了我们的业务逻辑部分，但是并不能对外提供服务，所以我们要完成我们的gRPC的server。&lt;/p&gt;
+&lt;h3 id=&#34;实现server端&#34;&gt;实现Server端&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ pwd
+/home/soi/golang/src/github.com/ycrxun/add/add
+$ ls
+cmd main.go
+$ cat main.go
+package main
+import &amp;quot;github.com/ycrxun/add/add/cmd&amp;quot;
+func main() {
+cmd.Execute()
+}
+$ cat cmd/root.go
+package cmd
+import (
+&amp;quot;fmt&amp;quot;
+&amp;quot;os&amp;quot;
+&amp;quot;github.com/spf13/cobra&amp;quot;
+)
+var rootCmd = &amp;amp;cobra.Command{
+Use: &amp;quot;add&amp;quot;,
+Short: &amp;quot;grpc add service simple.&amp;quot;,
+}
+// Execute cmd
+func Execute() {
+if err := rootCmd.Execute(); err != nil {
+fmt.Println(err)
+os.Exit(-1)
+}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;为了后续的操作，我们最好按照这种结构去写，当然，你也可以不这么写。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;接下来，我们去实现我们的gRPC Server&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;package cmd
+import (
+&amp;quot;net&amp;quot;
+&amp;quot;github.com/ycrxun/add&amp;quot;
+&amp;quot;github.com/ycrxun/add/server&amp;quot;
+&amp;quot;github.com/sirupsen/logrus&amp;quot;
+&amp;quot;github.com/spf13/cobra&amp;quot;
+&amp;quot;google.golang.org/grpc&amp;quot;
+)
+var serveCmd = &amp;amp;cobra.Command{
+Use: &amp;quot;serve&amp;quot;,
+Short: &amp;quot;Run the RPC server&amp;quot;,
+Run: func(cmd *cobra.Command, args []string) {
+logrus.Fatal(runServe())
+},
+}
+func runServe() error {
+lis, err := net.Listen(&amp;quot;tcp&amp;quot;, &amp;quot;:8000&amp;quot;)
+logrus.Infof(&amp;quot;add serve at %s&amp;quot;, &amp;quot;0.0.0.0:8000&amp;quot;)
+if err != nil {
+return err
+}
+s := grpc.NewServer()
+add.RegisterAddServiceServer(s, &amp;amp;server.AddServer{})
+return s.Serve(lis)
+}
+func init() {
+rootCmd.AddCommand(serveCmd)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;至此，我们的gRPC server以及我们的业务逻辑就完成了。&lt;/p&gt;
+&lt;p&gt;是不是很鸡冻呢？&lt;/p&gt;
+&lt;p&gt;接下来我们来编译并运行起来。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ pwd
+/home/soi/golang/src/github.com/ycrxun/add/add
+$ go build
+$ ls
+add cmd main.go
+$ ./add serve
+INFO[0000] add serve at 0.0.0.0:8000
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;编写客户端&#34;&gt;编写客户端&lt;/h3&gt;
+&lt;p&gt;上面我们已经编写并完成了gRPC server及其业务逻辑，并可以对外提供服务了，这时候我们需要使用一个客户端去调用我们的服务，为了方便测试，我们选择使用&lt;a href=&#34;https://iris-go.com/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;iris&lt;/a&gt;来构建一个HTTP的API对外提供服务。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-golang&#34;&gt;package cmd
+import (
+&amp;quot;context&amp;quot;
+&amp;quot;github.com/kataras/iris&amp;quot;
+&amp;quot;github.com/sirupsen/logrus&amp;quot;
+&amp;quot;github.com/spf13/cobra&amp;quot;
+&amp;quot;github.com/ycrxun/add&amp;quot;
+&amp;quot;google.golang.org/grpc&amp;quot;
+)
+var clientCmd = &amp;amp;cobra.Command{
+Use: &amp;quot;client&amp;quot;,
+Short: &amp;quot;Run the RPC client&amp;quot;,
+Run: func(cmd *cobra.Command, args []string) {
+logrus.Fatal(runClient())
+},
+}
+func runClient() error {
+// 建立一个grpc连接
+cc, err := grpc.Dial(&amp;quot;0.0.0.0:8000&amp;quot;, grpc.WithInsecure())
+if err != nil {
+return err
+}
+// 创建AddService的客户端
+cl := add.NewAddServiceClient(cc)
+app := iris.New()
+app.Get(&amp;quot;/:a/:b&amp;quot;, func(ctx iris.Context) {
+a, _ := ctx.Params().GetInt64(&amp;quot;a&amp;quot;)
+b, _ := ctx.Params().GetInt64(&amp;quot;b&amp;quot;)
+c := context.Background()
+rs, err := cl.Add(c, &amp;amp;add.AddRequest{A: uint64(a), B: uint64(b)})
+if err != nil {
+ctx.Text(err.Error())
+return
+}
+ctx.JSON(rs)
+})
+return app.Run(iris.Addr(&amp;quot;:8100&amp;quot;))
+}
+func init() {
+rootCmd.AddCommand(clientCmd)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;到此，我们的客户端也完成了，接下来为们重新编译下，并依次将服务端，客户端启动起来。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ pwd
+/home/soi/golang/src/github.com/ycrxun/add/add
+$ go build
+$ ./add serve
+INFO[0000] add serve at 0.0.0.0:8000
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;重新开一个终端&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ ./add client
+Now listening on: http://localhost:8100
+Application started. Press CTRL+C to shut down.
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;打开浏览器，输入&lt;code&gt;http://localhost:8100/1/1&lt;/code&gt;&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-json&#34;&gt;{&amp;quot;result&amp;quot;:2}
+&lt;/code&gt;&lt;/pre&gt;</description></item><item><title>开启Traefik的https</title><link>https://ronggle.com/2018/traefik-https/</link><pubDate>Thu, 26 Jul 2018 22:42:22 +0800</pubDate><guid>https://ronggle.com/2018/traefik-https/</guid><description>&lt;p&gt;在&lt;a href=&#34;https://ronggle.com/2018/05/cloud-labs/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;使用Docker打造自己的云平台&lt;/a&gt;中我们有提到&lt;strong&gt;Traefik&lt;/strong&gt;，并对其进行了简单的使用，后面在使用的过程中，需要使用https，所以也对traefik自动从&lt;a href=&#34;https://letsencrypt.org/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Let&amp;rsquo;s Encrypt&lt;/a&gt;获取证书进行了验证与使用，所以在此记录下验证的过程。&lt;/p&gt;
+&lt;h2 id=&#34;目标&#34;&gt;目标&lt;/h2&gt;
+&lt;p&gt;开启Traefik的https服务。
+&lt;img src=&#34;https://ronggle.com/traefik-https/console.png&#34; alt=&#34;traefik console&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;前期准备&#34;&gt;前期准备&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.docker.com/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Docker&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://traefik.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Traefik&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.portainer.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Portainer&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.docker.com/compose/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Docker Compose&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.docker.com/engine/swarm/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Docker Swarm&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;traefik&#34;&gt;Traefik&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Traefik&lt;/strong&gt;云原生边缘路由器,反向代理/负载均衡器，简单，动态，自动，快速，功能齐全，开源，经过生产验证，提供指标，并与各种主要集群技术集成&amp;hellip;&amp;hellip;难怪它如此受欢迎！&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/traefik-https/traefik-architecture.svg&#34; alt=&#34;架构&#34; /&gt;
+&lt;img src=&#34;https://ronggle.com/traefik-https/web.frontend.png&#34; alt=&#34;WebUI&#34; /&gt;
+&lt;img src=&#34;https://ronggle.com/traefik-https/traefik-health.png&#34; alt=&#34;Health&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;新建stack编排文件&#34;&gt;新建stack编排文件&lt;/h2&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;version: &amp;quot;3.4&amp;quot;
+services:
+server:
+image: traefik:latest
+command:
+- &amp;quot;--api&amp;quot;
+- &amp;quot;--api.dashboard&amp;quot;
+- &amp;quot;--api.statistics&amp;quot;
+- &amp;quot;--entrypoints=Name:http Address::80 Redirect.EntryPoint:https&amp;quot;
+- &amp;quot;--entrypoints=Name:https Address::443 TLS&amp;quot;
+- &amp;quot;--defaultentrypoints=http,https&amp;quot;
+- &amp;quot;--acme&amp;quot;
+- &amp;quot;--acme.storage=/acme.json&amp;quot;
+- &amp;quot;--acme.entryPoint=https&amp;quot;
+- &amp;quot;--acme.httpChallenge.entryPoint=http&amp;quot;
+- &amp;quot;--acme.onHostRule=true&amp;quot;
+- &amp;quot;--acme.onDemand=false&amp;quot;
+- &amp;quot;--acme.email=example@mail.com&amp;quot;
+- &amp;quot;--docker&amp;quot;
+- &amp;quot;--docker.swarmMode&amp;quot;
+- &amp;quot;--docker.domain=example.com&amp;quot;
+- &amp;quot;--docker.watch&amp;quot;
+ports:
+- &amp;quot;80:80&amp;quot;
+- &amp;quot;443:443&amp;quot;
+networks:
+- proxy
+volumes:
+- /var/run/docker.sock:/var/run/docker.sock
+deploy:
+placement:
+constraints:
+- node.role == manager
+update_config:
+parallelism: 1
+delay: 10s
+restart_policy:
+condition: on-failure
+labels:
+- traefik.backend=traefik
+- traefik.frontend.rule=Host:monitor.example.com
+- traefik.docker.network=traefik_proxy
+- traefik.port=8080
+networks:
+proxy:
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;如上，我们开启了traefik的&lt;code&gt;api&lt;/code&gt;、&lt;code&gt;docker&lt;/code&gt;、&lt;code&gt;docker swarm&lt;/code&gt;、&lt;code&gt;https&lt;/code&gt;、&lt;code&gt;自动向Let&#39;s Encrypt申请证书&lt;/code&gt;功能，并且把它的&lt;code&gt;web&lt;/code&gt;功能暴露到&lt;code&gt;monitor.example.com&lt;/code&gt;，当我们部署完成后，就可以使用&lt;code&gt;https://monitor.example.com&lt;/code&gt;进行访问。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;部署traefik&#34;&gt;部署traefik&lt;/h3&gt;
+&lt;p&gt;部署其实很简单，为采用的stack模式部署的traefik，命令如下：
+```bash
+$ ls
+traefik.yml&lt;/p&gt;
+&lt;p&gt;$ sudo docker stack deploy -c traefik.yml traefik&lt;/p&gt;
+&lt;p&gt;稍等一会儿就可以查看到我们已经完成了traefik的部署，并且使用traefik自动发现Docker上运行的应用时，以及是https了，查看证书详情，可以看到我们的证书使用的Let&amp;rsquo;s Encrypt申请。
+&lt;img src=&#34;https://ronggle.com/traefik-https/lets-encrypt.png&#34; alt=&#34;证书详情&#34; /&gt;&lt;/p&gt;</description></item><item><title>2B小姐姐</title><link>https://ronggle.com/2018/love-2b-miss/</link><pubDate>Thu, 17 May 2018 21:08:52 +0800</pubDate><guid>https://ronggle.com/2018/love-2b-miss/</guid><description>&lt;p&gt;2B是游戏《尼尔：机械纪元》中的可操作角色，全称：ヨルハ2号B型。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/love-2b-miss/1.jpg&#34; alt=&#34;1&#34; /&gt;
+&lt;img src=&#34;https://ronggle.com/love-2b-miss/2.jpg&#34; alt=&#34;2&#34; /&gt;
+&lt;img src=&#34;https://ronggle.com/love-2b-miss/3.jpg&#34; alt=&#34;3&#34; /&gt;
+&lt;img src=&#34;https://ronggle.com/love-2b-miss/4.jpg&#34; alt=&#34;4&#34; /&gt;
+&lt;img src=&#34;https://ronggle.com/love-2b-miss/5.jpg&#34; alt=&#34;5&#34; /&gt;
+&lt;img src=&#34;https://ronggle.com/love-2b-miss/6.jpg&#34; alt=&#34;6&#34; /&gt;
+&lt;img src=&#34;https://ronggle.com/love-2b-miss/7.jpg&#34; alt=&#34;7&#34; /&gt;
+&lt;img src=&#34;https://ronggle.com/love-2b-miss/8.jpg&#34; alt=&#34;8&#34; /&gt;
+&lt;img src=&#34;https://ronggle.com/love-2b-miss/9.jpg&#34; alt=&#34;9&#34; /&gt;
+&lt;img src=&#34;https://ronggle.com/love-2b-miss/10.jpg&#34; alt=&#34;10&#34; /&gt;&lt;/p&gt;</description></item><item><title>使用Docker打造自己的云平台</title><link>https://ronggle.com/2018/cloud-labs/</link><pubDate>Sun, 13 May 2018 18:00:59 +0800</pubDate><guid>https://ronggle.com/2018/cloud-labs/</guid><description>&lt;p&gt;失踪人口回归，经过几个月的失踪，我又终于回归正轨了，前面没有更博客，主要原因是，因为我实在是太忙（懒）了。&lt;/p&gt;
+&lt;p&gt;那么，既然回归，当然是要拿出干货咯。&lt;/p&gt;
+&lt;p&gt;今天说点什么呢？沉寂了这么久，也一直在做与Docker相关的工作与学习，就记录下最近的一些内容，主要是为了防止自己又忘了，每次都要去找各种文档，没法快速复制出一份自己玩过的东西。&lt;/p&gt;
+&lt;h2 id=&#34;目标&#34;&gt;目标&lt;/h2&gt;
+&lt;p&gt;使用Docker搭建一个自己的”云平台“，大概就是，可以在上面部署应用，并且自动暴露出来。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/cloud-labs/monitor.png&#34; alt=&#34;traefik&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/cloud-labs/console.png&#34; alt=&#34;potainer&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/cloud-labs/console-services.png&#34; alt=&#34;potainer services&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;前期准备&#34;&gt;前期准备&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.docker.com/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Docker&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://traefik.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Traefik&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://www.portainer.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Portainer&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.docker.com/compose/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Docker Compose&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://docs.docker.com/engine/swarm/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Docker Swarm&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;以上是我们需要前期准备好的，包括它们分别是什么、怎么安装、怎么使用？&lt;/p&gt;
+&lt;p&gt;因为篇幅问题，在此不一一详细节介绍，如果你感兴趣，希望你能够自己通过搜索引擎自行了解，如果有什么问题，你可以联系我。&lt;/p&gt;
+&lt;h2 id=&#34;traefik&#34;&gt;Traefik&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Træfɪk&lt;/strong&gt; 是一个为了让部署微服务更加便捷而诞生的现代HTTP反向代理、负载均衡工具。 它支持多种后台 (Docker, Swarm, Kubernetes, Marathon, Mesos, Consul, Etcd, Zookeeper, BoltDB, Rest API, file…) 来自动化、动态的应用它的配置文件设置。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/cloud-labs/traefik.png&#34; alt=&#34;traefik&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;我们用它作什么呢？没错，反向代理和负载均衡，同时因为其提供了好用的动态功能，使得我们可以用它配置域名动态的功能。&lt;/p&gt;
+&lt;p&gt;怎么理解呢？假设我现在有了一个域名&lt;code&gt;cloud-labs.io&lt;/code&gt;，然后为使用这个域名配置了一个“云平台”，然后为希望我在这个平台部署一个应用&lt;code&gt;nina&lt;/code&gt;,部署完成后，为就可以使用&lt;code&gt;nina.cloud-labs.io&lt;/code&gt;进行访问，并不在乎我的运用被具体部署到哪里。&lt;/p&gt;
+&lt;p&gt;那么，要怎么做呢？&lt;/p&gt;
+&lt;p&gt;如果使用了traefik，其实很简单，我们只需要将应用作为一个&lt;code&gt;backend&lt;/code&gt;暴露给traefik即可。如果结合Docker使用，为们只需要在Label上加上对应的配置即可。&lt;/p&gt;
+&lt;p&gt;下面我们一起来部署traefik吧！&lt;/p&gt;
+&lt;p&gt;前提条件，你已经安装号Docker以及初始化完成Docker Swarm，当然你也可以只使用Docker模式，你可以参考traefik的&lt;a href=&#34;https://docs.traefik.io/configuration/backends/docker/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;官方文档&lt;/a&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;新建stack编排文件&#34;&gt;新建stack编排文件&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;version: &#39;3.3&#39;
+services:
+proxy:
+image: traefik
+command: --web --docker --docker.domain=cloud-labs.io --docker.watch --docker.swarmmode=true --logLevel=DEBUG
+deploy:
+labels:
+- traefik.backend=traefik
+- traefik.frontend.rule=Host:monitor.cloud-labs.io
+- traefik.port=8080
+- traefik.docker.network=traefik_proxy
+networks:
+- proxy
+ports:
+- &amp;quot;80:80&amp;quot;
+- &amp;quot;443:443&amp;quot;
+volumes:
+- /var/run/docker.sock:/var/run/docker.sock
+- /dev/null:/traefik.toml
+networks:
+proxy
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如上，我们开启了traefik的&lt;code&gt;web&lt;/code&gt;、&lt;code&gt;docker&lt;/code&gt;、&lt;code&gt;docker swarm&lt;/code&gt;功能，并且把它的&lt;code&gt;web&lt;/code&gt;功能暴露到&lt;code&gt;monitor.cloud-labs.io&lt;/code&gt;，当我们部署完成后，就可以使用&lt;code&gt;monitor.cloud-labs.io&lt;/code&gt;进行访问。&lt;/p&gt;
+&lt;h3 id=&#34;部署traefik&#34;&gt;部署traefik&lt;/h3&gt;
+&lt;p&gt;部署其实很简单，为采用的stack模式部署的traefik，命令如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ ls
+traefik.yml
+$ docker stack deploy -c traefik.yml traefik
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;稍等一会儿，就可以在使用&lt;code&gt;monitor.cloud-labs.io&lt;/code&gt;访问了。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;当然，&lt;code&gt;monitor.cloud-labs.io&lt;/code&gt;是一个假定的域名，需要在你的host文件中进行配置。
+$ cat /etc/hosts
+127.0.0.1 monitor.cloud-labs.io&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;portainer&#34;&gt;Portainer&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Portainer&lt;/strong&gt;是一个轻量级管理用户界面，可让你轻松管理不同的Docker环境（Docker主机或Swarm集群）。其使用与部署一样简单，它包含一个可以在任何Docker引擎上运行的容器（可以作为Linux容器或Windows本机容器部署）。并允许你管理Docker容器，图像，卷，网络等等！它与独立的Docker引擎和Docker Swarm模式兼容。&lt;/p&gt;
+&lt;p&gt;正如它的介绍那般，为们可以使用它作为我们的“云平台”的控制台，来作为我们平时的应用部署、管理、配置的WebUI，让我们的操作更加人性化。&lt;/p&gt;
+&lt;h3 id=&#34;新建stack编排文件-1&#34;&gt;新建stack编排文件&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;version: &#39;3.3&#39;
+services:
+server:
+image: portainer/portainer
+command: -H unix:///var/run/docker.sock
+networks:
+- traefik_proxy
+deploy:
+labels:
+- traefik.backend=portainer
+- traefik.frontend.rule=Host:console.cloud-labs.io
+- traefik.docker.network=traefik_proxy
+- traefik.port=9000
+volumes:
+- /var/run/docker.sock:/var/run/docker.sock
+- portainer:/data
+networks:
+traefik_proxy:
+external: true
+volumes:
+portainer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;如上，为们将会把Portainer部署到Docker环境中，同时将其暴露到了traefik中，使用&lt;code&gt;console.cloud-labs.io&lt;/code&gt;进行访问。在这里，你可能会发现，为们并没有为portainer配置暴露的端口，这也是因为traefik给我们带来的一个好处，便是为们不需要在我们的物理机上开启那么多的端口映射，为们知道，如果端口映射过多时，我们会在难以管理、感知，往往会出现端口已经使用的情况下导致部署失败。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;值得注意的是，我们的Portainer的网络设置：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;&amp;gt; networks:
+&amp;gt; traefik_proxy:
+&amp;gt; external: true
+&amp;gt; ```
+&amp;gt; 是的，我们使用的是traefik的网络，因为我们希望它能够被traefik发现，并作反向代理和负载均衡。
+### 部署Portainer
+部署Portainer也很简单，为们使用stack进行部署：
+```bash
+$ ls
+portainer.yml
+$ docker stack deploy -c portainer.yml portainer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;稍等一会儿，就可以在使用&lt;code&gt;monitor.cloud-labs.io&lt;/code&gt;中发现我们的应用以及部署好了，并且被暴露在&lt;code&gt;console.cloud-labs.io&lt;/code&gt;。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/cloud-labs/monitor-portainer.png&#34; alt=&#34;traefik monitor portainer&#34; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;同样的，&lt;code&gt;console.cloud-labs.io&lt;/code&gt;是一个假定的域名，需要在你的host文件中进行配置。
+$ cat /etc/hosts
+127.0.0.1 console.cloud-labs.io&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;部署运用&#34;&gt;部署运用&lt;/h2&gt;
+&lt;p&gt;上面，我们已经把我们“云平台”的反向代理、负载均衡组件traefik，以及控制台portainer部署完毕，那么我们接下来就使用我们的“云平台”来部署一个应用吧！&lt;/p&gt;
+&lt;p&gt;接下来，我们来部署一个比较简单的应用。&lt;/p&gt;
+&lt;h3 id=&#34;登入控制台&#34;&gt;登入控制台&lt;/h3&gt;
+&lt;p&gt;登陆我们“云平台”的控制台后，选择stack，为们来编排一下我们的应用。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/cloud-labs/portainer-stack-gitea.png&#34; alt=&#34;portainer stack gitea&#34; /&gt;&lt;/p&gt;
+&lt;h3 id=&#34;进入traefik&#34;&gt;进入Traefik&lt;/h3&gt;
+&lt;p&gt;当我们在控制台部署完成我们的gitea后，我们可以在Traefik的WebUI中看到，我们的gitea已经部署完成，并暴露在&lt;code&gt;git.cloud-labs.io&lt;/code&gt;，这时我们可以访问&lt;code&gt;git.cloud-labs.io&lt;/code&gt;来进行gitea的配置。&lt;/p&gt;
+&lt;h3 id=&#34;应用预览&#34;&gt;应用预览&lt;/h3&gt;
+&lt;p&gt;配置完成gitea后我们可以看到如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/cloud-labs/gitea.png&#34; alt=&#34;gitea&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;通过这次实战，你是否有收获呢？如果有，请为自己鼓掌，如果没有，那你也别责怪我，因为我其实真的是为了让自己记住。&lt;/p&gt;
+&lt;p&gt;好吧，我会把最后的文件整理下，放到我的Github上，仓库为&lt;a href=&#34;https://github.com/ycrxun/cloud-labs&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;cloud-labs&lt;/a&gt;。&lt;/p&gt;</description></item><item><title>consul学习二-集群</title><link>https://ronggle.com/2018/consul-cluster/</link><pubDate>Mon, 15 Jan 2018 21:42:19 +0800</pubDate><guid>https://ronggle.com/2018/consul-cluster/</guid><description>&lt;p&gt;在前面我们已经介绍了&lt;a href=&#34;https://ronggle.com/2018/01/07/consul-first-time/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;什么是Consul&lt;/a&gt;，接下来，我们将介绍下怎么搭建一个集群。&lt;/p&gt;
+&lt;h2 id=&#34;环境准备&#34;&gt;环境准备&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;节点名称&lt;/th&gt;
+&lt;th&gt;ip&lt;/th&gt;
+&lt;th&gt;角色&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;ams1&lt;/td&gt;
+&lt;td&gt;192.168.42.33&lt;/td&gt;
+&lt;td&gt;leader&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ams2&lt;/td&gt;
+&lt;td&gt;192.168.42.198&lt;/td&gt;
+&lt;td&gt;server&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ams3&lt;/td&gt;
+&lt;td&gt;192.168.42.85&lt;/td&gt;
+&lt;td&gt;server&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;ams4&lt;/td&gt;
+&lt;td&gt;192.168.42.252&lt;/td&gt;
+&lt;td&gt;client&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2 id=&#34;安装并配置&#34;&gt;安装并配置&lt;/h2&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
+&lt;p&gt;分别在4个节点安装&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ wget https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip
+$ unzip onsul_1.0.2_linux_amd64.zip -d /usr/bin
+$ consul version
+Consul v1.0.2
+Protocol 2 spoken by default, understands 2 to 3 (agent will automatically use protocol &amp;gt;2 when speaking to compatible agents)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Consul安装之后，运行Agent。
+Agent可以在server或client模式下运行。每个数据中心都必须至少有一个运行于serve，但推荐使用3台或5台服务器。
+&lt;img src=&#34;https://ronggle.com/consul-cluster/consul-cluster.svg&#34; alt=&#34;consul cluster&#34; /&gt;&lt;/p&gt;
+&lt;h3 id=&#34;启动leader&#34;&gt;启动leader&lt;/h3&gt;
+&lt;h4 id=&#34;创建配置文件&#34;&gt;创建配置文件&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# cat /etc/consul.d/server.json
+{
+&amp;quot;datacenter&amp;quot;: &amp;quot;ams&amp;quot;,
+&amp;quot;data_dir&amp;quot;: &amp;quot;/data/consul&amp;quot;,
+&amp;quot;node_name&amp;quot;: &amp;quot;consul-leader&amp;quot;,
+&amp;quot;server&amp;quot;: true,
+&amp;quot;ui&amp;quot;: true,
+&amp;quot;bootstrap_expect&amp;quot;: 1,
+&amp;quot;client_addr&amp;quot;: &amp;quot;0.0.0.0&amp;quot;,
+&amp;quot;advertise_addr&amp;quot;: &amp;quot;192.168.42.33&amp;quot;
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;数据目录&#34;&gt;数据目录&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# mkdir -p /data/consul
+# mkdir -p /data/consul/log
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;启动&#34;&gt;启动&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;nohup consul agent -config-dir /etc/consul.d &amp;gt; /data/consul/log/server.log 2&amp;gt;&amp;amp;1 &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;启动server1&#34;&gt;启动server1&lt;/h3&gt;
+&lt;h4 id=&#34;创建配置文件-1&#34;&gt;创建配置文件&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# cat /etc/consul.d/server.json
+{
+&amp;quot;datacenter&amp;quot;: &amp;quot;ams&amp;quot;,
+&amp;quot;data_dir&amp;quot;: &amp;quot;/data/consul&amp;quot;,
+&amp;quot;node_name&amp;quot;: &amp;quot;consul-server1&amp;quot;,
+&amp;quot;server&amp;quot;: true,
+&amp;quot;ui&amp;quot;: true,
+&amp;quot;client_addr&amp;quot;: &amp;quot;0.0.0.0&amp;quot;,
+&amp;quot;advertise_addr&amp;quot;: &amp;quot;192.168.42.198&amp;quot;,
+&amp;quot;retry_join&amp;quot;: [&amp;quot;192.168.42.33&amp;quot;]
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;数据目录-1&#34;&gt;数据目录&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# mkdir -p /data/consul
+# mkdir -p /data/consul/log
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;启动-1&#34;&gt;启动&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;nohup consul agent -config-dir /etc/consul.d &amp;gt; /data/consul/log/server.log 2&amp;gt;&amp;amp;1 &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;启动server2&#34;&gt;启动server2&lt;/h3&gt;
+&lt;h4 id=&#34;创建配置文件-2&#34;&gt;创建配置文件&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# cat /etc/consul.d/server.json
+{
+&amp;quot;datacenter&amp;quot;: &amp;quot;ams&amp;quot;,
+&amp;quot;data_dir&amp;quot;: &amp;quot;/data/consul&amp;quot;,
+&amp;quot;node_name&amp;quot;: &amp;quot;consul-server2&amp;quot;,
+&amp;quot;server&amp;quot;: true,
+&amp;quot;ui&amp;quot;: true,
+&amp;quot;client_addr&amp;quot;: &amp;quot;0.0.0.0&amp;quot;,
+&amp;quot;advertise_addr&amp;quot;: &amp;quot;192.168.42.85&amp;quot;,
+&amp;quot;retry_join&amp;quot;: [&amp;quot;192.168.42.33&amp;quot;]
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;数据目录-2&#34;&gt;数据目录&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# mkdir -p /data/consul
+# mkdir -p /data/consul/log
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;启动-2&#34;&gt;启动&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;nohup consul agent -config-dir /etc/consul.d &amp;gt; /data/consul/log/server.log 2&amp;gt;&amp;amp;1 &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;启动client&#34;&gt;启动client&lt;/h3&gt;
+&lt;h4 id=&#34;创建配置文件-3&#34;&gt;创建配置文件&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# cat /etc/consul.d/server.json
+{
+&amp;quot;datacenter&amp;quot;: &amp;quot;ams&amp;quot;,
+&amp;quot;data_dir&amp;quot;: &amp;quot;/data/consul&amp;quot;,
+&amp;quot;node_name&amp;quot;: &amp;quot;consul-client&amp;quot;,
+&amp;quot;server&amp;quot;: true,
+&amp;quot;client_addr&amp;quot;: &amp;quot;0.0.0.0&amp;quot;,
+&amp;quot;advertise_addr&amp;quot;: &amp;quot;192.168.42.252&amp;quot;,
+&amp;quot;retry_join&amp;quot;: [&amp;quot;192.168.42.33&amp;quot;]
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;数据目录-3&#34;&gt;数据目录&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;# mkdir -p /data/consul
+# mkdir -p /data/consul/log
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4 id=&#34;启动-3&#34;&gt;启动&lt;/h4&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;nohup consul agent -config-dir /etc/consul.d &amp;gt; /data/consul/log/server.log 2&amp;gt;&amp;amp;1 &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;验证安装&#34;&gt;验证安装&lt;/h2&gt;
+&lt;p&gt;在浏览器中打开&lt;a href=&#34;http://192.168.42.33:8500&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;http://192.168.42.33:8500&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/consul-cluster/consul-cluster-ui.png&#34; alt=&#34;consul cluster ui&#34; /&gt;&lt;/p&gt;</description></item><item><title>consul学习一-初见</title><link>https://ronggle.com/2018/consul-first-time/</link><pubDate>Sun, 07 Jan 2018 19:38:00 +0800</pubDate><guid>https://ronggle.com/2018/consul-first-time/</guid><description>&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://www.consul.io&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Consul&lt;/a&gt;&lt;/strong&gt;是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置&lt;/p&gt;
+&lt;h2 id=&#34;什么是consul&#34;&gt;什么是Consul&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://www.consul.io&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Consul&lt;/a&gt;&lt;/strong&gt;是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置。它提供了几个关键功能：
+- 服务发现：Consul的客户端可以为一些客户端发现给定服务的提供者，诸如api或mysql之类的服务，通过使用DNS或HTTP，应用程序可以很容易地找到它们所依赖的服务。
+- 健康检查：Consul的客户端可以提供任何数量的健康检查，或者与给定的服务（“是Web服务器返回200 OK”），或与本地节点（“内存利用率低于90％”）相关联。操作员可以使用此信息来监视群集运行状况，服务发现组件使用此信息将流量从不健康的主机中引导出去。
+- KV存储：应用程序可以使用Consul的分层键/值存储，用于任何目的，包括动态配置，功能标记，协调，领导选举等等。简单的HTTP API使其易于使用。
+- 多数据中心：Consul支持多个数据中心。这意味着Consul的用户不必担心构建额外的抽象层以扩展到多个区域。&lt;/p&gt;
+&lt;h2 id=&#34;基本架构&#34;&gt;基本架构&lt;/h2&gt;
+&lt;p&gt;Consul是一个分布式，高度可用的系统。
+&lt;img src=&#34;https://www.consul.io/assets/images/consul-arch-420ce04a.png&#34; alt=&#34;consul&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;向Consul提供服务的每个节点都运行一个Consul代理。 发现其他服务或获取/设置键/值数据不需要运行代理。 代理负责健康检查节点上的服务以及节点本身。&lt;/p&gt;
+&lt;p&gt;代理与一个或多个Consul服务器通讯。 Consul服务器是数据存储和复制的地方。 服务器自己选出一位领导。 虽然Consul可以在一台服务器上运行，但推荐使用3到5来避免导致数据丢失的故障情况。 每个数据中心都建议使用一组Consul服务器。&lt;/p&gt;
+&lt;p&gt;需要发现其他服务或节点的基础架构组件可以查询任何Consul服务器或任何Consul代理。 代理自动将查询转发到服务器。&lt;/p&gt;
+&lt;p&gt;每个数据中心都运行Consul服务器集群。 当发生跨数据中心服务发现或配置请求时，本地Consul服务器将请求转发给远程数据中心并返回结果。&lt;/p&gt;
+&lt;h2 id=&#34;简单使用&#34;&gt;简单使用&lt;/h2&gt;
+&lt;p&gt;consul的使用非常简单，其采用Go语言编写，编译出的文件无其他依赖。因此只需要从官方下载对应平台的编译好的二进制可执行程序直接运行就可以了，下载地址&lt;a href=&#34;https://www.consul.io/downloads.html&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;https://www.consul.io/downloads.html&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;安装&#34;&gt;安装&lt;/h3&gt;
+&lt;p&gt;我使用的Linux系统，所以安装如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;curl -O https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip &amp;amp;&amp;amp; sudo unzip consul_1.0.2_linux_amd64.zip -d /usr/local/bin/
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ consul
+Usage: consul [--version] [--help] &amp;lt;command&amp;gt; [&amp;lt;args&amp;gt;]
+Available commands are:
+agent Runs a Consul agent
+catalog Interact with the catalog
+event Fire a new event
+exec Executes a command on Consul nodes
+force-leave Forces a member of the cluster to enter the &amp;quot;left&amp;quot; state
+info Provides debugging information for operators.
+join Tell Consul agent to join cluster
+keygen Generates a new encryption key
+keyring Manages gossip layer encryption keys
+kv Interact with the key-value store
+leave Gracefully leaves the Consul cluster and shuts down
+lock Execute a command holding a lock
+maint Controls node or service maintenance mode
+members Lists the members of a Consul cluster
+monitor Stream logs from a Consul agent
+operator Provides cluster-level tools for Consul operators
+reload Triggers the agent to reload configuration files
+rtt Estimates network round trip time between nodes
+snapshot Saves, restores and inspects snapshots of Consul server state
+validate Validate config files/directories
+version Prints the Consul version
+watch Watch for changes in Consul
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;启动&#34;&gt;启动&lt;/h3&gt;
+&lt;p&gt;为了简单起见，我们将暂时在开发者模式中启动Consul代理。这个模式可以非常容易快速地启动一个单节点的Consul环境。当然它并不是用于生产环境下并且它也不会持久任何状态。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ consul agent -dev
+==&amp;gt; Starting Consul agent...
+==&amp;gt; Consul agent running!
+Version: &#39;v1.0.2&#39;
+Node ID: &#39;14f11e8d-4904-3fcd-1cd5-251c311cf775&#39;
+Node name: &#39;master.soi.io&#39;
+Datacenter: &#39;dc1&#39; (Segment: &#39;&amp;lt;all&amp;gt;&#39;)
+Server: true (Bootstrap: false)
+Client Addr: [127.0.0.1] (HTTP: 8500, HTTPS: -1, DNS: 8600)
+Cluster Addr: 127.0.0.1 (LAN: 8301, WAN: 8302)
+Encrypt: Gossip: false, TLS-Outgoing: false, TLS-Incoming: false
+==&amp;gt; Log data will now stream in as it occurs:
+2018/01/12 22:02:36 [DEBUG] Using random ID &amp;quot;14f11e8d-4904-3fcd-1cd5-251c311cf775&amp;quot; as node ID
+2018/01/12 22:02:36 [INFO] raft: Initial configuration (index=1): [{Suffrage:Voter ID:14f11e8d-4904-3fcd-1cd5-251c311cf775 Address:127.0.0.1:8300}]
+2018/01/12 22:02:36 [INFO] raft: Node at 127.0.0.1:8300 [Follower] entering Follower state (Leader: &amp;quot;&amp;quot;)
+2018/01/12 22:02:36 [INFO] serf: EventMemberJoin: master.soi.io.dc1 127.0.0.1
+2018/01/12 22:02:36 [INFO] serf: EventMemberJoin: master.soi.io 127.0.0.1
+2018/01/12 22:02:36 [INFO] consul: Adding LAN server master.soi.io (Addr: tcp/127.0.0.1:8300) (DC: dc1)
+2018/01/12 22:02:36 [INFO] consul: Handled member-join event for server &amp;quot;master.soi.io.dc1&amp;quot; in area &amp;quot;wan&amp;quot;
+2018/01/12 22:02:36 [INFO] agent: Started DNS server 127.0.0.1:8600 (udp)
+2018/01/12 22:02:36 [INFO] agent: Started DNS server 127.0.0.1:8600 (tcp)
+2018/01/12 22:02:36 [INFO] agent: Started HTTP server on 127.0.0.1:8500 (tcp)
+2018/01/12 22:02:36 [INFO] agent: started state syncer
+2018/01/12 22:02:36 [WARN] raft: Heartbeat timeout from &amp;quot;&amp;quot; reached, starting election
+2018/01/12 22:02:36 [INFO] raft: Node at 127.0.0.1:8300 [Candidate] entering Candidate state in term 2
+2018/01/12 22:02:36 [DEBUG] raft: Votes needed: 1
+2018/01/12 22:02:36 [DEBUG] raft: Vote granted from 14f11e8d-4904-3fcd-1cd5-251c311cf775 in term 2. Tally: 1
+2018/01/12 22:02:36 [INFO] raft: Election won. Tally: 1
+2018/01/12 22:02:36 [INFO] raft: Node at 127.0.0.1:8300 [Leader] entering Leader state
+2018/01/12 22:02:36 [INFO] consul: cluster leadership acquired
+2018/01/12 22:02:36 [INFO] consul: New leader elected: master.soi.io
+2018/01/12 22:02:36 [DEBUG] consul: Skipping self join check for &amp;quot;master.soi.io&amp;quot; since the cluster is too small
+2018/01/12 22:02:36 [INFO] consul: member &#39;master.soi.io&#39; joined, marking health alive
+2018/01/12 22:02:36 [DEBUG] Skipping remote check &amp;quot;serfHealth&amp;quot; since it is managed automatically
+2018/01/12 22:02:36 [INFO] agent: Synced node info
+2018/01/12 22:02:36 [DEBUG] agent: Node info in sync
+2018/01/12 22:02:37 [DEBUG] Skipping remote check &amp;quot;serfHealth&amp;quot; since it is managed automatically
+2018/01/12 22:02:37 [DEBUG] agent: Node info in sync
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;集群成员&#34;&gt;集群成员&lt;/h3&gt;
+&lt;p&gt;此时，打开另一个终端，使用&lt;code&gt;consul members&lt;/code&gt;命令查看：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ consul members
+Node Address Status Type Build Protocol DC Segment
+master.soi.io 127.0.0.1:8301 alive server 1.0.2 2 dc1 &amp;lt;all&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;使用server模式运行&#34;&gt;使用server模式运行&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ consul agent -server -bootstrap -data-dir=$PWD -advertise=192.168.31.28 -client=0.0.0.0 -ui
+bootstrap = true: do not enable unless necessary
+==&amp;gt; Starting Consul agent...
+==&amp;gt; Consul agent running!
+Version: &#39;v1.0.2&#39;
+Node ID: &#39;aac96fbf-2ccb-e0a8-2e82-aa4e3ff40d82&#39;
+Node name: &#39;master.soi.io&#39;
+Datacenter: &#39;dc1&#39; (Segment: &#39;&amp;lt;all&amp;gt;&#39;)
+Server: true (Bootstrap: true)
+Client Addr: [0.0.0.0] (HTTP: 8500, HTTPS: -1, DNS: 8600)
+Cluster Addr: 192.168.31.28 (LAN: 8301, WAN: 8302)
+Encrypt: Gossip: false, TLS-Outgoing: false, TLS-Incoming: false
+==&amp;gt; Log data will now stream in as it occurs:
+2018/01/12 22:09:19 [INFO] raft: Initial configuration (index=1): [{Suffrage:Voter ID:aac96fbf-2ccb-e0a8-2e82-aa4e3ff40d82 Address:192.168.31.28:8300}]
+2018/01/12 22:09:19 [INFO] raft: Node at 192.168.31.28:8300 [Follower] entering Follower state (Leader: &amp;quot;&amp;quot;)
+2018/01/12 22:09:19 [INFO] serf: EventMemberJoin: master.soi.io.dc1 192.168.31.28
+2018/01/12 22:09:19 [INFO] serf: EventMemberJoin: master.soi.io 192.168.31.28
+2018/01/12 22:09:19 [INFO] consul: Handled member-join event for server &amp;quot;master.soi.io.dc1&amp;quot; in area &amp;quot;wan&amp;quot;
+2018/01/12 22:09:19 [INFO] consul: Adding LAN server master.soi.io (Addr: tcp/192.168.31.28:8300) (DC: dc1)
+2018/01/12 22:09:19 [INFO] agent: Started DNS server 0.0.0.0:8600 (udp)
+2018/01/12 22:09:19 [INFO] agent: Started DNS server 0.0.0.0:8600 (tcp)
+2018/01/12 22:09:19 [INFO] agent: Started HTTP server on [::]:8500 (tcp)
+2018/01/12 22:09:19 [INFO] agent: started state syncer
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;在浏览器中打开&lt;a href=&#34;http://localhost:8500&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;http://localhost:8500&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/consul-first-time/consul-ui.png&#34; alt=&#34;consul ui&#34; /&gt;&lt;/p&gt;</description></item><item><title>2018年计划</title><link>https://ronggle.com/2018/2018-technology-plan/</link><pubDate>Thu, 04 Jan 2018 21:48:48 +0800</pubDate><guid>https://ronggle.com/2018/2018-technology-plan/</guid><description>&lt;p&gt;弹指间，2017又浪费了，2018伊始，该做好计划，规划下自己的一年了。&lt;/p&gt;
+&lt;h2 id=&#34;生活计划&#34;&gt;生活计划&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;每周至少打一次球&lt;/li&gt;
+&lt;li&gt;坚持每天锻炼身体&lt;/li&gt;
+&lt;li&gt;坚持23点睡觉&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;读书计划&#34;&gt;读书计划&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;《Kubernetes权威指南》&lt;/li&gt;
+&lt;li&gt;《开源容器云-OpenShift》&lt;/li&gt;
+&lt;li&gt;《Vue权威指南》&lt;/li&gt;
+&lt;li&gt;《领域驱动设计》&lt;/li&gt;
+&lt;li&gt;《微服务架构与实践》&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;课程学习&#34;&gt;课程学习&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;CKA&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;技术学习&#34;&gt;技术学习&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Consul&lt;/li&gt;
+&lt;li&gt;Golang&lt;/li&gt;
+&lt;li&gt;Spring Boot/Cloud&lt;/li&gt;
+&lt;li&gt;Nomad&lt;/li&gt;
+&lt;li&gt;CI/CD(CDS,GoCD,Jenkins)&lt;/li&gt;
+&lt;li&gt;OpenID Connect&lt;/li&gt;
+&lt;li&gt;K8s&lt;/li&gt;
+&lt;li&gt;Docker&lt;/li&gt;
+&lt;li&gt;Nodejs&lt;/li&gt;
+&lt;li&gt;Python&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;项目计划&#34;&gt;项目计划&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/ycrxun/onion&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;onion&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;其他计划&#34;&gt;其他计划&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;坚持写博客&lt;/li&gt;
+&lt;li&gt;坚持写博客&lt;/li&gt;
+&lt;li&gt;坚持写博客&lt;/li&gt;
+&lt;/ul&gt;</description></item><item><title>Easy Mock 试玩</title><link>https://ronggle.com/2017/easy-mock-getting-and-started/</link><pubDate>Sun, 03 Sep 2017 12:38:11 +0800</pubDate><guid>https://ronggle.com/2017/easy-mock-getting-and-started/</guid><description>&lt;p&gt;在过去的开发模式中，或许是一群人坐在一起，风风火火的一起码一个项目，大家在一起，口头沟通交流，并不太涉及到跨团队间的数据调用，基本上涉及的API也是不断沟通修改。&lt;/p&gt;
+&lt;h2 id=&#34;不搭的前言&#34;&gt;不搭的前言&lt;/h2&gt;
+&lt;p&gt;而今，开发的项目庞大而且复杂，涉及多个模块，跨多个项目组，如果再按照口头沟通协调，很难想象是多么艰难。而在日常的一些开发过程中，我们也需要不停的对自己开发的代码进行调试，比如某些公司，有些产品线根本没有稳定的开发环境提供给开发人员使用，那么，怎么办，只能使用mock的方式。&lt;/p&gt;
+&lt;p&gt;说到mock，其实我也再使用，有时候，不能每时每刻都调用真实的服务，我们就会再自己项目中设置开关，当再开发环境下时，使用自己再本地文件中伪造的数据，这些文件有JSON、TXT、CSV/EXCEL，往往再不同的模块和借口会写很多不同的Mock数据处理的逻辑，没有复用性，且没有良好的版本控制与管理。&lt;/p&gt;
+&lt;p&gt;那么要怎么处理这些Mock数据呢？今天我们来试玩一下Easy Mock。&lt;/p&gt;
+&lt;h2 id=&#34;什么是easy-mock&#34;&gt;什么是Easy Mock&lt;/h2&gt;
+&lt;p&gt;伪造数据，我们更高效；但，不仅于此。&lt;/p&gt;
+&lt;p&gt;这是Easy Mock的&lt;a href=&#34;https://www.easy-mock.com&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;官网&lt;/a&gt;上面的介绍。&lt;/p&gt;
+&lt;p&gt;Easy Mock是一个极其简单、高效、可视化、并且能快速生成模拟数据的在线Mock服务。以项目管理的方式组织Mock数据，能帮助我们更好的管理Mock数据，不怕丢失。&lt;/p&gt;
+&lt;h3 id=&#34;特性&#34;&gt;特性&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;支持接口代理&lt;/li&gt;
+&lt;li&gt;支持快捷键操作&lt;/li&gt;
+&lt;li&gt;支持协同编辑&lt;/li&gt;
+&lt;li&gt;支持团队项目&lt;/li&gt;
+&lt;li&gt;支持 Restful&lt;/li&gt;
+&lt;li&gt;支持 Swagger 1.2 &amp;amp; 2.0
+&lt;ul&gt;
+&lt;li&gt;基于 Swagger 快速创建项目&lt;/li&gt;
+&lt;li&gt;支持显示接口入参与返回值&lt;/li&gt;
+&lt;li&gt;支持显示实体类&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;支持灵活性与扩展性更高的响应式数据开发&lt;/li&gt;
+&lt;li&gt;支持 Mock.js 语法&lt;/li&gt;
+&lt;li&gt;支持 restc 方式的接口预览&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;a href=&#34;https://easy-mock.com/docs&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;在线使用文档&lt;/a&gt;&lt;br /&gt;
+&lt;a href=&#34;https://github.com/easy-mock/easy-mock-cli&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Easy Mock CLI&lt;/a&gt; - 基于 Easy Mock 快速生成 api.js 的命令行工具。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;数据伪造&#34;&gt;数据伪造&lt;/h2&gt;
+&lt;p&gt;我前面也提到过，我们才有的是编程式的伪造数据，利用请求拦截或者配置文件开关，来切换我们的正常数据请求与Mock数据。&lt;/p&gt;
+&lt;p&gt;这些方法虽然可以解决我们的问题，但同样伴随着一些问题，比如说，依赖特定的框架，主要体现再我们使用spring的配置文件profile作为切换开关；又比如，脏代码，主要是我们会带项目源码中以编程的方式伪造Mock数据；又比如说，这些数据没法统一管理，变更困难等等。his&lt;/p&gt;
+&lt;p&gt;说到以上的这些困难，可能还是没能触及你的痛点，但是无所谓了，哈哈哈，接下来，我们试试Easy Mock吧。&lt;/p&gt;
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在开始之前，假设你已经成功安装了 Node.js (v7.4 以上) 和 MongoDB (v3.4 以上)&lt;/p&gt;
+&lt;p&gt;注意，在安装项目依赖时，bcrypt需要c++编译环境g++，如果你没有安装，那需要自行安装
+&amp;gt; $ sudo dnf install gcc-c++ # 注意，本屌使用的是Fedora，你需要根据自己的操作系统找到安装方式&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ git clone https://github.com/easy-mock/easy-mock.git
+$ cd easy-mock &amp;amp;&amp;amp; npm install
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;配置&#34;&gt;配置&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;不同环境会加载不同的配置文件，在此之前你应该对 node-config 有所了解。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ pwd
+/home/soi/web/easy-mock
+$ cd config
+$ cat default.json
+{
+&amp;quot;port&amp;quot;: 7300,
+&amp;quot;pageSize&amp;quot;: 30,
+&amp;quot;routerPrefix&amp;quot;: {
+&amp;quot;mock&amp;quot;: &amp;quot;/mock&amp;quot;,
+&amp;quot;api&amp;quot;: &amp;quot;/api&amp;quot;
+},
+&amp;quot;db&amp;quot;: &amp;quot;mongodb://192.168.31.28:27017/easy-mock&amp;quot;,
+...
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意，这里我们需要配置的是MongoDB，可以不配置其他的。如果你需要一些高级用法，你可以参考github仓库的文档进行配置。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;启动&#34;&gt;启动&lt;/h2&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;$ npm run dev
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这里使用的开发模式启动，可以在你的浏览器中访问&lt;code&gt;http://127.0.0.1:7300&lt;/code&gt;&lt;br /&gt;
+更多命令：&lt;br /&gt;
+$ npm run build # 前端静态资源构建打包&lt;br /&gt;
+$ npm run start # 以生产环境方式启动，需要提前执行 build&lt;br /&gt;
+$ npm run test # 测试&lt;br /&gt;
+$ npm run lint # 语法检测&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;使用&#34;&gt;使用&lt;/h2&gt;
+&lt;h3 id=&#34;登录页&#34;&gt;登录页&lt;/h3&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/easy-mock-getting-and-started/login.png&#34; alt=&#34;easy mock login&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/easy-mock-getting-and-started/login-input.png&#34; alt=&#34;easy mock login input&#34; /&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;注意，这里如果你没有用户名和密码的话，直接输入用户名密码，会给新建一个用户&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;个人项目&#34;&gt;个人项目&lt;/h3&gt;
+&lt;p&gt;登录成功后，进入我的个人项目面板。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/easy-mock-getting-and-started/my-project.png&#34; alt=&#34;easy mock project&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;点击项目可以查看项目接口列表。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/easy-mock-getting-and-started/my-project-api.png&#34; alt=&#34;easy mock project api&#34; /&gt;&lt;/p&gt;
+&lt;h3 id=&#34;团队项目&#34;&gt;团队项目&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;首先，我们来初始化一个团队。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/easy-mock-getting-and-started/my-team-new.png&#34; alt=&#34;easy mock team&#34; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;新建团队项目&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/easy-mock-getting-and-started/my-team-project-new.png&#34; alt=&#34;easy mock team project&#34; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;编辑项目API&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/easy-mock-getting-and-started/my-team-project-api-edit.png&#34; alt=&#34;easy mock team project api&#34; /&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;预览项目API&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/easy-mock-getting-and-started/my-team-project-api-preview.png&#34; alt=&#34;easy mock team project api previw&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;后语&#34;&gt;后语&lt;/h2&gt;
+&lt;p&gt;这里我就水完了一篇博客了，对你有没有帮助我不知道。&lt;/p&gt;
+&lt;p&gt;不过首先的感谢下&lt;a href=&#34;http://f2e.souche.com/blog/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;大搜车无线架构团队&lt;/a&gt;给我们开源这个好用的Mock神器。&lt;/p&gt;</description></item><item><title>Fedora 桌面系统体验</title><link>https://ronggle.com/2017/fedora/</link><pubDate>Thu, 03 Aug 2017 21:39:17 +0800</pubDate><guid>https://ronggle.com/2017/fedora/</guid><description>&lt;p&gt;最开始安装Linux操作系统，那是三四年前了，那时候还在大学，当时安装了Debian，完了一段时间后为了耍游戏，还是换回了Windows。&lt;/p&gt;
+&lt;p&gt;再次安装Linux是两年前，自己安装了个Ubuntu，后面安装了Deepin，总体上感觉都很不错，特别是Deepin，国内发行版算是颜值比较高的了，一直都很喜欢。&lt;/p&gt;
+&lt;p&gt;直到去年我的笔记本报废，六七年前的低配电脑，实在扛不住了。在换了新的电脑后，i7、16G、GTX960，很给力的配置，但是在我装Ubuntu的过程中，严重不喜欢这个配置了，显卡不兼容，上面的Windows10还特别讨厌，不得不放弃。&lt;/p&gt;
+&lt;p&gt;其实在很久之前，就听说&lt;a href=&#34;https://getfedora.org/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Fedora&lt;/a&gt;很不错，最近因为折腾Openshift，突发奇想，安装了一个，然后被Fedora的颜值（肯定是桌面）吸引。&lt;/p&gt;
+&lt;p&gt;一张美美的桌面&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/fedora/home.png&#34; alt=&#34;fedora home&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;应用列表&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/fedora/apps.png&#34; alt=&#34;fedora apps&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;弹出&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/fedora/super.png&#34; alt=&#34;fedora pop&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;多窗口&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/fedora/edit.png&#34; alt=&#34;fedora edit&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;重命名&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/fedora/rename.png&#34; alt=&#34;fedora rename&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;终端
+&lt;img src=&#34;https://ronggle.com/fedora/terminal.png&#34; alt=&#34;fedora terminal&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;漂亮不？如果你也喜欢，安装个试试呗！&lt;/p&gt;</description></item><item><title>一场王者农药引发的思考</title><link>https://ronggle.com/2017/a-game-of-thinking/</link><pubDate>Sat, 29 Jul 2017 17:37:14 +0800</pubDate><guid>https://ronggle.com/2017/a-game-of-thinking/</guid><description>&lt;p&gt;最近手游届，王者农药应该算是比较火爆的了。当然，我也是其中的一名中毒者。&lt;/p&gt;
+&lt;p&gt;在一次次的游戏中，有胜利，有失败，也有愤怒，也有责怪，到最后，我还是永恒的“青铜”。&lt;/p&gt;
+&lt;p&gt;扯远了，回到主题，前几天和小伙伴一起打排位，有生之年，最舒服的一次排位。从而有了下面的这些思考，纯属个人观点，不喜勿喷！额，其实也不会有人喷的。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/a-game-of-thinking/game.png&#34; alt=&#34;game&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;团队&#34;&gt;团队&lt;/h2&gt;
+&lt;p&gt;三个臭皮匠，顶个诸葛亮。不得不说，在我们的日常生活中，会见到很多团队，有技术的，有施工的，各有不同。&lt;/p&gt;
+&lt;p&gt;在王者农药中，选择一场对局，配合队友，选择自己擅长的英雄，射手、法师、打野、辅助、肉盾，各司其职。&lt;/p&gt;
+&lt;p&gt;在游戏的过程中，一般都会根据英雄的性质不同，选择不同的路线。同时，要准备好随时支援处于危险中的队友。&lt;/p&gt;
+&lt;p&gt;当然，实际上这个是理想的状态。&lt;/p&gt;
+&lt;p&gt;人都是自私的，所谓，“人不为己，天诛地灭”。很多时候，组建的团队很多时候都是残缺不全的。能够做到无私奉献自己的，能有多少人呢？我们都是凡夫俗子，都有七情六欲。&lt;/p&gt;
+&lt;p&gt;我记得以前有一局，我选择了法师，我们5人一起推中路，这时候，对面4个人过来了，我的上去就是一个大，结果，我的队友全走了，对没错，走了，留我一个人在那里懵逼。&lt;/p&gt;
+&lt;p&gt;在后面的回合中，我幸苦的打残血了一个，这时候我的两个队友勇敢的上去，追着人家残血不放，各种喊撤退都不停，从中路一路追到下路，然后中了埋伏。不是，我说你们这个何必呢？&lt;/p&gt;
+&lt;p&gt;还有一次，对面两个肉盾在前面扛着，后面输出贼猛，我的队友却一心一意，很认真很认真的打肉盾。咱能不逗吗？&lt;/p&gt;
+&lt;p&gt;其实，在实际的生活中，我们工作的团队也会出现这样的情况，当一个任务来了，很多人都会避而不及，当一点好处来了，很多人都会弃队友于不顾，自己先上。&lt;/p&gt;
+&lt;p&gt;往往在遇到问题的时候，总是想办法把锅丢出去。&lt;/p&gt;
+&lt;p&gt;我记得我以前在某公司，当时发生了故障，所有人都在找到底是谁造成的。其实，这个时候重要的不是找到对策，解决这个问题吗？为啥都在找是谁造成的呢？&lt;/p&gt;
+&lt;p&gt;在一局农药中，我是一个快乐的小射手，辅助我的哥们在草丛里面看着我和对面怼，没错，看着，当我把对面怼残血的时候，他一个漂亮的技能，抢到一个人头。没错，我还站在哪里蒙圈，第二次还这样，第三次也是。不得不承认，当时我很想祝贺他。&lt;/p&gt;
+&lt;p&gt;在我理想状态下的团队，应该是一个荣辱与共的。正好今天听到一句台词，“你们没有荣耀，荣耀只属于遵守纪律的团队，不属于你们这样的，一团散沙的队伍”。&lt;/p&gt;
+&lt;h2 id=&#34;定位&#34;&gt;定位&lt;/h2&gt;
+&lt;p&gt;定位，也就是我们要选择适合自己的角色，并且，尽可能发挥自己，配合队友。比如，当我选择做一名肉盾的时候，我会尽可能拖住对面，保护后排的队友；如果我选择了输出，我会尽可能先朝着对方输出，在我的队友倒下前，尽可能让他们受到最短时间的伤害；当作为一个辅助时，需要让队友得到最多的资源。&lt;/p&gt;
+&lt;p&gt;其实生活中也一样，在一个团队里，不管你是老人，还是新人，如果自己才华不如队友，就尽可能辅助队友，让他绽放自己的光彩，而在某些领域，自己能够胜任的，一定要尽心去完成。&lt;/p&gt;
+&lt;p&gt;当然，这其中还有个重要的角色，就是为队伍发号施令的人，什么们时候改前进，什么时候该撤退。而这个人，必须能够关注到战场的形势，及时调整战术，对应瞬息万变的战场。再一次任务失败后，作出最佳的调整，鼓励队友，下一次再战。&lt;/p&gt;
+&lt;h2 id=&#34;最后&#34;&gt;最后&lt;/h2&gt;
+&lt;p&gt;好吧，我承认，我是标题党。&lt;/p&gt;
+&lt;p&gt;我说了一堆废话，其实是希望，一个团队，应该拥有自己的荣耀。&lt;/p&gt;</description></item><item><title>什么是Zipkin</title><link>https://ronggle.com/2017/what-is-zipkin/</link><pubDate>Sat, 22 Jul 2017 23:30:22 +0800</pubDate><guid>https://ronggle.com/2017/what-is-zipkin/</guid><description>&lt;p&gt;&lt;strong&gt;Zipkin&lt;/strong&gt;是一个分布式跟踪系统。 它有助于收集在微服务架构中排除延迟问题所需的时间数据。 它管理这些数据的收集和查找。 Zipkin是基于Google Dapper论文设计的。&lt;/p&gt;
+&lt;p&gt;将应用程序用于向Zipkin报告时序数据。 Zipkin UI还提供了一个依赖关系图，显示了每个应用程序中跟踪的请求数量。 如果要解决延迟问题或错误，可以根据应用程序，跟踪长度，注释或时间戳来过滤或排序所有跟踪。 选择跟踪后，您可以看到每个跨度所需的总跟踪时间的百分比，从而允许您识别问题应用程序。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/what-is-zipkin/index.png&#34; alt=&#34;index&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;快速开始&#34;&gt;快速开始&lt;/h2&gt;
+&lt;p&gt;首先，我是一个spring cloud的初学者，所以我在本次采用了spring cloud来学习zipkin，当然，只要你愿意，你完全可以不采用spring cloud。&lt;/p&gt;
+&lt;p&gt;项目结构如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;- platform
+- account
+- config
+- registry
+- zipkin
+- zuul
+pom.xml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这是个多模块项目，其中子模块分别对应的是账号服务、配置中心、注册中心、zipkin服务、API Getaway。&lt;/p&gt;
+&lt;h3 id=&#34;zipkin-server&#34;&gt;Zipkin Server&lt;/h3&gt;
+&lt;p&gt;首先，我们来看看zipkin模块的pom.xml&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
+&amp;lt;project xmlns=&amp;quot;http://maven.apache.org/POM/4.0.0&amp;quot;
+xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot;
+xsi:schemaLocation=&amp;quot;http://maven.apache.org/POM/4.0.0
+http://maven.apache.org/xsd/maven-4.0.0.xsd&amp;quot;&amp;gt;
+&amp;lt;parent&amp;gt;
+&amp;lt;artifactId&amp;gt;platform&amp;lt;/artifactId&amp;gt;
+&amp;lt;groupId&amp;gt;team.soi&amp;lt;/groupId&amp;gt;
+&amp;lt;version&amp;gt;1.0-SNAPSHOT&amp;lt;/version&amp;gt;
+&amp;lt;/parent&amp;gt;
+&amp;lt;modelVersion&amp;gt;4.0.0&amp;lt;/modelVersion&amp;gt;
+&amp;lt;artifactId&amp;gt;zipkin&amp;lt;/artifactId&amp;gt;
+&amp;lt;version&amp;gt;1.0-SNAPSHOT&amp;lt;/version&amp;gt;
+&amp;lt;dependencies&amp;gt;
+&amp;lt;dependency&amp;gt;
+&amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;spring-cloud-starter-config&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+&amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;spring-cloud-starter-eureka&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;spring-boot-starter-actuator&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+&amp;lt;groupId&amp;gt;io.zipkin.java&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;zipkin-server&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+&amp;lt;groupId&amp;gt;io.zipkin.java&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;zipkin-autoconfigure-ui&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+&amp;lt;groupId&amp;gt;io.zipkin.java&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;zipkin-autoconfigure-storage-mysql&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+&amp;lt;groupId&amp;gt;mysql&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;mysql-connector-java&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;spring-boot-starter-jdbc&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+&amp;lt;groupId&amp;gt;org.projectlombok&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;lombok&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;dependency&amp;gt;
+&amp;lt;groupId&amp;gt;org.jetbrains.kotlin&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;kotlin-stdlib&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&amp;lt;/dependencies&amp;gt;
+&amp;lt;build&amp;gt;
+&amp;lt;finalName&amp;gt;zipkin&amp;lt;/finalName&amp;gt;
+&amp;lt;plugins&amp;gt;
+&amp;lt;plugin&amp;gt;
+&amp;lt;groupId&amp;gt;org.apache.maven.plugins&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;maven-compiler-plugin&amp;lt;/artifactId&amp;gt;
+&amp;lt;/plugin&amp;gt;
+&amp;lt;plugin&amp;gt;
+&amp;lt;artifactId&amp;gt;kotlin-maven-plugin&amp;lt;/artifactId&amp;gt;
+&amp;lt;groupId&amp;gt;org.jetbrains.kotlin&amp;lt;/groupId&amp;gt;
+&amp;lt;/plugin&amp;gt;
+&amp;lt;plugin&amp;gt;
+&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;spring-boot-maven-plugin&amp;lt;/artifactId&amp;gt;
+&amp;lt;/plugin&amp;gt;
+&amp;lt;/plugins&amp;gt;
+&amp;lt;/build&amp;gt;
+&amp;lt;/project&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;从pom.xml中，不难看出，我引入了&lt;code&gt;zipkin-server&lt;/code&gt;、&lt;code&gt;zipkin-autoconfigure-ui&lt;/code&gt;、&lt;code&gt;zipkin-autoconfigure-storage-mysql&lt;/code&gt;，在本例中，我采用的mysql存储。&lt;/p&gt;
+&lt;p&gt;接下来，我们只需要在启动类中打开&lt;code&gt;@EnableZipkinServer&lt;/code&gt;注解就OK。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package team.soi.platform.zipkin
+import org.springframework.boot.SpringApplication
+import org.springframework.boot.autoconfigure.SpringBootApplication
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient
+import zipkin.server.EnableZipkinServer
+/**
+* @author Soi.
+*
+* @version 1.0
+*
+* @see
+*/
+@SpringBootApplication
+@EnableZipkinServer
+@EnableDiscoveryClient
+open class App
+fun main(args: Array&amp;lt;String&amp;gt;) {
+SpringApplication.run(App::class.java, *args)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;zipkin服务的配置文件application.yml如下：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;server:
+port: ${port:9411}
+spring:
+application:
+name: zipkin
+datasource:
+schema: classpath:/mysql.sql
+url: jdbc:mysql://localhost:3306/zipkin?autoReconnect=true
+username: root
+password: root
+driver-class-name: com.mysql.jdbc.Driver
+initialize: true
+continue-on-error: true
+eureka:
+client:
+serviceUrl:
+defaultZone: ${defaultZone:http://localhost:8761/eureka/}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;zipkin-client&#34;&gt;Zipkin Client&lt;/h3&gt;
+&lt;p&gt;在使用zipkin服务的模块的pom.xml中加入下面的依赖：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
+&amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
+&amp;lt;artifactId&amp;gt;spring-cloud-starter-zipkin&amp;lt;/artifactId&amp;gt;
+&amp;lt;/dependency&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;然后在application.yml中注明zipkin的url：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;spring:
+zipkin:
+base-url: http://localhost:9411
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;在我的示例中，我分别在config、zuul、account模块中加入了zipkin的配置。&lt;/p&gt;
+&lt;h3 id=&#34;zipkin-ui&#34;&gt;Zipkin UI&lt;/h3&gt;
+&lt;p&gt;首先，我分别启动了这几个模块，我们可以在Eureka的UI中看到：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/what-is-zipkin/eureka.png&#34; alt=&#34;eureka&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;然后我分别在浏览器中访问API Getaway中映射的API&lt;code&gt;http://localhost:9200/account/accounts/1&lt;/code&gt;和&lt;code&gt;http://localhost:9200/config/platform/zuul/dev&lt;/code&gt;，然后在打开Zipkin页面。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/what-is-zipkin/trace.png&#34; alt=&#34;trace&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;我们可以看到服务调用的依赖关系：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/what-is-zipkin/dependencies.png&#34; alt=&#34;dependencies&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;还可以看到调用的详细信息：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://ronggle.com/what-is-zipkin/traces_detail.png&#34; alt=&#34;traces detail&#34; /&gt;&lt;/p&gt;
+&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
+&lt;p&gt;在spring cloud中，为我们集成了许许多多工具，为我们的微服务开发提供了便利，同时也解决了我们的一些痛点，而Zipkin，为我们解决了服务调用链的追踪问题，同时提供了详细的调用时间，可以是我们更加有效地知晓服务的性能瓶颈在哪些地方。&lt;/p&gt;
+&lt;p&gt;当然，本例只是简单的介绍了下Zipkin的使用，没有想过会给你带来什么。&lt;/p&gt;</description></item></channel></rss>

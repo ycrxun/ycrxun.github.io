@@ -1,0 +1,130 @@
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content=noodp><meta name=author content=Soi><meta name=description content="Search Engine Oriented Programming."><meta name=keywords content=Soi,Programming,Blog,ycrxun><link rel=prev href=https://ronggle.com/2015/it-is-been-a-long-time/><link rel=next href=https://ronggle.com/2017/microservice-container-and-container-cloud/><link rel=canonical href=https://ronggle.com/2017/webservice-hello-world/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content=#da532c><meta name=theme-color content=#ffffff><title>WebService学习记录 | 凉都小道</title><meta name=title content="WebService学习记录 | 凉都小道"><link rel=stylesheet href=/font/iconfont.css><link rel=stylesheet href=/css/main.min.css><link rel=stylesheet href=/css/gitalk.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/ronggle.com\/"},"articleSection":"posts","name":"WebService学习记录","headline":"WebService学习记录","description":"\x3cp\x3e最近项目要使用WebService，正在学习中，做个记录。\x3c\/p\x3e","inLanguage":"en-us","author":"Soi","creator":"Soi","publisher":"Soi","accountablePerson":"Soi","copyrightHolder":"Soi","copyrightYear":"2017","datePublished":"2017-02-12 19:32:45 \x2b0800 CST","dateModified":"2017-02-12 19:32:45 \x2b0800 CST","url":"https:\/\/ronggle.com\/2017\/webservice-hello-world\/","wordCount":"274","keywords":["Java","凉都小道"]}</script></head><body><div class=wrapper><nav class=navbar><div class=container><div class="navbar-header header-logo"><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class="menu navbar-right"><a class=menu-item href=/posts>Posts</a>
+<a class=menu-item href=/categories/>Categories</a>
+<a class=menu-item href=/tags/>Tags</a>
+<a class=menu-item href=/about/>About</a></div></div></nav><nav class=navbar-mobile id=nav-mobile style=display:none><div class=container><div class=navbar-header><div><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class=menu-toggle><span></span><span></span><span></span></div></div><div class=menu id=mobile-menu><a class=menu-item href=/posts>Posts</a>
+<a class=menu-item href=/categories/>Categories</a>
+<a class=menu-item href=/tags/>Tags</a>
+<a class=menu-item href=/about/>About</a></div></div></nav><main class=main><div class=container><article class=post-warp itemscope itemtype=http://schema.org/Article><header class=post-header><h1 class=post-title itemprop="name headline">WebService学习记录</h1><div class=post-meta>Written by <a itemprop=name href=https://ronggle.com/ rel=author>Soi</a> with ♥
+<span class=post-time>on <time datetime=2017-02-12 itemprop=datePublished>February 12, 2017</time></span>
+in
+<i class="iconfont icon-folder"></i><span class=post-category><a href=https://ronggle.com/categories/programming/>Programming</a></span></div></header><div class=post-content><p>最近项目要使用WebService，正在学习中，做个记录。</p><p><strong>WebService</strong>是一个平台独立的，低耦合的，自包含的、基于可编程的web的应用程序，可使用开放的XML（标准通用标记语言下的一个子集）标准来描述、发布、发现、协调和配置这些应用程序，用于开发分布式的互操作的应用程序。
+巴拉巴拉。。。。。。</p><h3 id=开始编写接口>开始编写接口</h3><pre><code class=language-java>package team.soi.service;
+
+public interface HelloService {
+
+    /**
+     * to do sth.
+     * @param to
+     * @return
+     */
+    Object toDoSth(String to);
+}
+</code></pre><h3 id=编写接口的实现类>编写接口的实现类</h3><pre><code class=language-java>package team.soi.service.impl;
+
+import team.soi.service.HelloService;
+
+import javax.jws.WebService;
+
+@WebService
+public class HelloServiceImpl implements HelloService {
+
+    public Object toDoSth(String to) {
+        return &quot;Hello,&quot; + to + &quot;! Welcome to my webservice world!&quot;;
+    }
+}
+</code></pre><h3 id=发布webservice>发布WebService</h3><pre><code class=language-java>package team.soi;
+
+import team.soi.service.impl.HelloServiceImpl;
+
+import javax.xml.ws.Endpoint;
+
+public class App {
+    public static void main(String[] args) {
+        Endpoint.publish(&quot;http://localhost:8899/ws/demo&quot;, new HelloServiceImpl());
+    }
+}
+</code></pre><p>奏是介么仍性，在浏览器输入<code>http://localhost:8899/ws/demo?wsdl</code>
+见证奇迹的时刻到了，Duang&hellip;&hellip;如下：</p><pre><code class=language-xml>This XML file does not appear to have any style information associated with it. The document tree is shown below.
+&lt;!--
+ Published by JAX-WS RI (http://jax-ws.java.net). RI's version is JAX-WS RI 2.2.9-b130926.1035 svn-revision#5f6196f2b90e9460065a4c2f4e30e065b245e51e. 
+--&gt;
+&lt;!--
+ Generated by JAX-WS RI (http://jax-ws.java.net). RI's version is JAX-WS RI 2.2.9-b130926.1035 svn-revision#5f6196f2b90e9460065a4c2f4e30e065b245e51e. 
+--&gt;
+&lt;definitions xmlns:wsu=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&quot; xmlns:wsp=&quot;http://www.w3.org/ns/ws-policy&quot;xmlns:wsp1_2=&quot;http://schemas.xmlsoap.org/ws/2004/09/policy&quot; xmlns:wsam=&quot;http://www.w3.org/2007/05/addressing/metadata&quot; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;xmlns:tns=&quot;http://impl.service.soi.team/&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns=&quot;http://schemas.xmlsoap.org/wsdl/&quot; targetNamespace=&quot;http://impl.service.soi.team/&quot;name=&quot;HelloServiceImplService&quot;&gt;
+&lt;types&gt;
+&lt;xsd:schema&gt;
+&lt;xsd:import namespace=&quot;http://impl.service.soi.team/&quot; schemaLocation=&quot;http://localhost:8899/ws/demo?xsd=1&quot;/&gt;
+&lt;/xsd:schema&gt;
+&lt;/types&gt;
+&lt;message name=&quot;toDoSth&quot;&gt;
+&lt;part name=&quot;parameters&quot; element=&quot;tns:toDoSth&quot;/&gt;
+&lt;/message&gt;
+&lt;message name=&quot;toDoSthResponse&quot;&gt;
+&lt;part name=&quot;parameters&quot; element=&quot;tns:toDoSthResponse&quot;/&gt;
+&lt;/message&gt;
+&lt;portType name=&quot;HelloServiceImpl&quot;&gt;
+&lt;operation name=&quot;toDoSth&quot;&gt;
+&lt;input wsam:Action=&quot;http://impl.service.soi.team/HelloServiceImpl/toDoSthRequest&quot; message=&quot;tns:toDoSth&quot;/&gt;
+&lt;output wsam:Action=&quot;http://impl.service.soi.team/HelloServiceImpl/toDoSthResponse&quot; message=&quot;tns:toDoSthResponse&quot;/&gt;
+&lt;/operation&gt;
+&lt;/portType&gt;
+&lt;binding name=&quot;HelloServiceImplPortBinding&quot; type=&quot;tns:HelloServiceImpl&quot;&gt;
+&lt;soap:binding transport=&quot;http://schemas.xmlsoap.org/soap/http&quot; style=&quot;document&quot;/&gt;
+&lt;operation name=&quot;toDoSth&quot;&gt;
+&lt;soap:operation soapAction=&quot;&quot;/&gt;
+&lt;input&gt;
+&lt;soap:body use=&quot;literal&quot;/&gt;
+&lt;/input&gt;
+&lt;output&gt;
+&lt;soap:body use=&quot;literal&quot;/&gt;
+&lt;/output&gt;
+&lt;/operation&gt;
+&lt;/binding&gt;
+&lt;service name=&quot;HelloServiceImplService&quot;&gt;
+&lt;port name=&quot;HelloServiceImplPort&quot; binding=&quot;tns:HelloServiceImplPortBinding&quot;&gt;
+&lt;soap:address location=&quot;http://localhost:8899/ws/demo&quot;/&gt;
+&lt;/port&gt;
+&lt;/service&gt;
+&lt;/definitions&gt;
+</code></pre><p>到这里，说明你的WebService服务端编写完成了，接下来，我们要怎么去调用呢？
+说真的，在今天之前，我就知道WebService可以如上的写法，但是不会调用，感觉自己好Low，于是乎，在群里面一吼，很多热心的人回答了我的问题，得知了接下来该做的事情。</p><h3 id=生成jar>生成Jar</h3><p>在你的终端里，输入命令，如下：</p><pre><code class=language-shell>soi@soi:~/workspace/wsc$ wsimport -extension -keep -p team.soi.ws.client -s ./src -d ./bin http://localhost:8899/ws/demo?wsdl
+正在解析 WSDL...
+
+正在生成代码...
+
+正在编译代码...
+
+soi@soi:~/workspace/wsc$ cd bin
+soi@soi:~/workspace/wsc/bin$ jar cvf hello-ws-demo.jar team
+soi@soi:~/workspace/wsc/bin$ ls
+hello-ws-demo.jar  team
+</code></pre><p>此时，我们已经拿到了本WebService的客户端jar包，我们将客户端jar包加入到我们的工程，顺理成章，开始编写客户端代码：</p><pre><code class=language-java>package team.soi;
+
+import junit.framework.TestCase;
+import team.soi.ws.client.HelloServiceImpl;
+import team.soi.ws.client.HelloServiceImplService;
+
+public class AppTest
+        extends TestCase {
+
+    /**
+     * test ws
+     */
+    public void testWs() {
+        HelloServiceImpl service = new HelloServiceImplService().getHelloServiceImplPort();
+        String s = (String) service.toDoSth(&quot;Soi&quot;);
+        System.out.println(s);
+    }
+}
+</code></pre><p>运行测试代码：</p><pre><code class=language-shell>Hello,Soi! Welcome to my webservice world!
+</code></pre><p>撸完收工&hellip;&hellip;.</p></div><div class=post-copyright><p class=copyright-item><span>Author:</span>
+<span>Soi</span></p><p class=copyright-item><span>Link:</span>
+<a href=https://ronggle.com/2017/webservice-hello-world/>https://ronggle.com/2017/webservice-hello-world/</span></p><p class="copyright-item lincese">本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p></div><div class=post-tags><section><i class="iconfont icon-tag"></i>Tag(s):
+<span class=tag><a href=https://ronggle.com/tags/java/>#Java</a></span></section><section><a href=javascript:window.history.back();>back</a></span> ·
+<span><a href=https://ronggle.com/>home</a></span></section></div><div class=post-nav><a href=https://ronggle.com/2015/it-is-been-a-long-time/ class=prev rel=prev title=好久不见><i class="iconfont icon-left"></i>&nbsp;好久不见</a>
+<a href=https://ronggle.com/2017/microservice-container-and-container-cloud/ class=next rel=next title=微服务、容器与容器云-从入门到放弃>微服务、容器与容器云-从入门到放弃&nbsp;<i class="iconfont icon-right"></i></a></div><div class=post-comment></div></article></div></main><script src=/js/gitalk.min.min.js></script><div id=gitalk-container></div><script>var gitalk=new Gitalk({clientId:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:"ycrxun",id:location.pathname,distractionFreeMode:false});gitalk.render('gitalk-container');</script><footer class=footer><div class=copyright>&copy;
+<span itemprop=copyrightYear>2015 - 2019</span>
+<span class=with-love><i class="iconfont icon-love"></i></span><span class=author itemprop=copyrightHolder><a href=https://ronggle.com/>Soi</a> |</span>
+<a href=http://www.beian.miit.gov.cn/ target=_blank rel="external nofollow">黔ICP备15015267号</a> |
+<span>Powered by <a href=https://gohugo.io/ target=_blank rel="external nofollow">Hugo</a> & <a href=https://github.com/liuzc/leaveit target=_blank rel="external nofollow">LeaveIt</a></span></div></footer><script src=/js/vendor_no_gallery.min.js async></script><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?VNkd8ZiQJH29dqsu";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script></div></body></html>
