@@ -54,6 +54,14 @@ preserveTaxonomyNames = true
 
     license= '本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可'
 
+[params.gitalk]
+    clientId = "a2f917f5cb45d6dffe92"
+    clientSecret = "879169dfceea28b064c49ef7fd190cdafcc6e5a7"
+    repo = "ycrxun.github.io"
+    owner = "ycrxun"
+    admin = "ycrxun"
+    distractionFreeMode = false
+
 [params.social]
     GitHub = "ycrxun"
     Twitter = "ChangrongYang"
