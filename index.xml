@@ -1,4 +1,208 @@
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>凉都小道 on 凉都小道</title><link>https://ronggle.com/</link><description>Recent content in 凉都小道 on 凉都小道</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 30 Jun 2019 16:27:29 +0800</lastBuildDate><atom:link href="https://ronggle.com/" rel="self" type="application/rss+xml"/><item><title>Elassandra简单介绍</title><link>https://ronggle.com/2019/elassandra-getting-and-started/</link><pubDate>Sun, 30 Jun 2019 16:27:29 +0800</pubDate><guid>https://ronggle.com/2019/elassandra-getting-and-started/</guid><description>&lt;h2 id=&#34;elassandra&#34;&gt;Elassandra&lt;/h2&gt;
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>凉都小道 on 凉都小道</title><link>https://ronggle.com/</link><description>Recent content in 凉都小道 on 凉都小道</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 07 Jul 2019 17:47:56 +0800</lastBuildDate><atom:link href="https://ronggle.com/" rel="self" type="application/rss+xml"/><item><title>Lile简单介绍</title><link>https://ronggle.com/2019/lile-getting-and-started/</link><pubDate>Sun, 07 Jul 2019 17:47:56 +0800</pubDate><guid>https://ronggle.com/2019/lile-getting-and-started/</guid><description>&lt;p&gt;继续挖坑，希望将来能静下心来，安静的补坑。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/lileio/lile&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Lile&lt;/a&gt;是Go中的gRPC服务和一组工具/库的应用程序生成器（类似于create-react-app，rails new或django startproject）。&lt;/p&gt;
+&lt;p&gt;Lile的主要焦点是在创建新服务时通过创建基本结构，测试示例，Dockerfile，Makefile等。&lt;/p&gt;
+&lt;p&gt;Lile带有基本的预设置，带有可插拔选项，适用于&amp;hellip;&amp;hellip;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Metrics (例如&lt;a href=&#34;https://prometheus.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Prometheus&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Tracing (例如&lt;a href=&#34;https://zipkin.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Zipkin&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;PubSub (例如&lt;a href=&#34;https://cloud.google.com/pubsub/docs/overview&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Google PubSub&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Service Discovery&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;安装&#34;&gt;安装&lt;/h2&gt;
+&lt;p&gt;安装Lile非常简单，使用&lt;code&gt;go get&lt;/code&gt;就可以安装lile的命令行工具，用于生成新的服务和所需的库。&lt;/p&gt;
+&lt;p&gt;首先，您需要安装Google的&lt;a href=&#34;https://developers.google.com/protocol-buffers/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Protocol Buffers&lt;/a&gt;。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ brew install protobuf
+$ go get -u github.com/lileio/lile/...
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;快速开始&#34;&gt;快速开始&lt;/h2&gt;
+&lt;p&gt;使用&lt;code&gt;lile new&lt;/code&gt;生成新服务。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ lile new lileio/users
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2 id=&#34;指南&#34;&gt;指南&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;#创建服务&#34;&gt;创建服务&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#服务定义&#34;&gt;服务定义&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#生成RPC方法&#34;&gt;生成RPC方法&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#编写并运行测试用例&#34;&gt;编写并运行测试用例&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#使用生成的命令行&#34;&gt;使用生成的命令行&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;#添加你自己的命令行&#34;&gt;添加你自己的命令行&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;创建服务&#34;&gt;创建服务&lt;/h3&gt;
+&lt;p&gt;Lile附带一个“代码生成器”，可以快速生成新的Lile服务。&lt;/p&gt;
+&lt;p&gt;Lile遵循Go关于$GOPATH的约定（参见如何写Go），并且自动解析您的新服务的名称，以在正确的位置创建服务。&lt;/p&gt;
+&lt;p&gt;如果您的Github用户名是&lt;code&gt;lileio&lt;/code&gt;，并且您想创建一个新的服务为了发布消息到Slack，您可以使用如下命令：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;lile new lileio/slack
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;这将创建一个项目到&lt;code&gt;$GOPATH/src/github.com/lileio/slack&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;服务定义&#34;&gt;服务定义&lt;/h3&gt;
+&lt;p&gt;Lile服务主要使用&lt;a href=&#34;https://grpc.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;gRPC&lt;/a&gt;，因此使用&lt;a href=&#34;https://developers.google.com/protocol-buffers/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;protocol buffers&lt;/a&gt;作为接口定义语言（IDL），用于描述有效负载消息的服务接口和结构。 如果需要，可以使用其他替代品。&lt;/p&gt;
+&lt;p&gt;我强烈建议您先阅读&lt;a href=&#34;https://cloud.google.com/apis/design/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Google API&lt;/a&gt;设计文档，以获得有关RPC方法和消息的一般命名的好建议，以及如果需要，可以通过&lt;a href=&#34;https://github.com/grpc-ecosystem/grpc-gateway&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;gRPC Gateway&lt;/a&gt;将其转换为REST/JSON。&lt;/p&gt;
+&lt;p&gt;下面是一个简单的例子&lt;code&gt;account_service&lt;/code&gt;：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-protobuf&#34;&gt;service AccountService {
+rpc List (ListAccountsRequest) returns (ListAccountsResponse) {}
+rpc GetById (GetByIdRequest) returns (Account) {}
+rpc GetByEmail (GetByEmailRequest) returns (Account) {}
+rpc AuthenticateByEmail (AuthenticateByEmailRequest) returns (Account) {}
+rpc GeneratePasswordToken (GeneratePasswordTokenRequest) returns (GeneratePasswordTokenResponse) {}
+rpc ResetPassword (ResetPasswordRequest) returns (Account) {}
+rpc ConfirmAccount (ConfirmAccountRequest) returns (Account) {}
+rpc Create (CreateAccountRequest) returns (Account) {}
+rpc Update (UpdateAccountRequest) returns (Account) {}
+rpc Delete (DeleteAccountRequest) returns (google.protobuf.Empty) {}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;生成rpc方法&#34;&gt;生成RPC方法&lt;/h3&gt;
+&lt;p&gt;默认情况下，Lile将创建一个RPC方法和一个简单的请求和响应消息。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-proto&#34;&gt;syntax = &amp;quot;proto3&amp;quot;;
+option go_package = &amp;quot;github.com/lileio/slack&amp;quot;;
+package slack;
+message Request {
+string id = 1;
+}
+message Response {
+string id = 1;
+}
+service Slack {
+rpc Read (Request) returns (Response) {}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;我们来修改一下使它能够提供真正的服务，并添加自己的方法。&lt;/p&gt;
+&lt;p&gt;我们来创建一个Announce方法向Slack发布消息。&lt;/p&gt;
+&lt;p&gt;我们假设Slack团队和身份验证已经由服务配置来处理，所以我们服务的用户只需要提供一个房间和他们的消息。 该服务将发送特殊的空响应，因为我们只需要知道是否发生错误，也不需要知道其他任何内容。&lt;/p&gt;
+&lt;p&gt;现在我们的proto文件看起来像这样：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-proto&#34;&gt;syntax = &amp;quot;proto3&amp;quot;;
+option go_package = &amp;quot;github.com/lileio/slack&amp;quot;;
+import &amp;quot;google/protobuf/empty.proto&amp;quot;;
+package slack;
+message AnnounceRequest {
+string channel = 1;
+string msg = 2;
+}
+service Slack {
+rpc Announce (AnnounceRequest) returns (google.protobuf.Empty) {}
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;现在我们运行protoc工具我们的文件，以及Lile生成器插件。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;protoc -I . slack.proto --lile-server_out=. --go_out=plugins=grpc:$GOPATH/src
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Lile提供了一个Makefile，每个项目都有一个已经配置的proto构建步骤。 所以我们可以运行它。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;make proto
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;我们可以看到，Lile将在server目录中为我们创建两个文件。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ make proto
+protoc -I . slack.proto --lile-server_out=. --go_out=plugins=grpc:$GOPATH/src
+2017/07/12 15:44:01 [Creating] server/announce.go
+2017/07/12 15:44:01 [Creating test] server/announce_test.go
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;我们来看看Lile为我们创建的&lt;code&gt;announce.go&lt;/code&gt;文件。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package server
+import (
+&amp;quot;errors&amp;quot;
+&amp;quot;github.com/golang/protobuf/ptypes/empty&amp;quot;
+&amp;quot;github.com/lileio/slack&amp;quot;
+context &amp;quot;golang.org/x/net/context&amp;quot;
+)
+func (s SlackServer) Announce(ctx context.Context, r *slack.AnnounceRequest) (*empty.Empty, error) {
+return nil, errors.New(&amp;quot;not yet implemented&amp;quot;)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;接下来我们实现这个生成的方法，让我们从测试开始吧！&lt;/p&gt;
+&lt;h3 id=&#34;编写并运行测试用例&#34;&gt;编写并运行测试用例&lt;/h3&gt;
+&lt;p&gt;当您使用Lile生成RPC方法时，也会创建一个对应的测试文件。例如，给定我们的&lt;code&gt;announce.go&lt;/code&gt;文件，Lile将在同一目录中创建&lt;code&gt;announce_test.go&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;看起来如下:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package server
+import (
+&amp;quot;testing&amp;quot;
+&amp;quot;github.com/lileio/slack&amp;quot;
+&amp;quot;github.com/stretchr/testify/assert&amp;quot;
+context &amp;quot;golang.org/x/net/context&amp;quot;
+)
+func TestAnnounce(t *testing.T) {
+ctx := context.Background()
+req := &amp;amp;slack.AnnounceRequest{}
+res, err := cli.Announce(ctx, req)
+assert.Nil(t, err)
+assert.NotNil(t, res)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;您现在可以使用&lt;code&gt;Makefile&lt;/code&gt;运行测试，并运行&lt;code&gt;make test&lt;/code&gt;命令:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ make test
+=== RUN TestAnnounce
+--- FAIL: TestAnnounce (0.00s)
+Error Trace: announce_test.go:16
+Error: Expected nil, but got: &amp;amp;status.statusError{Code:2, Message:&amp;quot;not yet implemented&amp;quot;, Details:[]*any.Any(nil)}
+Error Trace: announce_test.go:17
+Error: Expected value not to be nil.
+FAIL
+coverage: 100.0% of statements
+FAIL github.com/lileio/slack/server 0.011s
+make: *** [test] Error 2
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;我们的测试失败了，因为我们还没有实现我们的方法，在我们的方法中返回一个“未实现”的错误。&lt;/p&gt;
+&lt;p&gt;让我们在announce.go中实现Announce方法，这里是一个使用nlopes的&lt;a href=&#34;https://github.com/nlopes/slack&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;slack library&lt;/a&gt;的例子。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;package server
+import (
+&amp;quot;os&amp;quot;
+&amp;quot;google.golang.org/grpc/codes&amp;quot;
+&amp;quot;google.golang.org/grpc/status&amp;quot;
+&amp;quot;github.com/golang/protobuf/ptypes/empty&amp;quot;
+&amp;quot;github.com/lileio/slack&amp;quot;
+sl &amp;quot;github.com/nlopes/slack&amp;quot;
+context &amp;quot;golang.org/x/net/context&amp;quot;
+)
+var api = sl.New(os.Getenv(&amp;quot;SLACK_TOKEN&amp;quot;))
+func (s SlackServer) Announce(ctx context.Context, r *slack.AnnounceRequest) (*empty.Empty, error) {
+_, _, err := api.PostMessage(r.Channel, r.Msg, sl.PostMessageParameters{})
+if err != nil {
+return nil, status.Errorf(codes.Internal, err.Error())
+}
+return &amp;amp;empty.Empty{}, nil
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;我们再次修改我们的测试用力，然后再次运行我们的测试:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-go&#34;&gt;package server
+import (
+&amp;quot;testing&amp;quot;
+&amp;quot;github.com/lileio/slack&amp;quot;
+&amp;quot;github.com/stretchr/testify/assert&amp;quot;
+context &amp;quot;golang.org/x/net/context&amp;quot;
+)
+func TestAnnounce(t *testing.T) {
+ctx := context.Background()
+req := &amp;amp;slack.AnnounceRequest{
+Channel: &amp;quot;@alex&amp;quot;,
+Msg: &amp;quot;hellooo&amp;quot;,
+}
+res, err := cli.Announce(ctx, req)
+assert.Nil(t, err)
+assert.NotNil(t, res)
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;现在如果我使用我的Slack令牌作为环境变量运行测试，我应该看到通过测试！&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ alex@slack: SLACK_TOKEN=zbxkkausdkasugdk make test
+go test -v ./... -cover
+? github.com/lileio/slack [no test files]
+=== RUN TestAnnounce
+--- PASS: TestAnnounce (0.32s)
+PASS
+coverage: 75.0% of statements
+ok github.com/lileio/slack/server 0.331s coverage: 75.0% of statements
+? github.com/lileio/slack/slack [no test files]
+? github.com/lileio/slack/slack/cmd [no test files]
+? github.com/lileio/slack/subscribers [no test files]
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3 id=&#34;使用生成的命令行&#34;&gt;使用生成的命令行&lt;/h3&gt;
+&lt;p&gt;生成服务时，Lile会基于&lt;a href=&#34;https://github.com/spf13/cobra&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;cobra&lt;/a&gt;生成命令行程序。您可以使用自己的cmd扩展应用程序，也可以使用内置cmds来运行服务。&lt;/p&gt;
+&lt;p&gt;运行不带任何参数的cmd行应用程序将打印生成的帮助。&lt;/p&gt;
+&lt;p&gt;例如&lt;code&gt;go run orders/main.go&lt;/code&gt;&lt;/p&gt;
+&lt;h4 id=&#34;启动&#34;&gt;启动&lt;/h4&gt;
+&lt;p&gt;运行&lt;code&gt;up&lt;/code&gt;将同时运行RPC服务器和发布订阅的订阅者。&lt;/p&gt;
+&lt;h3 id=&#34;添加你自己的命令行&#34;&gt;添加你自己的命令行&lt;/h3&gt;
+&lt;p&gt;要添加自己的cmd，您可以使用Cobra内置的生成器来生成更多的命令。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;$ cd orders
+$ cobra add import
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;您现在可以编辑生成的文件，以创建您的命令行，cobra会自动将命令行的名称添加到帮助中。&lt;/p&gt;</description></item><item><title>Elassandra简单介绍</title><link>https://ronggle.com/2019/elassandra-getting-and-started/</link><pubDate>Sun, 30 Jun 2019 16:27:29 +0800</pubDate><guid>https://ronggle.com/2019/elassandra-getting-and-started/</guid><description>&lt;h2 id=&#34;elassandra&#34;&gt;Elassandra&lt;/h2&gt;
 &lt;p&gt;&lt;a href=&#34;http://www.elassandra.io/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Elassandra&lt;/a&gt;是&lt;a href=&#34;https://github.com/elastic/elasticsearch&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Elasticsearch&lt;/a&gt;的一个分支，经过修改，可以作为&lt;a href=&#34;http://cassandra.apache.org/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Apache Cassandra&lt;/a&gt;的插件运行，具有可扩展和灵活的点对点架构。 Elasticsearch代码嵌入在Cassanda节点中，在Cassandra表上提供高级搜索功能，Cassandra用作Elasticsearch数据和配置存储。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://ronggle.com/elassandra-getting-and-started/elassandra-arch.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Elassandra支持Cassandra vnodes，并通过添加更多节点进行水平扩展。&lt;/p&gt;
@@ -2078,160 +2282,4 @@ $ npm run lint # 语法检测&lt;/p&gt;
 &lt;p&gt;当然，这其中还有个重要的角色，就是为队伍发号施令的人，什么们时候改前进，什么时候该撤退。而这个人，必须能够关注到战场的形势，及时调整战术，对应瞬息万变的战场。再一次任务失败后，作出最佳的调整，鼓励队友，下一次再战。&lt;/p&gt;
 &lt;h2 id=&#34;最后&#34;&gt;最后&lt;/h2&gt;
 &lt;p&gt;好吧，我承认，我是标题党。&lt;/p&gt;
-&lt;p&gt;我说了一堆废话，其实是希望，一个团队，应该拥有自己的荣耀。&lt;/p&gt;</description></item><item><title>什么是Zipkin</title><link>https://ronggle.com/2017/what-is-zipkin/</link><pubDate>Sat, 22 Jul 2017 23:30:22 +0800</pubDate><guid>https://ronggle.com/2017/what-is-zipkin/</guid><description>&lt;p&gt;&lt;strong&gt;Zipkin&lt;/strong&gt;是一个分布式跟踪系统。 它有助于收集在微服务架构中排除延迟问题所需的时间数据。 它管理这些数据的收集和查找。 Zipkin是基于Google Dapper论文设计的。&lt;/p&gt;
-&lt;p&gt;将应用程序用于向Zipkin报告时序数据。 Zipkin UI还提供了一个依赖关系图，显示了每个应用程序中跟踪的请求数量。 如果要解决延迟问题或错误，可以根据应用程序，跟踪长度，注释或时间戳来过滤或排序所有跟踪。 选择跟踪后，您可以看到每个跨度所需的总跟踪时间的百分比，从而允许您识别问题应用程序。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ronggle.com/what-is-zipkin/index.png&#34; alt=&#34;index&#34; /&gt;&lt;/p&gt;
-&lt;h2 id=&#34;快速开始&#34;&gt;快速开始&lt;/h2&gt;
-&lt;p&gt;首先，我是一个spring cloud的初学者，所以我在本次采用了spring cloud来学习zipkin，当然，只要你愿意，你完全可以不采用spring cloud。&lt;/p&gt;
-&lt;p&gt;项目结构如下：&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-shell&#34;&gt;- platform
-- account
-- config
-- registry
-- zipkin
-- zuul
-pom.xml
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;这是个多模块项目，其中子模块分别对应的是账号服务、配置中心、注册中心、zipkin服务、API Getaway。&lt;/p&gt;
-&lt;h3 id=&#34;zipkin-server&#34;&gt;Zipkin Server&lt;/h3&gt;
-&lt;p&gt;首先，我们来看看zipkin模块的pom.xml&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;?xml version=&amp;quot;1.0&amp;quot; encoding=&amp;quot;UTF-8&amp;quot;?&amp;gt;
-&amp;lt;project xmlns=&amp;quot;http://maven.apache.org/POM/4.0.0&amp;quot;
-xmlns:xsi=&amp;quot;http://www.w3.org/2001/XMLSchema-instance&amp;quot;
-xsi:schemaLocation=&amp;quot;http://maven.apache.org/POM/4.0.0
-http://maven.apache.org/xsd/maven-4.0.0.xsd&amp;quot;&amp;gt;
-&amp;lt;parent&amp;gt;
-&amp;lt;artifactId&amp;gt;platform&amp;lt;/artifactId&amp;gt;
-&amp;lt;groupId&amp;gt;team.soi&amp;lt;/groupId&amp;gt;
-&amp;lt;version&amp;gt;1.0-SNAPSHOT&amp;lt;/version&amp;gt;
-&amp;lt;/parent&amp;gt;
-&amp;lt;modelVersion&amp;gt;4.0.0&amp;lt;/modelVersion&amp;gt;
-&amp;lt;artifactId&amp;gt;zipkin&amp;lt;/artifactId&amp;gt;
-&amp;lt;version&amp;gt;1.0-SNAPSHOT&amp;lt;/version&amp;gt;
-&amp;lt;dependencies&amp;gt;
-&amp;lt;dependency&amp;gt;
-&amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;spring-cloud-starter-config&amp;lt;/artifactId&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&amp;lt;dependency&amp;gt;
-&amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;spring-cloud-starter-eureka&amp;lt;/artifactId&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&amp;lt;dependency&amp;gt;
-&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;spring-boot-starter-actuator&amp;lt;/artifactId&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&amp;lt;dependency&amp;gt;
-&amp;lt;groupId&amp;gt;io.zipkin.java&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;zipkin-server&amp;lt;/artifactId&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&amp;lt;dependency&amp;gt;
-&amp;lt;groupId&amp;gt;io.zipkin.java&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;zipkin-autoconfigure-ui&amp;lt;/artifactId&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&amp;lt;dependency&amp;gt;
-&amp;lt;groupId&amp;gt;io.zipkin.java&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;zipkin-autoconfigure-storage-mysql&amp;lt;/artifactId&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&amp;lt;dependency&amp;gt;
-&amp;lt;groupId&amp;gt;mysql&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;mysql-connector-java&amp;lt;/artifactId&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&amp;lt;dependency&amp;gt;
-&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;spring-boot-starter-jdbc&amp;lt;/artifactId&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&amp;lt;dependency&amp;gt;
-&amp;lt;groupId&amp;gt;org.projectlombok&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;lombok&amp;lt;/artifactId&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&amp;lt;dependency&amp;gt;
-&amp;lt;groupId&amp;gt;org.jetbrains.kotlin&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;kotlin-stdlib&amp;lt;/artifactId&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&amp;lt;/dependencies&amp;gt;
-&amp;lt;build&amp;gt;
-&amp;lt;finalName&amp;gt;zipkin&amp;lt;/finalName&amp;gt;
-&amp;lt;plugins&amp;gt;
-&amp;lt;plugin&amp;gt;
-&amp;lt;groupId&amp;gt;org.apache.maven.plugins&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;maven-compiler-plugin&amp;lt;/artifactId&amp;gt;
-&amp;lt;/plugin&amp;gt;
-&amp;lt;plugin&amp;gt;
-&amp;lt;artifactId&amp;gt;kotlin-maven-plugin&amp;lt;/artifactId&amp;gt;
-&amp;lt;groupId&amp;gt;org.jetbrains.kotlin&amp;lt;/groupId&amp;gt;
-&amp;lt;/plugin&amp;gt;
-&amp;lt;plugin&amp;gt;
-&amp;lt;groupId&amp;gt;org.springframework.boot&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;spring-boot-maven-plugin&amp;lt;/artifactId&amp;gt;
-&amp;lt;/plugin&amp;gt;
-&amp;lt;/plugins&amp;gt;
-&amp;lt;/build&amp;gt;
-&amp;lt;/project&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;从pom.xml中，不难看出，我引入了&lt;code&gt;zipkin-server&lt;/code&gt;、&lt;code&gt;zipkin-autoconfigure-ui&lt;/code&gt;、&lt;code&gt;zipkin-autoconfigure-storage-mysql&lt;/code&gt;，在本例中，我采用的mysql存储。&lt;/p&gt;
-&lt;p&gt;接下来，我们只需要在启动类中打开&lt;code&gt;@EnableZipkinServer&lt;/code&gt;注解就OK。&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-java&#34;&gt;package team.soi.platform.zipkin
-import org.springframework.boot.SpringApplication
-import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.cloud.client.discovery.EnableDiscoveryClient
-import zipkin.server.EnableZipkinServer
-/**
-* @author Soi.
-*
-* @version 1.0
-*
-* @see
-*/
-@SpringBootApplication
-@EnableZipkinServer
-@EnableDiscoveryClient
-open class App
-fun main(args: Array&amp;lt;String&amp;gt;) {
-SpringApplication.run(App::class.java, *args)
-}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;zipkin服务的配置文件application.yml如下：&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;server:
-port: ${port:9411}
-spring:
-application:
-name: zipkin
-datasource:
-schema: classpath:/mysql.sql
-url: jdbc:mysql://localhost:3306/zipkin?autoReconnect=true
-username: root
-password: root
-driver-class-name: com.mysql.jdbc.Driver
-initialize: true
-continue-on-error: true
-eureka:
-client:
-serviceUrl:
-defaultZone: ${defaultZone:http://localhost:8761/eureka/}
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h3 id=&#34;zipkin-client&#34;&gt;Zipkin Client&lt;/h3&gt;
-&lt;p&gt;在使用zipkin服务的模块的pom.xml中加入下面的依赖：&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-xml&#34;&gt;&amp;lt;dependency&amp;gt;
-&amp;lt;groupId&amp;gt;org.springframework.cloud&amp;lt;/groupId&amp;gt;
-&amp;lt;artifactId&amp;gt;spring-cloud-starter-zipkin&amp;lt;/artifactId&amp;gt;
-&amp;lt;/dependency&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;然后在application.yml中注明zipkin的url：&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&#34;language-yaml&#34;&gt;spring:
-zipkin:
-base-url: http://localhost:9411
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;在我的示例中，我分别在config、zuul、account模块中加入了zipkin的配置。&lt;/p&gt;
-&lt;h3 id=&#34;zipkin-ui&#34;&gt;Zipkin UI&lt;/h3&gt;
-&lt;p&gt;首先，我分别启动了这几个模块，我们可以在Eureka的UI中看到：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ronggle.com/what-is-zipkin/eureka.png&#34; alt=&#34;eureka&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;然后我分别在浏览器中访问API Getaway中映射的API&lt;code&gt;http://localhost:9200/account/accounts/1&lt;/code&gt;和&lt;code&gt;http://localhost:9200/config/platform/zuul/dev&lt;/code&gt;，然后在打开Zipkin页面。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ronggle.com/what-is-zipkin/trace.png&#34; alt=&#34;trace&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;我们可以看到服务调用的依赖关系：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ronggle.com/what-is-zipkin/dependencies.png&#34; alt=&#34;dependencies&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;还可以看到调用的详细信息：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://ronggle.com/what-is-zipkin/traces_detail.png&#34; alt=&#34;traces detail&#34; /&gt;&lt;/p&gt;
-&lt;h2 id=&#34;总结&#34;&gt;总结&lt;/h2&gt;
-&lt;p&gt;在spring cloud中，为我们集成了许许多多工具，为我们的微服务开发提供了便利，同时也解决了我们的一些痛点，而Zipkin，为我们解决了服务调用链的追踪问题，同时提供了详细的调用时间，可以是我们更加有效地知晓服务的性能瓶颈在哪些地方。&lt;/p&gt;
-&lt;p&gt;当然，本例只是简单的介绍了下Zipkin的使用，没有想过会给你带来什么。&lt;/p&gt;</description></item></channel></rss>
+&lt;p&gt;我说了一堆废话，其实是希望，一个团队，应该拥有自己的荣耀。&lt;/p&gt;</description></item></channel></rss>

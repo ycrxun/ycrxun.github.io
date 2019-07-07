@@ -1,0 +1,171 @@
+<!doctype html><html lang=en-us><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content=noodp><meta name=author content=Soi><meta name=description content="Search Engine Oriented Programming."><meta name=keywords content=Soi,Programming,Blog,ycrxun><link rel=prev href=https://ronggle.com/2019/elassandra-getting-and-started/><link rel=canonical href=https://ronggle.com/2019/lile-getting-and-started/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content=#da532c><meta name=theme-color content=#ffffff><title>Lile简单介绍 | 凉都小道</title><meta name=title content="Lile简单介绍 | 凉都小道"><link rel=stylesheet href=/font/iconfont.css><link rel=stylesheet href=/css/main.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/ronggle.com\/"},"articleSection":"posts","name":"Lile简单介绍","headline":"Lile简单介绍","description":"Lile是Go中的gRPC服务和一组工具\/库的应用程序生成器","inLanguage":"en-us","author":"Soi","creator":"Soi","publisher":"Soi","accountablePerson":"Soi","copyrightHolder":"Soi","copyrightYear":"2019","datePublished":"2019-07-07 17:47:56 \x2b0800 CST","dateModified":"2019-07-07 17:47:56 \x2b0800 CST","url":"https:\/\/ronggle.com\/2019\/lile-getting-and-started\/","wordCount":"493","keywords":["gRPC","Go","凉都小道"]}</script></head><body><div class=wrapper><nav class=navbar><div class=container><div class="navbar-header header-logo"><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class="menu navbar-right"><a class=menu-item href=/posts>Posts</a>
+<a class=menu-item href=/categories/>Categories</a>
+<a class=menu-item href=/tags/>Tags</a>
+<a class=menu-item href=/about/>About</a></div></div></nav><nav class=navbar-mobile id=nav-mobile style=display:none><div class=container><div class=navbar-header><div><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class=menu-toggle><span></span><span></span><span></span></div></div><div class=menu id=mobile-menu><a class=menu-item href=/posts>Posts</a>
+<a class=menu-item href=/categories/>Categories</a>
+<a class=menu-item href=/tags/>Tags</a>
+<a class=menu-item href=/about/>About</a></div></div></nav><main class=main><div class=container><article class=post-warp itemscope itemtype=http://schema.org/Article><header class=post-header><h1 class=post-title itemprop="name headline">Lile简单介绍</h1><div class=post-meta>Written by <a itemprop=name href=https://ronggle.com/ rel=author>Soi</a>
+with ♥
+<span class=post-time>on <time datetime=2019-07-07 itemprop=datePublished>July 7, 2019</time></span>
+in
+<i class="iconfont icon-folder"></i><span class=post-category><a href=https://ronggle.com/categories/programming/>Programming</a></span></div></header><div class=post-content><img src=/lile-getting-and-started/lile.png class=featured_image><p>继续挖坑，希望将来能静下心来，安静的补坑。</p><p><a href=https://github.com/lileio/lile rel="nofollow noreferrer" target=_blank>Lile</a>是Go中的gRPC服务和一组工具/库的应用程序生成器（类似于create-react-app，rails new或django startproject）。</p><p>Lile的主要焦点是在创建新服务时通过创建基本结构，测试示例，Dockerfile，Makefile等。</p><p>Lile带有基本的预设置，带有可插拔选项，适用于&hellip;&hellip;</p><ul><li>Metrics (例如<a href=https://prometheus.io/ rel="nofollow noreferrer" target=_blank>Prometheus</a>)</li><li>Tracing (例如<a href=https://zipkin.io/ rel="nofollow noreferrer" target=_blank>Zipkin</a>)</li><li>PubSub (例如<a href=https://cloud.google.com/pubsub/docs/overview rel="nofollow noreferrer" target=_blank>Google PubSub</a>)</li><li>Service Discovery</li></ul><h2 id=安装>安装</h2><p>安装Lile非常简单，使用<code>go get</code>就可以安装lile的命令行工具，用于生成新的服务和所需的库。</p><p>首先，您需要安装Google的<a href=https://developers.google.com/protocol-buffers/ rel="nofollow noreferrer" target=_blank>Protocol Buffers</a>。</p><pre><code class=language-bash>$ brew install protobuf
+$ go get -u github.com/lileio/lile/...
+</code></pre><h2 id=快速开始>快速开始</h2><p>使用<code>lile new</code>生成新服务。</p><pre><code class=language-bash>$ lile new lileio/users
+</code></pre><h2 id=指南>指南</h2><ul><li><a href=#创建服务>创建服务</a></li><li><a href=#服务定义>服务定义</a></li><li><a href=#生成RPC方法>生成RPC方法</a></li><li><a href=#编写并运行测试用例>编写并运行测试用例</a></li><li><a href=#使用生成的命令行>使用生成的命令行</a></li><li><a href=#添加你自己的命令行>添加你自己的命令行</a></li></ul><h3 id=创建服务>创建服务</h3><p>Lile附带一个“代码生成器”，可以快速生成新的Lile服务。</p><p>Lile遵循Go关于$GOPATH的约定（参见如何写Go），并且自动解析您的新服务的名称，以在正确的位置创建服务。</p><p>如果您的Github用户名是<code>lileio</code>，并且您想创建一个新的服务为了发布消息到Slack，您可以使用如下命令：</p><pre><code class=language-bash>lile new lileio/slack
+</code></pre><p>这将创建一个项目到<code>$GOPATH/src/github.com/lileio/slack</code></p><h3 id=服务定义>服务定义</h3><p>Lile服务主要使用<a href=https://grpc.io/ rel="nofollow noreferrer" target=_blank>gRPC</a>，因此使用<a href=https://developers.google.com/protocol-buffers/ rel="nofollow noreferrer" target=_blank>protocol buffers</a>作为接口定义语言（IDL），用于描述有效负载消息的服务接口和结构。 如果需要，可以使用其他替代品。</p><p>我强烈建议您先阅读<a href=https://cloud.google.com/apis/design/ rel="nofollow noreferrer" target=_blank>Google API</a>设计文档，以获得有关RPC方法和消息的一般命名的好建议，以及如果需要，可以通过<a href=https://github.com/grpc-ecosystem/grpc-gateway rel="nofollow noreferrer" target=_blank>gRPC Gateway</a>将其转换为REST/JSON。</p><p>下面是一个简单的例子<code>account_service</code>：</p><pre><code class=language-protobuf>service AccountService {
+  rpc List (ListAccountsRequest) returns (ListAccountsResponse) {}
+  rpc GetById (GetByIdRequest) returns (Account) {}
+  rpc GetByEmail (GetByEmailRequest) returns (Account) {}
+  rpc AuthenticateByEmail (AuthenticateByEmailRequest) returns (Account) {}
+  rpc GeneratePasswordToken (GeneratePasswordTokenRequest) returns (GeneratePasswordTokenResponse) {}
+  rpc ResetPassword (ResetPasswordRequest) returns (Account) {}
+  rpc ConfirmAccount (ConfirmAccountRequest) returns (Account) {}
+  rpc Create (CreateAccountRequest) returns (Account) {}
+  rpc Update (UpdateAccountRequest) returns (Account) {}
+  rpc Delete (DeleteAccountRequest) returns (google.protobuf.Empty) {}
+}
+</code></pre><h3 id=生成rpc方法>生成RPC方法</h3><p>默认情况下，Lile将创建一个RPC方法和一个简单的请求和响应消息。</p><pre><code class=language-proto>syntax = &quot;proto3&quot;;
+option go_package = &quot;github.com/lileio/slack&quot;;
+package slack;
+
+message Request {
+  string id = 1;
+}
+
+message Response {
+  string id = 1;
+}
+
+service Slack {
+  rpc Read (Request) returns (Response) {}
+}
+
+</code></pre><p>我们来修改一下使它能够提供真正的服务，并添加自己的方法。</p><p>我们来创建一个Announce方法向Slack发布消息。</p><p>我们假设Slack团队和身份验证已经由服务配置来处理，所以我们服务的用户只需要提供一个房间和他们的消息。 该服务将发送特殊的空响应，因为我们只需要知道是否发生错误，也不需要知道其他任何内容。</p><p>现在我们的proto文件看起来像这样：</p><pre><code class=language-proto>syntax = &quot;proto3&quot;;
+option go_package = &quot;github.com/lileio/slack&quot;;
+import &quot;google/protobuf/empty.proto&quot;;
+package slack;
+
+message AnnounceRequest {
+  string channel = 1;
+  string msg = 2;
+}
+
+service Slack {
+  rpc Announce (AnnounceRequest) returns (google.protobuf.Empty) {}
+}
+</code></pre><p>现在我们运行protoc工具我们的文件，以及Lile生成器插件。</p><pre><code class=language-bash>protoc -I . slack.proto --lile-server_out=. --go_out=plugins=grpc:$GOPATH/src
+</code></pre><p>Lile提供了一个Makefile，每个项目都有一个已经配置的proto构建步骤。 所以我们可以运行它。</p><pre><code class=language-bash>make proto
+</code></pre><p>我们可以看到，Lile将在server目录中为我们创建两个文件。</p><pre><code class=language-bash>$ make proto
+protoc -I . slack.proto --lile-server_out=. --go_out=plugins=grpc:$GOPATH/src
+2017/07/12 15:44:01 [Creating] server/announce.go
+2017/07/12 15:44:01 [Creating test] server/announce_test.go
+</code></pre><p>我们来看看Lile为我们创建的<code>announce.go</code>文件。</p><pre><code class=language-go>package server
+
+import (
+    &quot;errors&quot;
+
+    &quot;github.com/golang/protobuf/ptypes/empty&quot;
+    &quot;github.com/lileio/slack&quot;
+    context &quot;golang.org/x/net/context&quot;
+)
+
+func (s SlackServer) Announce(ctx context.Context, r *slack.AnnounceRequest) (*empty.Empty, error) {
+  return nil, errors.New(&quot;not yet implemented&quot;)
+}
+</code></pre><p>接下来我们实现这个生成的方法，让我们从测试开始吧！</p><h3 id=编写并运行测试用例>编写并运行测试用例</h3><p>当您使用Lile生成RPC方法时，也会创建一个对应的测试文件。例如，给定我们的<code>announce.go</code>文件，Lile将在同一目录中创建<code>announce_test.go</code></p><p>看起来如下:</p><pre><code class=language-go>package server
+
+import (
+	&quot;testing&quot;
+
+	&quot;github.com/lileio/slack&quot;
+	&quot;github.com/stretchr/testify/assert&quot;
+	context &quot;golang.org/x/net/context&quot;
+)
+
+func TestAnnounce(t *testing.T) {
+	ctx := context.Background()
+	req := &amp;slack.AnnounceRequest{}
+
+	res, err := cli.Announce(ctx, req)
+	assert.Nil(t, err)
+	assert.NotNil(t, res)
+}
+</code></pre><p>您现在可以使用<code>Makefile</code>运行测试，并运行<code>make test</code>命令:</p><pre><code class=language-bash>$ make test
+=== RUN   TestAnnounce
+--- FAIL: TestAnnounce (0.00s)
+        Error Trace:    announce_test.go:16
+        Error:          Expected nil, but got: &amp;status.statusError{Code:2, Message:&quot;not yet implemented&quot;, Details:[]*any.Any(nil)}
+        Error Trace:    announce_test.go:17
+        Error:          Expected value not to be nil.
+FAIL
+coverage: 100.0% of statements
+FAIL    github.com/lileio/slack/server  0.011s
+make: *** [test] Error 2
+
+</code></pre><p>我们的测试失败了，因为我们还没有实现我们的方法，在我们的方法中返回一个“未实现”的错误。</p><p>让我们在announce.go中实现Announce方法，这里是一个使用nlopes的<a href=https://github.com/nlopes/slack rel="nofollow noreferrer" target=_blank>slack library</a>的例子。</p><pre><code class=language-bash>package server
+
+import (
+	&quot;os&quot;
+	&quot;google.golang.org/grpc/codes&quot;
+	&quot;google.golang.org/grpc/status&quot;
+
+	&quot;github.com/golang/protobuf/ptypes/empty&quot;
+	&quot;github.com/lileio/slack&quot;
+	sl &quot;github.com/nlopes/slack&quot;
+	context &quot;golang.org/x/net/context&quot;
+)
+
+var api = sl.New(os.Getenv(&quot;SLACK_TOKEN&quot;))
+
+func (s SlackServer) Announce(ctx context.Context, r *slack.AnnounceRequest) (*empty.Empty, error) {
+	_, _, err := api.PostMessage(r.Channel, r.Msg, sl.PostMessageParameters{})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+
+	return &amp;empty.Empty{}, nil
+}
+</code></pre><p>我们再次修改我们的测试用力，然后再次运行我们的测试:</p><pre><code class=language-go>package server
+
+import (
+	&quot;testing&quot;
+
+	&quot;github.com/lileio/slack&quot;
+	&quot;github.com/stretchr/testify/assert&quot;
+	context &quot;golang.org/x/net/context&quot;
+)
+
+func TestAnnounce(t *testing.T) {
+	ctx := context.Background()
+	req := &amp;slack.AnnounceRequest{
+		Channel: &quot;@alex&quot;,
+		Msg:     &quot;hellooo&quot;,
+	}
+
+	res, err := cli.Announce(ctx, req)
+	assert.Nil(t, err)
+	assert.NotNil(t, res)
+}
+</code></pre><p>现在如果我使用我的Slack令牌作为环境变量运行测试，我应该看到通过测试！</p><pre><code class=language-bash>$ alex@slack: SLACK_TOKEN=zbxkkausdkasugdk make test
+go test -v ./... -cover
+?       github.com/lileio/slack [no test files]
+=== RUN   TestAnnounce
+--- PASS: TestAnnounce (0.32s)
+PASS
+coverage: 75.0% of statements
+ok      github.com/lileio/slack/server  0.331s  coverage: 75.0% of statements
+?       github.com/lileio/slack/slack   [no test files]
+?       github.com/lileio/slack/slack/cmd       [no test files]
+?       github.com/lileio/slack/subscribers     [no test files]
+</code></pre><h3 id=使用生成的命令行>使用生成的命令行</h3><p>生成服务时，Lile会基于<a href=https://github.com/spf13/cobra rel="nofollow noreferrer" target=_blank>cobra</a>生成命令行程序。您可以使用自己的cmd扩展应用程序，也可以使用内置cmds来运行服务。</p><p>运行不带任何参数的cmd行应用程序将打印生成的帮助。</p><p>例如<code>go run orders/main.go</code></p><h4 id=启动>启动</h4><p>运行<code>up</code>将同时运行RPC服务器和发布订阅的订阅者。</p><h3 id=添加你自己的命令行>添加你自己的命令行</h3><p>要添加自己的cmd，您可以使用Cobra内置的生成器来生成更多的命令。</p><pre><code class=language-bash>$ cd orders
+$ cobra add import
+</code></pre><p>您现在可以编辑生成的文件，以创建您的命令行，cobra会自动将命令行的名称添加到帮助中。</p></div><div class=post-copyright><p class=copyright-item><span>Author:</span>
+<span>Soi</span></p><p class=copyright-item><span>Link:</span>
+<a href=https://ronggle.com/2019/lile-getting-and-started/>https://ronggle.com/2019/lile-getting-and-started/</span></p><p class="copyright-item lincese">本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p></div><div class=post-tags><section><i class="iconfont icon-tag"></i>Tag(s):
+<span class=tag><a href=https://ronggle.com/tags/grpc/>#gRPC</a></span>
+<span class=tag><a href=https://ronggle.com/tags/go/>#Go</a></span></section><section><a href=javascript:window.history.back();>back</a></span> ·
+<span><a href=https://ronggle.com/>home</a></span></section></div><div class=post-nav><a href=https://ronggle.com/2019/elassandra-getting-and-started/ class=prev rel=prev title=Elassandra简单介绍><i class="iconfont icon-left"></i>&nbsp;Elassandra简单介绍</a></div><div class=post-comment><link rel=stylesheet href=/css/gitalk.min.css><script src=/js/gitalk.min.min.js></script><div id=gitalk-container></div><script>var gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:"ycrxun",id:location.pathname,distractionFreeMode:false});gitalk.render('gitalk-container');</script></div></article></div></main><footer class=footer><div class=copyright>&copy;
+<span itemprop=copyrightYear>2015 - 2019</span>
+<span class=with-love><i class="iconfont icon-love"></i></span><span class=author itemprop=copyrightHolder><a href=https://ronggle.com/>Soi</a> |</span>
+<a href=http://www.beian.miit.gov.cn/ target=_blank rel="external nofollow">黔ICP备15015267号</a> |
+<span>Powered by <a href=https://gohugo.io/ target=_blank rel="external nofollow">Hugo</a> & <a href=https://github.com/liuzc/leaveit target=_blank rel="external nofollow">LeaveIt</a></span></div></footer><script src=/js/vendor_no_gallery.min.js async></script><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?VNkd8ZiQJH29dqsu";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script></div></body></html>
