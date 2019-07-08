@@ -32,13 +32,9 @@ $(document).on('copy', function () {
 });
 
 function initTips() {
-    //页面解析到当前为止所有的script标签
-    var js = document.scripts;
-    //js[js.length - 1] 就是当前的js文件的路径
-    var basePath = js[js.length - 1].src.substring(0, js[js.length - 1].src.lastIndexOf("/") + 1);
     $.ajax({
         cache: true,
-        url: `${basePath}/message.json`,
+        url: `${message_Path}/message.json`,
         dataType: "json",
         success: function (result) {
             $.each(result.mouseover, function (index, tips) {
