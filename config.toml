@@ -65,6 +65,7 @@ preserveTaxonomyNames = true
 [params.live2d]
     show = true
     messagejs = "/live2d/message.js"
+    messagePath = "/live2d/"
     model = "/live2d/model/tia/model.json"
 
 [params.social]
