@@ -61,6 +61,11 @@ preserveTaxonomyNames = true
     owner = "ycrxun"
     admin = "ycrxun"
     distractionFreeMode = false
+  
+[params.live2d]
+    show = true
+    messagejs = "/live2d/message.js"
+    model = "/live2d/model/tia/model.json"
 
 [params.social]
     GitHub = "ycrxun"
