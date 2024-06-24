@@ -1,1 +1,534 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>KV存储 on 凉都小道</title><link>https://ronggle.com/tags/kv%E5%AD%98%E5%82%A8/</link><description>Recent content in KV存储 on 凉都小道</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Mon, 15 Jan 2018 21:42:19 +0800</lastBuildDate><atom:link href="https://ronggle.com/tags/kv%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml"/><item><title>consul学习二-集群</title><link>https://ronggle.com/2018/consul-cluster/</link><pubDate>Mon, 15 Jan 2018 21:42:19 +0800</pubDate><guid>https://ronggle.com/2018/consul-cluster/</guid><description>&lt;p&gt;在前面我们已经介绍了&lt;a href=&#34;https://ronggle.com/2018/01/07/consul-first-time/&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;什么是Consul&lt;/a&gt;，接下来，我们将介绍下怎么搭建一个集群。&lt;/p&gt;</description></item><item><title>consul学习一-初见</title><link>https://ronggle.com/2018/consul-first-time/</link><pubDate>Sun, 07 Jan 2018 19:38:00 +0800</pubDate><guid>https://ronggle.com/2018/consul-first-time/</guid><description>&lt;p&gt;&lt;strong&gt;&lt;a href=&#34;https://www.consul.io&#34; rel=&#34;nofollow noreferrer&#34; target=&#34;_blank&#34;&gt;Consul&lt;/a&gt;&lt;/strong&gt;是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>KV存储 on 凉都小道</title><link>https://ronggle.com/tags/kv%E5%AD%98%E5%82%A8/</link><description>Recent content in KV存储 on 凉都小道</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Soi</copyright><lastBuildDate>Mon, 15 Jan 2018 21:42:19 +0800</lastBuildDate><atom:link href="https://ronggle.com/tags/kv%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml"/><item><title>consul学习二-集群</title><link>https://ronggle.com/2018/consul-cluster/</link><pubDate>Mon, 15 Jan 2018 21:42:19 +0800</pubDate><guid>https://ronggle.com/2018/consul-cluster/</guid><description>&lt;img src="https://ronggle.com/2018/consul-cluster/consul-cluster-ui.png" alt="Featured image of post consul学习二-集群" />&lt;h2 id="环境准备">环境准备
+&lt;/h2>&lt;table>
+&lt;thead>
+&lt;tr>
+&lt;th>节点名称&lt;/th>
+&lt;th>ip&lt;/th>
+&lt;th>角色&lt;/th>
+&lt;/tr>
+&lt;/thead>
+&lt;tbody>
+&lt;tr>
+&lt;td>ams1&lt;/td>
+&lt;td>192.168.42.33&lt;/td>
+&lt;td>leader&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>ams2&lt;/td>
+&lt;td>192.168.42.198&lt;/td>
+&lt;td>server&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>ams3&lt;/td>
+&lt;td>192.168.42.85&lt;/td>
+&lt;td>server&lt;/td>
+&lt;/tr>
+&lt;tr>
+&lt;td>ams4&lt;/td>
+&lt;td>192.168.42.252&lt;/td>
+&lt;td>client&lt;/td>
+&lt;/tr>
+&lt;/tbody>
+&lt;/table>
+&lt;h2 id="安装并配置">安装并配置
+&lt;/h2>&lt;h3 id="安装">安装
+&lt;/h3>&lt;p>分别在4个节点安装&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;span class="lnt">5
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">$ wget https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">$ unzip onsul_1.0.2_linux_amd64.zip -d /usr/bin
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">$ consul version
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Consul v1.0.2
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Protocol &lt;span class="m">2&lt;/span> spoken by default, understands &lt;span class="m">2&lt;/span> to &lt;span class="m">3&lt;/span> &lt;span class="o">(&lt;/span>agent will automatically use protocol &amp;gt;2 when speaking to compatible agents&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>Consul安装之后，运行Agent。
+Agent可以在server或client模式下运行。每个数据中心都必须至少有一个运行于serve，但推荐使用3台或5台服务器。
+&lt;img src="https://ronggle.com/consul-cluster/consul-cluster.svg"
+loading="lazy"
+alt="consul cluster"
+>&lt;/p>
+&lt;h3 id="启动leader">启动leader
+&lt;/h3>&lt;h4 id="创建配置文件">创建配置文件
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># cat /etc/consul.d/server.json&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;datacenter&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;ams&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;data_dir&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;/data/consul&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;node_name&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;consul-leader&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;server&amp;#34;&lt;/span>: true,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;ui&amp;#34;&lt;/span>: true,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;bootstrap_expect&amp;#34;&lt;/span>: 1,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;client_addr&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;0.0.0.0&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;advertise_addr&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;192.168.42.33&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="数据目录">数据目录
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># mkdir -p /data/consul&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># mkdir -p /data/consul/log &lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="启动">启动
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">nohup consul agent -config-dir /etc/consul.d &amp;gt; /data/consul/log/server.log 2&amp;gt;&lt;span class="p">&amp;amp;&lt;/span>&lt;span class="m">1&lt;/span> &lt;span class="p">&amp;amp;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="启动server1">启动server1
+&lt;/h3>&lt;h4 id="创建配置文件-1">创建配置文件
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># cat /etc/consul.d/server.json&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;datacenter&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;ams&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;data_dir&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;/data/consul&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;node_name&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;consul-server1&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;server&amp;#34;&lt;/span>: true,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;ui&amp;#34;&lt;/span>: true,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;client_addr&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;0.0.0.0&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;advertise_addr&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;192.168.42.198&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;retry_join&amp;#34;&lt;/span>: &lt;span class="o">[&lt;/span>&lt;span class="s2">&amp;#34;192.168.42.33&amp;#34;&lt;/span>&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="数据目录-1">数据目录
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># mkdir -p /data/consul&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># mkdir -p /data/consul/log &lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="启动-1">启动
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">nohup consul agent -config-dir /etc/consul.d &amp;gt; /data/consul/log/server.log 2&amp;gt;&lt;span class="p">&amp;amp;&lt;/span>&lt;span class="m">1&lt;/span> &lt;span class="p">&amp;amp;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="启动server2">启动server2
+&lt;/h3>&lt;h4 id="创建配置文件-2">创建配置文件
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># cat /etc/consul.d/server.json&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;datacenter&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;ams&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;data_dir&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;/data/consul&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;node_name&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;consul-server2&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;server&amp;#34;&lt;/span>: true,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;ui&amp;#34;&lt;/span>: true,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;client_addr&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;0.0.0.0&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;advertise_addr&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;192.168.42.85&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;retry_join&amp;#34;&lt;/span>: &lt;span class="o">[&lt;/span>&lt;span class="s2">&amp;#34;192.168.42.33&amp;#34;&lt;/span>&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="数据目录-2">数据目录
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># mkdir -p /data/consul&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># mkdir -p /data/consul/log &lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="启动-2">启动
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">nohup consul agent -config-dir /etc/consul.d &amp;gt; /data/consul/log/server.log 2&amp;gt;&lt;span class="p">&amp;amp;&lt;/span>&lt;span class="m">1&lt;/span> &lt;span class="p">&amp;amp;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="启动client">启动client
+&lt;/h3>&lt;h4 id="创建配置文件-3">创建配置文件
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># cat /etc/consul.d/server.json&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;datacenter&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;ams&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;data_dir&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;/data/consul&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;node_name&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;consul-client&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;server&amp;#34;&lt;/span>: true,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;client_addr&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;0.0.0.0&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;advertise_addr&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;192.168.42.252&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;retry_join&amp;#34;&lt;/span>: &lt;span class="o">[&lt;/span>&lt;span class="s2">&amp;#34;192.168.42.33&amp;#34;&lt;/span>&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="数据目录-3">数据目录
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># mkdir -p /data/consul&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="c1"># mkdir -p /data/consul/log &lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h4 id="启动-3">启动
+&lt;/h4>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">nohup consul agent -config-dir /etc/consul.d &amp;gt; /data/consul/log/server.log 2&amp;gt;&lt;span class="p">&amp;amp;&lt;/span>&lt;span class="m">1&lt;/span> &lt;span class="p">&amp;amp;&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="验证安装">验证安装
+&lt;/h2>&lt;p>在浏览器中打开&lt;a class="link" href="http://192.168.42.33:8500" target="_blank" rel="noopener"
+>http://192.168.42.33:8500&lt;/a>&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2018/consul-cluster/consul-cluster-ui.png"
+width="1831"
+height="1030"
+srcset="https://ronggle.com/2018/consul-cluster/consul-cluster-ui_hu839dc4e3ff387a820fa0d8e23d0db694_38705_480x0_resize_box_3.png 480w, https://ronggle.com/2018/consul-cluster/consul-cluster-ui_hu839dc4e3ff387a820fa0d8e23d0db694_38705_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="consul cluster ui"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p></description></item><item><title>consul学习一-初见</title><link>https://ronggle.com/2018/consul-first-time/</link><pubDate>Sun, 07 Jan 2018 19:38:00 +0800</pubDate><guid>https://ronggle.com/2018/consul-first-time/</guid><description>&lt;img src="https://ronggle.com/2018/consul-first-time/consul-ui.png" alt="Featured image of post consul学习一-初见" />&lt;h2 id="什么是consul">什么是Consul
+&lt;/h2>&lt;p>&lt;strong>&lt;a class="link" href="https://www.consul.io" target="_blank" rel="noopener"
+>Consul&lt;/a>&lt;/strong> 是HashiCorp公司推出的一款开源工具，用于实现分布式系统的服务发现与配置。它提供了几个关键功能：&lt;/p>
+&lt;ul>
+&lt;li>服务发现：Consul的客户端可以为一些客户端发现给定服务的提供者，诸如api或mysql之类的服务，通过使用DNS或HTTP，应用程序可以很容易地找到它们所依赖的服务。&lt;/li>
+&lt;li>健康检查：Consul的客户端可以提供任何数量的健康检查，或者与给定的服务（“是Web服务器返回200 OK”），或与本地节点（“内存利用率低于90％”）相关联。操作员可以使用此信息来监视群集运行状况，服务发现组件使用此信息将流量从不健康的主机中引导出去。&lt;/li>
+&lt;li>KV存储：应用程序可以使用Consul的分层键/值存储，用于任何目的，包括动态配置，功能标记，协调，领导选举等等。简单的HTTP API使其易于使用。&lt;/li>
+&lt;li>多数据中心：Consul支持多个数据中心。这意味着Consul的用户不必担心构建额外的抽象层以扩展到多个区域。&lt;/li>
+&lt;/ul>
+&lt;h2 id="基本架构">基本架构
+&lt;/h2>&lt;p>Consul是一个分布式，高度可用的系统。
+&lt;img src="https://ronggle.com/2018/consul-first-time/img.png"
+width="1241"
+height="625"
+srcset="https://ronggle.com/2018/consul-first-time/img_huc3ba6ac637e50c85c60dd21110598a8b_125171_480x0_resize_box_3.png 480w, https://ronggle.com/2018/consul-first-time/img_huc3ba6ac637e50c85c60dd21110598a8b_125171_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="img.png"
+class="gallery-image"
+data-flex-grow="198"
+data-flex-basis="476px"
+>&lt;/p>
+&lt;p>向Consul提供服务的每个节点都运行一个Consul代理。 发现其他服务或获取/设置键/值数据不需要运行代理。 代理负责健康检查节点上的服务以及节点本身。&lt;/p>
+&lt;p>代理与一个或多个Consul服务器通讯。 Consul服务器是数据存储和复制的地方。 服务器自己选出一位领导。 虽然Consul可以在一台服务器上运行，但推荐使用3到5来避免导致数据丢失的故障情况。 每个数据中心都建议使用一组Consul服务器。&lt;/p>
+&lt;p>需要发现其他服务或节点的基础架构组件可以查询任何Consul服务器或任何Consul代理。 代理自动将查询转发到服务器。&lt;/p>
+&lt;p>每个数据中心都运行Consul服务器集群。 当发生跨数据中心服务发现或配置请求时，本地Consul服务器将请求转发给远程数据中心并返回结果。&lt;/p>
+&lt;h2 id="简单使用">简单使用
+&lt;/h2>&lt;p>consul的使用非常简单，其采用Go语言编写，编译出的文件无其他依赖。因此只需要从官方下载对应平台的编译好的二进制可执行程序直接运行就可以了，下载地址&lt;a class="link" href="https://www.consul.io/downloads.html" target="_blank" rel="noopener"
+>https://www.consul.io/downloads.html&lt;/a>&lt;/p>
+&lt;h3 id="安装">安装
+&lt;/h3>&lt;p>我使用的Linux系统，所以安装如下：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">curl -O https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> sudo unzip consul_1.0.2_linux_amd64.zip -d /usr/local/bin/
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">$ consul
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Usage: consul &lt;span class="o">[&lt;/span>--version&lt;span class="o">]&lt;/span> &lt;span class="o">[&lt;/span>--help&lt;span class="o">]&lt;/span> &amp;lt;command&amp;gt; &lt;span class="o">[&lt;/span>&amp;lt;args&amp;gt;&lt;span class="o">]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Available commands are:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> agent Runs a Consul agent
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> catalog Interact with the catalog
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> event Fire a new event
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="nb">exec&lt;/span> Executes a &lt;span class="nb">command&lt;/span> on Consul nodes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> force-leave Forces a member of the cluster to enter the &lt;span class="s2">&amp;#34;left&amp;#34;&lt;/span> state
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> info Provides debugging information &lt;span class="k">for&lt;/span> operators.
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> join Tell Consul agent to join cluster
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> keygen Generates a new encryption key
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> keyring Manages gossip layer encryption keys
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> kv Interact with the key-value store
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> leave Gracefully leaves the Consul cluster and shuts down
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> lock Execute a &lt;span class="nb">command&lt;/span> holding a lock
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> maint Controls node or service maintenance mode
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> members Lists the members of a Consul cluster
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> monitor Stream logs from a Consul agent
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> operator Provides cluster-level tools &lt;span class="k">for&lt;/span> Consul operators
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> reload Triggers the agent to reload configuration files
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> rtt Estimates network round trip &lt;span class="nb">time&lt;/span> between nodes
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> snapshot Saves, restores and inspects snapshots of Consul server state
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> validate Validate config files/directories
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> version Prints the Consul version
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> watch Watch &lt;span class="k">for&lt;/span> changes in Consul
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="启动">启动
+&lt;/h3>&lt;p>为了简单起见，我们将暂时在开发者模式中启动Consul代理。这个模式可以非常容易快速地启动一个单节点的Consul环境。当然它并不是用于生产环境下并且它也不会持久任何状态。&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;span class="lnt">26
+&lt;/span>&lt;span class="lnt">27
+&lt;/span>&lt;span class="lnt">28
+&lt;/span>&lt;span class="lnt">29
+&lt;/span>&lt;span class="lnt">30
+&lt;/span>&lt;span class="lnt">31
+&lt;/span>&lt;span class="lnt">32
+&lt;/span>&lt;span class="lnt">33
+&lt;/span>&lt;span class="lnt">34
+&lt;/span>&lt;span class="lnt">35
+&lt;/span>&lt;span class="lnt">36
+&lt;/span>&lt;span class="lnt">37
+&lt;/span>&lt;span class="lnt">38
+&lt;/span>&lt;span class="lnt">39
+&lt;/span>&lt;span class="lnt">40
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">$ consul agent -dev
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">==&lt;/span>&amp;gt; Starting Consul agent...
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">==&lt;/span>&amp;gt; Consul agent running!
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Version: &lt;span class="s1">&amp;#39;v1.0.2&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Node ID: &lt;span class="s1">&amp;#39;14f11e8d-4904-3fcd-1cd5-251c311cf775&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Node name: &lt;span class="s1">&amp;#39;master.soi.io&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Datacenter: &lt;span class="s1">&amp;#39;dc1&amp;#39;&lt;/span> &lt;span class="o">(&lt;/span>Segment: &lt;span class="s1">&amp;#39;&amp;lt;all&amp;gt;&amp;#39;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Server: &lt;span class="nb">true&lt;/span> &lt;span class="o">(&lt;/span>Bootstrap: &lt;span class="nb">false&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Client Addr: &lt;span class="o">[&lt;/span>127.0.0.1&lt;span class="o">]&lt;/span> &lt;span class="o">(&lt;/span>HTTP: 8500, HTTPS: -1, DNS: 8600&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Cluster Addr: 127.0.0.1 &lt;span class="o">(&lt;/span>LAN: 8301, WAN: 8302&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Encrypt: Gossip: false, TLS-Outgoing: false, TLS-Incoming: &lt;span class="nb">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">==&lt;/span>&amp;gt; Log data will now stream in as it occurs:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>DEBUG&lt;span class="o">]&lt;/span> Using random ID &lt;span class="s2">&amp;#34;14f11e8d-4904-3fcd-1cd5-251c311cf775&amp;#34;&lt;/span> as node ID
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> raft: Initial configuration &lt;span class="o">(&lt;/span>&lt;span class="nv">index&lt;/span>&lt;span class="o">=&lt;/span>1&lt;span class="o">)&lt;/span>: &lt;span class="o">[{&lt;/span>Suffrage:Voter ID:14f11e8d-4904-3fcd-1cd5-251c311cf775 Address:127.0.0.1:8300&lt;span class="o">}]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> raft: Node at 127.0.0.1:8300 &lt;span class="o">[&lt;/span>Follower&lt;span class="o">]&lt;/span> entering Follower state &lt;span class="o">(&lt;/span>Leader: &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> serf: EventMemberJoin: master.soi.io.dc1 127.0.0.1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> serf: EventMemberJoin: master.soi.io 127.0.0.1
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> consul: Adding LAN server master.soi.io &lt;span class="o">(&lt;/span>Addr: tcp/127.0.0.1:8300&lt;span class="o">)&lt;/span> &lt;span class="o">(&lt;/span>DC: dc1&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> consul: Handled member-join event &lt;span class="k">for&lt;/span> server &lt;span class="s2">&amp;#34;master.soi.io.dc1&amp;#34;&lt;/span> in area &lt;span class="s2">&amp;#34;wan&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> agent: Started DNS server 127.0.0.1:8600 &lt;span class="o">(&lt;/span>udp&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> agent: Started DNS server 127.0.0.1:8600 &lt;span class="o">(&lt;/span>tcp&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> agent: Started HTTP server on 127.0.0.1:8500 &lt;span class="o">(&lt;/span>tcp&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> agent: started state syncer
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>WARN&lt;span class="o">]&lt;/span> raft: Heartbeat timeout from &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span> reached, starting election
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> raft: Node at 127.0.0.1:8300 &lt;span class="o">[&lt;/span>Candidate&lt;span class="o">]&lt;/span> entering Candidate state in term &lt;span class="m">2&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>DEBUG&lt;span class="o">]&lt;/span> raft: Votes needed: &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>DEBUG&lt;span class="o">]&lt;/span> raft: Vote granted from 14f11e8d-4904-3fcd-1cd5-251c311cf775 in term 2. Tally: &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> raft: Election won. Tally: &lt;span class="m">1&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> raft: Node at 127.0.0.1:8300 &lt;span class="o">[&lt;/span>Leader&lt;span class="o">]&lt;/span> entering Leader state
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> consul: cluster leadership acquired
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> consul: New leader elected: master.soi.io
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>DEBUG&lt;span class="o">]&lt;/span> consul: Skipping self join check &lt;span class="k">for&lt;/span> &lt;span class="s2">&amp;#34;master.soi.io&amp;#34;&lt;/span> since the cluster is too small
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> consul: member &lt;span class="s1">&amp;#39;master.soi.io&amp;#39;&lt;/span> joined, marking health alive
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>DEBUG&lt;span class="o">]&lt;/span> Skipping remote check &lt;span class="s2">&amp;#34;serfHealth&amp;#34;&lt;/span> since it is managed automatically
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> agent: Synced node info
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:36 &lt;span class="o">[&lt;/span>DEBUG&lt;span class="o">]&lt;/span> agent: Node info in sync
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:37 &lt;span class="o">[&lt;/span>DEBUG&lt;span class="o">]&lt;/span> Skipping remote check &lt;span class="s2">&amp;#34;serfHealth&amp;#34;&lt;/span> since it is managed automatically
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:02:37 &lt;span class="o">[&lt;/span>DEBUG&lt;span class="o">]&lt;/span> agent: Node info in sync
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="集群成员">集群成员
+&lt;/h3>&lt;p>此时，打开另一个终端，使用&lt;code>consul members&lt;/code>命令查看：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">$ consul members
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">Node Address Status Type Build Protocol DC Segment
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">master.soi.io 127.0.0.1:8301 alive server 1.0.2 &lt;span class="m">2&lt;/span> dc1 &amp;lt;all&amp;gt;
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h3 id="使用server模式运行">使用server模式运行
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;span class="lnt">24
+&lt;/span>&lt;span class="lnt">25
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">$ consul agent -server -bootstrap -data-dir&lt;span class="o">=&lt;/span>&lt;span class="nv">$PWD&lt;/span> -advertise&lt;span class="o">=&lt;/span>192.168.31.28 -client&lt;span class="o">=&lt;/span>0.0.0.0 -ui
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="nv">bootstrap&lt;/span> &lt;span class="o">=&lt;/span> true: &lt;span class="k">do&lt;/span> not &lt;span class="nb">enable&lt;/span> unless &lt;span class="nv">necessary&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">==&lt;/span>&amp;gt; Starting Consul agent...
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">==&lt;/span>&amp;gt; Consul agent running!
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Version: &lt;span class="s1">&amp;#39;v1.0.2&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Node ID: &lt;span class="s1">&amp;#39;aac96fbf-2ccb-e0a8-2e82-aa4e3ff40d82&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Node name: &lt;span class="s1">&amp;#39;master.soi.io&amp;#39;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Datacenter: &lt;span class="s1">&amp;#39;dc1&amp;#39;&lt;/span> &lt;span class="o">(&lt;/span>Segment: &lt;span class="s1">&amp;#39;&amp;lt;all&amp;gt;&amp;#39;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Server: &lt;span class="nb">true&lt;/span> &lt;span class="o">(&lt;/span>Bootstrap: &lt;span class="nb">true&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Client Addr: &lt;span class="o">[&lt;/span>0.0.0.0&lt;span class="o">]&lt;/span> &lt;span class="o">(&lt;/span>HTTP: 8500, HTTPS: -1, DNS: 8600&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Cluster Addr: 192.168.31.28 &lt;span class="o">(&lt;/span>LAN: 8301, WAN: 8302&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> Encrypt: Gossip: false, TLS-Outgoing: false, TLS-Incoming: &lt;span class="nb">false&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">==&lt;/span>&amp;gt; Log data will now stream in as it occurs:
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:09:19 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> raft: Initial configuration &lt;span class="o">(&lt;/span>&lt;span class="nv">index&lt;/span>&lt;span class="o">=&lt;/span>1&lt;span class="o">)&lt;/span>: &lt;span class="o">[{&lt;/span>Suffrage:Voter ID:aac96fbf-2ccb-e0a8-2e82-aa4e3ff40d82 Address:192.168.31.28:8300&lt;span class="o">}]&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:09:19 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> raft: Node at 192.168.31.28:8300 &lt;span class="o">[&lt;/span>Follower&lt;span class="o">]&lt;/span> entering Follower state &lt;span class="o">(&lt;/span>Leader: &lt;span class="s2">&amp;#34;&amp;#34;&lt;/span>&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:09:19 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> serf: EventMemberJoin: master.soi.io.dc1 192.168.31.28
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:09:19 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> serf: EventMemberJoin: master.soi.io 192.168.31.28
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:09:19 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> consul: Handled member-join event &lt;span class="k">for&lt;/span> server &lt;span class="s2">&amp;#34;master.soi.io.dc1&amp;#34;&lt;/span> in area &lt;span class="s2">&amp;#34;wan&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:09:19 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> consul: Adding LAN server master.soi.io &lt;span class="o">(&lt;/span>Addr: tcp/192.168.31.28:8300&lt;span class="o">)&lt;/span> &lt;span class="o">(&lt;/span>DC: dc1&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:09:19 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> agent: Started DNS server 0.0.0.0:8600 &lt;span class="o">(&lt;/span>udp&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:09:19 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> agent: Started DNS server 0.0.0.0:8600 &lt;span class="o">(&lt;/span>tcp&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:09:19 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> agent: Started HTTP server on &lt;span class="o">[&lt;/span>::&lt;span class="o">]&lt;/span>:8500 &lt;span class="o">(&lt;/span>tcp&lt;span class="o">)&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> 2018/01/12 22:09:19 &lt;span class="o">[&lt;/span>INFO&lt;span class="o">]&lt;/span> agent: started state syncer
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>在浏览器中打开&lt;a class="link" href="http://localhost:8500" target="_blank" rel="noopener"
+>http://localhost:8500&lt;/a>&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2018/consul-first-time/consul-ui.png"
+width="1818"
+height="1022"
+srcset="https://ronggle.com/2018/consul-first-time/consul-ui_hu73244f513327a036976c582a5b438755_67330_480x0_resize_box_3.png 480w, https://ronggle.com/2018/consul-first-time/consul-ui_hu73244f513327a036976c582a5b438755_67330_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="consul ui"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p></description></item></channel></rss>

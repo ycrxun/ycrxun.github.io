@@ -1,84 +1,143 @@
-<!doctype html><html lang=en-us><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta name=author content="Soi"><meta name=description content="Search Engine Oriented Programming."><meta name=keywords content="Soi,Programming,Blog,ycrxun"><link rel=prev href=https://ronggle.com/2018/consul-first-time/><link rel=next href=https://ronggle.com/2018/cloud-labs/><link rel=canonical href=https://ronggle.com/2018/consul-cluster/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><title>consul学习二-集群 | 凉都小道</title><meta name=title content="consul学习二-集群 | 凉都小道"><link rel=stylesheet href=/font/iconfont.css><link rel=stylesheet href=/css/main.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/ronggle.com\/"},"articleSection":"posts","name":"consul学习二-集群","headline":"consul学习二-集群","description":"\x3cp\x3e在前面我们已经介绍了\x3ca href=\x22https:\/\/ronggle.com\/2018\/01\/07\/consul-first-time\/\x22 rel=\x22nofollow noreferrer\x22 target=\x22_blank\x22\x3e什么是Consul\x3c\/a\x3e，接下来，我们将介绍下怎么搭建一个集群。\x3c\/p\x3e","inLanguage":"en-us","author":"Soi","creator":"Soi","publisher":"Soi","accountablePerson":"Soi","copyrightHolder":"Soi","copyrightYear":"2018","datePublished":"2018-01-15 21:42:19 \x2b0800 CST","dateModified":"2018-01-15 21:42:19 \x2b0800 CST","url":"https:\/\/ronggle.com\/2018\/consul-cluster\/","wordCount":"223","keywords":["服务注册","服务发现","KV存储","凉都小道"]}</script></head><body><div class=wrapper><nav class=navbar><div class=container><div class="navbar-header header-logo"><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class="menu navbar-right"><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><nav class=navbar-mobile id=nav-mobile style=display:none><div class=container><div class=navbar-header><div><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class=menu-toggle><span></span><span></span><span></span></div></div><div class=menu id=mobile-menu><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><main class=main><div class=container><article class=post-warp itemscope itemtype=http://schema.org/Article><header class=post-header><h1 class=post-title itemprop="name headline">consul学习二-集群</h1><div class=post-meta>Written by <a itemprop=name href=https://ronggle.com/ rel=author>Soi</a>
-with ♥
-<span class=post-time>on <time datetime=2018-01-15 itemprop=datePublished>January 15, 2018</time></span>
-in
-<i class="iconfont icon-folder"></i><span class=post-category><a href=https://ronggle.com/categories/programming/>Programming</a></span></div></header><div class=post-content><img src=/consul-first-time/consul-ui.png class=featured_image><p>在前面我们已经介绍了<a href=https://ronggle.com/2018/01/07/consul-first-time/ rel="nofollow noreferrer" target=_blank>什么是Consul</a>，接下来，我们将介绍下怎么搭建一个集群。</p><h2 id=环境准备>环境准备</h2><table><thead><tr><th>节点名称</th><th>ip</th><th>角色</th></tr></thead><tbody><tr><td>ams1</td><td>192.168.42.33</td><td>leader</td></tr><tr><td>ams2</td><td>192.168.42.198</td><td>server</td></tr><tr><td>ams3</td><td>192.168.42.85</td><td>server</td></tr><tr><td>ams4</td><td>192.168.42.252</td><td>client</td></tr></tbody></table><h2 id=安装并配置>安装并配置</h2><h3 id=安装>安装</h3><p>分别在4个节点安装</p><pre><code class=language-shell>$ wget https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip
-$ unzip onsul_1.0.2_linux_amd64.zip -d /usr/bin
-$ consul version
-Consul v1.0.2
-Protocol 2 spoken by default, understands 2 to 3 (agent will automatically use protocol &gt;2 when speaking to compatible agents)
-</code></pre><p>Consul安装之后，运行Agent。
-Agent可以在server或client模式下运行。每个数据中心都必须至少有一个运行于serve，但推荐使用3台或5台服务器。<figure><img src=/images/ring.svg data-sizes=auto data-src=/consul-cluster/consul-cluster.svg alt="consul cluster" class=lazyload><figcaption class=image-caption>consul cluster</figcaption></figure></p><h3 id=启动leader>启动leader</h3><h4 id=创建配置文件>创建配置文件</h4><pre><code class=language-shell># cat /etc/consul.d/server.json
-{
-  &quot;datacenter&quot;: &quot;ams&quot;,
-  &quot;data_dir&quot;: &quot;/data/consul&quot;,
-  &quot;node_name&quot;: &quot;consul-leader&quot;,
-  &quot;server&quot;: true,
-  &quot;ui&quot;: true,
-  &quot;bootstrap_expect&quot;: 1,
-  &quot;client_addr&quot;: &quot;0.0.0.0&quot;,
-  &quot;advertise_addr&quot;: &quot;192.168.42.33&quot;
-}
-</code></pre><h4 id=数据目录>数据目录</h4><pre><code class=language-shell># mkdir -p /data/consul
-# mkdir -p /data/consul/log 
-</code></pre><h4 id=启动>启动</h4><pre><code class=language-shell>nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;
-</code></pre><h3 id=启动server1>启动server1</h3><h4 id=创建配置文件-1>创建配置文件</h4><pre><code class=language-shell># cat /etc/consul.d/server.json
-{
-  &quot;datacenter&quot;: &quot;ams&quot;,
-  &quot;data_dir&quot;: &quot;/data/consul&quot;,
-  &quot;node_name&quot;: &quot;consul-server1&quot;,
-  &quot;server&quot;: true,
-  &quot;ui&quot;: true,
-  &quot;client_addr&quot;: &quot;0.0.0.0&quot;,
-  &quot;advertise_addr&quot;: &quot;192.168.42.198&quot;,
-  &quot;retry_join&quot;: [&quot;192.168.42.33&quot;]
-}
-</code></pre><h4 id=数据目录-1>数据目录</h4><pre><code class=language-shell># mkdir -p /data/consul
-# mkdir -p /data/consul/log 
-</code></pre><h4 id=启动-1>启动</h4><pre><code class=language-shell>nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;
-</code></pre><h3 id=启动server2>启动server2</h3><h4 id=创建配置文件-2>创建配置文件</h4><pre><code class=language-shell># cat /etc/consul.d/server.json
-{
-  &quot;datacenter&quot;: &quot;ams&quot;,
-  &quot;data_dir&quot;: &quot;/data/consul&quot;,
-  &quot;node_name&quot;: &quot;consul-server2&quot;,
-  &quot;server&quot;: true,
-  &quot;ui&quot;: true,
-  &quot;client_addr&quot;: &quot;0.0.0.0&quot;,
-  &quot;advertise_addr&quot;: &quot;192.168.42.85&quot;,
-  &quot;retry_join&quot;: [&quot;192.168.42.33&quot;]
-}
-</code></pre><h4 id=数据目录-2>数据目录</h4><pre><code class=language-shell># mkdir -p /data/consul
-# mkdir -p /data/consul/log 
-</code></pre><h4 id=启动-2>启动</h4><pre><code class=language-shell>nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;
-</code></pre><h3 id=启动client>启动client</h3><h4 id=创建配置文件-3>创建配置文件</h4><pre><code class=language-shell># cat /etc/consul.d/server.json
-{
-  &quot;datacenter&quot;: &quot;ams&quot;,
-  &quot;data_dir&quot;: &quot;/data/consul&quot;,
-  &quot;node_name&quot;: &quot;consul-client&quot;,
-  &quot;server&quot;: true,
-  &quot;client_addr&quot;: &quot;0.0.0.0&quot;,
-  &quot;advertise_addr&quot;: &quot;192.168.42.252&quot;,
-  &quot;retry_join&quot;: [&quot;192.168.42.33&quot;]
-}
-</code></pre><h4 id=数据目录-3>数据目录</h4><pre><code class=language-shell># mkdir -p /data/consul
-# mkdir -p /data/consul/log 
-</code></pre><h4 id=启动-3>启动</h4><pre><code class=language-shell>nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;&amp;1 &amp;
-</code></pre><h2 id=验证安装>验证安装</h2><p>在浏览器中打开<a href=http://192.168.42.33:8500 rel="nofollow noreferrer" target=_blank>http://192.168.42.33:8500</a></p><p><figure><img src=/images/ring.svg data-sizes=auto data-src=/consul-cluster/consul-cluster-ui.png alt="consul cluster ui" class=lazyload><figcaption class=image-caption>consul cluster ui</figcaption></figure></p></div><div class=post-copyright><p class=copyright-item><span>Author:</span>
-<span>Soi</span></p><p class=copyright-item><span>Link:</span>
-<a href=https://ronggle.com/2018/consul-cluster/>https://ronggle.com/2018/consul-cluster/</span></p><p class="copyright-item lincese">本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p></div><div class=post-tags><section><i class="iconfont icon-tag"></i>Tag(s):
-<span class=tag><a href=https://ronggle.com/tags/%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C/>#服务注册</a></span>
-<span class=tag><a href=https://ronggle.com/tags/%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/>#服务发现</a></span>
-<span class=tag><a href=https://ronggle.com/tags/kv%E5%AD%98%E5%82%A8/>#KV存储</a></span></section><section><a href=javascript:window.history.back();>back</a></span> ·
-<span><a href=https://ronggle.com/>home</a></span></section></div><div class=post-nav><a href=https://ronggle.com/2018/consul-first-time/ class=prev rel=prev title=consul学习一-初见><i class="iconfont icon-left"></i>&nbsp;consul学习一-初见</a>
-<a href=https://ronggle.com/2018/cloud-labs/ class=next rel=next title=使用Docker打造自己的云平台>使用Docker打造自己的云平台&nbsp;<i class="iconfont icon-right"></i></a></div><div class=post-comment><link rel=stylesheet href=/css/gitalk.min.css><script src=/js/gitalk.min.min.js></script><div id=gitalk-container></div><script>var gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:"ycrxun",id:location.pathname,distractionFreeMode:false});gitalk.render('gitalk-container');</script></div></article></div></main><footer class=footer><div class=copyright>&copy;
-<span itemprop=copyrightYear>2015 - 2019</span>
-<span class=with-love><i class="iconfont icon-love"></i></span><span class=author itemprop=copyrightHolder><a href=https://ronggle.com/>Soi</a> |</span>
-<a href=http://www.beian.miit.gov.cn/ target=_blank rel="external nofollow">黔ICP备15015267号</a> |
-<span>Powered by <a href=https://gohugo.io/ target=_blank rel="external nofollow">Hugo</a> & <a href=https://github.com/liuzc/leaveit target=_blank rel="external nofollow">LeaveIt</a></span></div></footer><link href=//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css rel=stylesheet><script src=/js/vendor_gallery.min.js async></script><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?VNkd8ZiQJH29dqsu";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script><div id=landlord style=left:30px><div class=message style=opacity:0></div><canvas id=live2d width=280 height=250 class=live2d></canvas><div class=hide-button>隐藏</div></div><link rel=stylesheet href=/css/live2d.min.css><script src=/js/live2d.min.js></script><script src=/live2d/message.js defer></script><script type=text/javascript defer>var message_Path="\/live2d\/";var home_Path="https:\/\/ronggle.com\/"
-loadlive2d("live2d","\/live2d\/model\/tia\/model.json");</script></div></body></html>
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="在前面我们已经介绍了什么是Consul，接下来，我们将介绍下怎么搭建一个集群。"><title>consul学习二-集群</title>
+<link rel=canonical href=https://ronggle.com/2018/consul-cluster/><link rel=stylesheet href=/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css><meta property='og:title' content="consul学习二-集群"><meta property='og:description' content="在前面我们已经介绍了什么是Consul，接下来，我们将介绍下怎么搭建一个集群。"><meta property='og:url' content='https://ronggle.com/2018/consul-cluster/'><meta property='og:site_name' content='凉都小道'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='服务注册'><meta property='article:tag' content='服务发现'><meta property='article:tag' content='KV存储'><meta property='article:published_time' content='2018-01-15T21:42:19+08:00'><meta property='article:modified_time' content='2018-01-15T21:42:19+08:00'><meta property='og:image' content='https://ronggle.com/2018/consul-cluster/consul-cluster-ui.png'><meta name=twitter:title content="consul学习二-集群"><meta name=twitter:description content="在前面我们已经介绍了什么是Consul，接下来，我们将介绍下怎么搭建一个集群。"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://ronggle.com/2018/consul-cluster/consul-cluster-ui.png'><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu1aa4dd0456be0d06f4d83ce8e29586b6_40169_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🍥</span></figure><div class=site-meta><h1 class=site-name><a href=/>凉都小道</a></h1><h2 class=site-description>道生一，一生二，二生三，三生万物</h2></div></header><ol class=menu-social><li><a href=https://github.com/ycrxun target=_blank title=GitHub rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com/ChangrongYang target=_blank title=Twitter rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li><a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/about/><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-message-user"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 18l-5 3v-3H6a3 3 0 01-3-3V7a3 3 0 013-3h12a3 3 0 013 3v4.5"/><path d="M19 17m-2 0a2 2 0 104 0 2 2 0 10-4 0"/><path d="M22 22a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+<span>关于我</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#环境准备>环境准备</a></li><li><a href=#安装并配置>安装并配置</a><ol><li><a href=#安装>安装</a></li><li><a href=#启动leader>启动leader</a><ol><li><a href=#创建配置文件>创建配置文件</a></li><li><a href=#数据目录>数据目录</a></li><li><a href=#启动>启动</a></li></ol></li><li><a href=#启动server1>启动server1</a><ol><li><a href=#创建配置文件-1>创建配置文件</a></li><li><a href=#数据目录-1>数据目录</a></li><li><a href=#启动-1>启动</a></li></ol></li><li><a href=#启动server2>启动server2</a><ol><li><a href=#创建配置文件-2>创建配置文件</a></li><li><a href=#数据目录-2>数据目录</a></li><li><a href=#启动-2>启动</a></li></ol></li><li><a href=#启动client>启动client</a><ol><li><a href=#创建配置文件-3>创建配置文件</a></li><li><a href=#数据目录-3>数据目录</a></li><li><a href=#启动-3>启动</a></li></ol></li></ol></li><li><a href=#验证安装>验证安装</a></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/2018/consul-cluster/><img src=/2018/consul-cluster/consul-cluster-ui_hu839dc4e3ff387a820fa0d8e23d0db694_38705_800x0_resize_box_3.png srcset="/2018/consul-cluster/consul-cluster-ui_hu839dc4e3ff387a820fa0d8e23d0db694_38705_800x0_resize_box_3.png 800w, /2018/consul-cluster/consul-cluster-ui_hu839dc4e3ff387a820fa0d8e23d0db694_38705_1600x0_resize_box_3.png 1600w" width=800 height=450 loading=lazy alt="Featured image of post consul学习二-集群"></a></div><div class=article-details><header class=article-category><a href=/categories/programming/>Programming</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/2018/consul-cluster/>consul学习二-集群</a></h2><h3 class=article-subtitle>在前面我们已经介绍了什么是Consul，接下来，我们将介绍下怎么搭建一个集群。</h3></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jan 15, 2018</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 2 分钟</time></div></footer></div></header><section class=article-content><h2 id=环境准备>环境准备</h2><div class=table-wrapper><table><thead><tr><th>节点名称</th><th>ip</th><th>角色</th></tr></thead><tbody><tr><td>ams1</td><td>192.168.42.33</td><td>leader</td></tr><tr><td>ams2</td><td>192.168.42.198</td><td>server</td></tr><tr><td>ams3</td><td>192.168.42.85</td><td>server</td></tr><tr><td>ams4</td><td>192.168.42.252</td><td>client</td></tr></tbody></table></div><h2 id=安装并配置>安装并配置</h2><h3 id=安装>安装</h3><p>分别在4个节点安装</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>$ wget https://releases.hashicorp.com/consul/1.0.2/consul_1.0.2_linux_amd64.zip
+</span></span><span class=line><span class=cl>$ unzip onsul_1.0.2_linux_amd64.zip -d /usr/bin
+</span></span><span class=line><span class=cl>$ consul version
+</span></span><span class=line><span class=cl>Consul v1.0.2
+</span></span><span class=line><span class=cl>Protocol <span class=m>2</span> spoken by default, understands <span class=m>2</span> to <span class=m>3</span> <span class=o>(</span>agent will automatically use protocol &gt;2 when speaking to compatible agents<span class=o>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>Consul安装之后，运行Agent。
+Agent可以在server或client模式下运行。每个数据中心都必须至少有一个运行于serve，但推荐使用3台或5台服务器。
+<img src=/consul-cluster/consul-cluster.svg loading=lazy alt="consul cluster"></p><h3 id=启动leader>启动leader</h3><h4 id=创建配置文件>创建配置文件</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># cat /etc/consul.d/server.json</span>
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;datacenter&#34;</span>: <span class=s2>&#34;ams&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;data_dir&#34;</span>: <span class=s2>&#34;/data/consul&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;node_name&#34;</span>: <span class=s2>&#34;consul-leader&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;server&#34;</span>: true,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;ui&#34;</span>: true,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;bootstrap_expect&#34;</span>: 1,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;client_addr&#34;</span>: <span class=s2>&#34;0.0.0.0&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;advertise_addr&#34;</span>: <span class=s2>&#34;192.168.42.33&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=数据目录>数据目录</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># mkdir -p /data/consul</span>
+</span></span><span class=line><span class=cl><span class=c1># mkdir -p /data/consul/log </span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=启动>启动</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;<span class=p>&amp;</span><span class=m>1</span> <span class=p>&amp;</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=启动server1>启动server1</h3><h4 id=创建配置文件-1>创建配置文件</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># cat /etc/consul.d/server.json</span>
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;datacenter&#34;</span>: <span class=s2>&#34;ams&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;data_dir&#34;</span>: <span class=s2>&#34;/data/consul&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;node_name&#34;</span>: <span class=s2>&#34;consul-server1&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;server&#34;</span>: true,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;ui&#34;</span>: true,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;client_addr&#34;</span>: <span class=s2>&#34;0.0.0.0&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;advertise_addr&#34;</span>: <span class=s2>&#34;192.168.42.198&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;retry_join&#34;</span>: <span class=o>[</span><span class=s2>&#34;192.168.42.33&#34;</span><span class=o>]</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=数据目录-1>数据目录</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># mkdir -p /data/consul</span>
+</span></span><span class=line><span class=cl><span class=c1># mkdir -p /data/consul/log </span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=启动-1>启动</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;<span class=p>&amp;</span><span class=m>1</span> <span class=p>&amp;</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=启动server2>启动server2</h3><h4 id=创建配置文件-2>创建配置文件</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># cat /etc/consul.d/server.json</span>
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;datacenter&#34;</span>: <span class=s2>&#34;ams&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;data_dir&#34;</span>: <span class=s2>&#34;/data/consul&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;node_name&#34;</span>: <span class=s2>&#34;consul-server2&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;server&#34;</span>: true,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;ui&#34;</span>: true,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;client_addr&#34;</span>: <span class=s2>&#34;0.0.0.0&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;advertise_addr&#34;</span>: <span class=s2>&#34;192.168.42.85&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;retry_join&#34;</span>: <span class=o>[</span><span class=s2>&#34;192.168.42.33&#34;</span><span class=o>]</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=数据目录-2>数据目录</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># mkdir -p /data/consul</span>
+</span></span><span class=line><span class=cl><span class=c1># mkdir -p /data/consul/log </span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=启动-2>启动</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;<span class=p>&amp;</span><span class=m>1</span> <span class=p>&amp;</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=启动client>启动client</h3><h4 id=创建配置文件-3>创建配置文件</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># cat /etc/consul.d/server.json</span>
+</span></span><span class=line><span class=cl><span class=o>{</span>
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;datacenter&#34;</span>: <span class=s2>&#34;ams&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;data_dir&#34;</span>: <span class=s2>&#34;/data/consul&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;node_name&#34;</span>: <span class=s2>&#34;consul-client&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;server&#34;</span>: true,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;client_addr&#34;</span>: <span class=s2>&#34;0.0.0.0&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;advertise_addr&#34;</span>: <span class=s2>&#34;192.168.42.252&#34;</span>,
+</span></span><span class=line><span class=cl>  <span class=s2>&#34;retry_join&#34;</span>: <span class=o>[</span><span class=s2>&#34;192.168.42.33&#34;</span><span class=o>]</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=数据目录-3>数据目录</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl><span class=c1># mkdir -p /data/consul</span>
+</span></span><span class=line><span class=cl><span class=c1># mkdir -p /data/consul/log </span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=启动-3>启动</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>nohup consul agent -config-dir /etc/consul.d &gt; /data/consul/log/server.log 2&gt;<span class=p>&amp;</span><span class=m>1</span> <span class=p>&amp;</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=验证安装>验证安装</h2><p>在浏览器中打开<a class=link href=http://192.168.42.33:8500 target=_blank rel=noopener>http://192.168.42.33:8500</a></p><p><img src=/2018/consul-cluster/consul-cluster-ui.png width=1831 height=1030 srcset="/2018/consul-cluster/consul-cluster-ui_hu839dc4e3ff387a820fa0d8e23d0db694_38705_480x0_resize_box_3.png 480w, /2018/consul-cluster/consul-cluster-ui_hu839dc4e3ff387a820fa0d8e23d0db694_38705_1024x0_resize_box_3.png 1024w" loading=lazy alt="consul cluster ui" class=gallery-image data-flex-grow=177 data-flex-basis=426px></p></section><footer class=article-footer><section class=article-tags><a href=/tags/%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C/>服务注册</a>
+<a href=/tags/%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0/>服务发现</a>
+<a href=/tags/kv%E5%AD%98%E5%82%A8/>KV存储</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article class=has-image><a href=/2018/consul-first-time/><div class=article-image><img src=/2018/consul-first-time/consul-ui.ef87282f32e3c0ed1bccb979a67a747d_hu73244f513327a036976c582a5b438755_67330_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post consul学习一-初见" data-key=consul-first-time data-hash="md5-74coLzLjwO0bzLl5pnp0fQ=="></div><div class=article-details><h2 class=article-title>consul学习一-初见</h2></div></a></article><article class=has-image><a href=/2018/registry-microservies-via-grpc/><div class=article-image><img src=/2018/registry-microservies-via-grpc/consul.4be1f2f3cdc550398d09fc0127aa233a_hu3856c57a2da839c1c05d9a86cb7503bb_22688_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post 使用gRPC开发微服务-服务注册与发现" data-key=registry-microservies-via-grpc data-hash="md5-S+Hy883FUDmNCfwBJ6ojOg=="></div><div class=article-details><h2 class=article-title>使用gRPC开发微服务-服务注册与发现</h2></div></a></article><article class=has-image><a href=/2018/traefik-on-kubernetes/><div class=article-image><img src=/2018/traefik-on-kubernetes/traefik.svg loading=lazy data-key=traefik-on-kubernetes data-hash=/2018/traefik-on-kubernetes/traefik.svg></div><div class=article-details><h2 class=article-title>Traefik on Kubernetes</h2></div></a></article><article class=has-image><a href=/2018/traefik-https/><div class=article-image><img src=/2018/traefik-https/traefik.svg loading=lazy data-key=traefik-https data-hash=/2018/traefik-https/traefik.svg></div><div class=article-details><h2 class=article-title>开启Traefik的https</h2></div></a></article><article class=has-image><a href=/2019/hyperledger-fabric-on-swarm/><div class=article-image><img src=/2019/hyperledger-fabric-on-swarm/hyperledger-fabric-on-swarm.svg loading=lazy data-key=hyperledger-fabric-on-swarm data-hash=/2019/hyperledger-fabric-on-swarm/hyperledger-fabric-on-swarm.svg></div><div class=article-details><h2 class=article-title>使用Docker Swarm部署Hyperledger Fabric</h2></div></a></article></div></div></aside><div id=gitalk-container></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css><script src=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js></script><script src=https://cdn.jsdelivr.net/npm/blueimp-md5@2.18.0/js/md5.min.js></script><script>const gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:["ycrxun"],distractionFreeMode:!1,id:md5(location.pathname)});(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("gitalk-container").innerHTML="Gitalk comments not available by default when the website is previewed locally.";return}gitalk.render("gitalk-container")})()</script><footer class=site-footer><section class=copyright>&copy;
+2015 -
+2024 Soi</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.26.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

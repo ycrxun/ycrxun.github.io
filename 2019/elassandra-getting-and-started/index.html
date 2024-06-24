@@ -1,363 +1,699 @@
-<!doctype html><html lang=en-us><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta name=author content="Soi"><meta name=description content="Search Engine Oriented Programming."><meta name=keywords content="Soi,Programming,Blog,ycrxun"><link rel=prev href=https://ronggle.com/2019/graph-db-getting-and-started/><link rel=next href=https://ronggle.com/2019/lile-getting-and-started/><link rel=canonical href=https://ronggle.com/2019/elassandra-getting-and-started/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><title>Elassandra简单介绍 | 凉都小道</title><meta name=title content="Elassandra简单介绍 | 凉都小道"><link rel=stylesheet href=/font/iconfont.css><link rel=stylesheet href=/css/main.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/ronggle.com\/"},"articleSection":"posts","name":"Elassandra简单介绍","headline":"Elassandra简单介绍","description":"Elassandra是Elasticsearch的一个分支，经过修改，可以作为Apache Cassandra的插件运行，具有可扩展和灵活的点对点架构。","inLanguage":"en-us","author":"Soi","creator":"Soi","publisher":"Soi","accountablePerson":"Soi","copyrightHolder":"Soi","copyrightYear":"2019","datePublished":"2019-06-30 16:27:29 \x2b0800 CST","dateModified":"2019-06-30 16:27:29 \x2b0800 CST","url":"https:\/\/ronggle.com\/2019\/elassandra-getting-and-started\/","wordCount":"1065","keywords":["Database","Cassandra","Elasticsearch","凉都小道"]}</script></head><body><div class=wrapper><nav class=navbar><div class=container><div class="navbar-header header-logo"><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class="menu navbar-right"><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><nav class=navbar-mobile id=nav-mobile style=display:none><div class=container><div class=navbar-header><div><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class=menu-toggle><span></span><span></span><span></span></div></div><div class=menu id=mobile-menu><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><main class=main><div class=container><article class=post-warp itemscope itemtype=http://schema.org/Article><header class=post-header><h1 class=post-title itemprop="name headline">Elassandra简单介绍</h1><div class=post-meta>Written by <a itemprop=name href=https://ronggle.com/ rel=author>Soi</a>
-with ♥
-<span class=post-time>on <time datetime=2019-06-30 itemprop=datePublished>June 30, 2019</time></span>
-in
-<i class="iconfont icon-folder"></i><span class=post-category><a href=https://ronggle.com/categories/translation/>Translation</a></span></div></header><div class=post-content><img src=/elassandra-getting-and-started/elassandra-logo.png class=featured_image><h2 id=elassandra>Elassandra</h2><p><a href=http://www.elassandra.io/ rel="nofollow noreferrer" target=_blank>Elassandra</a>是<a href=https://github.com/elastic/elasticsearch rel="nofollow noreferrer" target=_blank>Elasticsearch</a>的一个分支，经过修改，可以作为<a href=http://cassandra.apache.org/ rel="nofollow noreferrer" target=_blank>Apache Cassandra</a>的插件运行，具有可扩展和灵活的点对点架构。 Elasticsearch代码嵌入在Cassanda节点中，在Cassandra表上提供高级搜索功能，Cassandra用作Elasticsearch数据和配置存储。</p><p><figure><img src=/images/ring.svg data-sizes=auto data-src=/elassandra-getting-and-started/elassandra-arch.jpg alt class=lazyload><figcaption class=image-caption></figcaption></figure></p><p>Elassandra支持Cassandra vnodes，并通过添加更多节点进行水平扩展。</p><p>项目文档可在<a href=https://doc.elassandra.io rel="nofollow noreferrer" target=_blank>doc.elassandra.io</a>上获得。</p><h2 id=elassandra的好处>Elassandra的好处</h2><p>对于Cassandra用户，elassandra提供Elasticsearch功能：</p><ul><li>在Elasticsearch中更新Cassandra索引。</li><li>对Cassandra数据进行全文和空间搜索。</li><li>实时聚合（不需要Spark或Hadoop来完成GROUP BY）</li><li>在一个查询中提供对多个键空间和表的搜索。</li><li>使用“用户定义的类型”提供自动模式创建和支持嵌套文档。</li><li>提供JSON REST API对Cassandra数据的读/写访问。</li><li>许多Elasticsearch插件和Kibana等产品。</li><li>管理并发弹性搜索映射更改并应用批处理原子CQL架构更改。</li><li>支持Elasticsearch摄取处理器，允许转换输入数据。</li></ul><p>对于Elasticsearch用户，elassandra提供了有用的功能：</p><ul><li>Elassandra是无主的。群集状态通过cassandra轻量级事务进行管理。</li><li>Elassandra是一个分片的多主数据库，其中Elasticsearch是分片主从。因此，Elassandra没有单点写入，有助于实现高可用性。</li><li>Elassandra继承了Cassandra数据修复机制（暗示切换，读取修复和nodetool修复），为跨数据中心复制提供支持。</li><li>将节点添加到Elassandra集群时，只有从现有节点提取的数据才会在Elasticsearch中重新编制索引。</li><li>Cassandra可能是您索引和非索引数据的唯一数据存储区。它更易于管理和保护。源文档现在存储在Cassandra中，如果您需要NoSQL数据库和Elasticsearch，则会减少磁盘空间。</li><li>写操作不限于一个主分片，而是分布在虚拟数据中心的所有Cassandra节点上。分片数量不会限制您的写入吞吐量。添加elassandra节点会增加读写吞吐量。</li><li>Elasticsearch索引可以在许多Cassandra数据中心之间复制，允许写入最近的数据中心并进行全局搜索。</li><li>cassandra驱动程序可识别数据中心和令牌，提供自动负载平衡和故障转移。</li><li>Elassandra有效地将Elasticsearch文档存储在二进制SSTable中，而不会产生任何JSON开销。</li></ul><h2 id=快速开始>快速开始</h2><p>使用docker启动单节点的Elassandra集群：</p><pre><code class=language-bash># 下载docker镜像
-$ docker pull docker.io/strapdata/elassandra:latest
-# 启动
-$ docker run -d --rm \
-  --name elassandra \
-  -p 9042:9042 \
-  -p 9200:9200 \
-  -e JVM_OPTS=&quot;-Dcassandra.custom_query_handler_class=org.elassandra.index.ElasticQueryHandler&quot; \
-  docker.io/strapdata/elassandra:latest
-</code></pre><p>检查Elassandra集群状态：</p><pre><code class=language-bash>$ docker exec -i elassandra nodetool status
-  Datacenter: DC1
-  ===============
-  Status=Up/Down
-  |/ State=Normal/Leaving/Joining/Moving
-  --  Address     Load       Tokens       Owns (effective)  Host ID                               Rack
-  UN  172.17.0.3  80.97 KiB  8            100.0%            81a9e4e0-efe4-458d-861e-8d527835372d  r1
-</code></pre><h3 id=从cassandra表创建elasticsearch索引>从Cassandra表创建Elasticsearch索引</h3><p>使用cassandra CQLSH创建一个cassandra Keyspace，一个User Defined Type，一个Table并添加两行：</p><pre><code class=language-bash>$ docker exec -i elassandra cqlsh &lt;&lt;EOF
-CREATE KEYSPACE IF NOT EXISTS test WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': 1};
-CREATE TYPE IF NOT EXISTS test.user_type (first text, last text);
-CREATE TABLE IF NOT EXISTS test.docs (uid int, username frozen&lt;user_type&gt;, login text, PRIMARY KEY (uid));
-INSERT INTO test.docs (uid, username, login) VALUES (1, {first:'vince',last:'royer'}, 'vroyer');
-INSERT INTO test.docs (uid, username, login) VALUES (2, {first:'barthelemy',last:'delemotte'}, 'barth');
-EOF
-</code></pre><p>通过发现CQL结构从Cassandra表架构创建Elasticsearch索引：</p><pre><code class=language-bash>$ curl -XPUT -H 'Content-Type: application/json' http://localhost:9200/test -d'{&quot;mappings&quot;:{&quot;docs&quot;:{&quot;discover&quot;:&quot;.*&quot;}}}'
-{&quot;acknowledged&quot;:true,&quot;shards_acknowledged&quot;:true,&quot;index&quot;:&quot;test&quot;}
-</code></pre><p>此命令发现与提供的正则表达式匹配的所有列，并创建Eslasticsearch索引。</p><h3 id=从头开始创建elasticsearch索引>从头开始创建Elasticsearch索引</h3><p>Elassandra在创建索引或使用新字段更新映射时自动生成基础CQL结构。</p><pre><code class=language-bash>$ curl -XPUT -H 'Content-Type: application/json' http://localhost:9200/test2 -d'{
-   &quot;mappings&quot;:{
-      &quot;docs&quot;:{
-         &quot;properties&quot;: {
-            &quot;first&quot;: {
-               &quot;type&quot;:&quot;text&quot;
-            },
-            &quot;last&quot;: {
-               &quot;type&quot;:&quot;text&quot;,
-               &quot;cql_collection&quot;:&quot;singleton&quot;
-            }
-         }
-      }
-   }
-}'
-{&quot;acknowledged&quot;:true,&quot;shards_acknowledged&quot;:true,&quot;index&quot;:&quot;test2&quot;}
-</code></pre><p>生成的CQL结构：</p><pre><code class=language-bash>$ docker exec -it elassandra cqlsh         
-  Connected to Test Cluster at 127.0.0.1:9042.
-  [cqlsh 5.0.1 | Cassandra 3.11.4.2 | CQL spec 3.4.4 | Native protocol v4]
-  Use HELP for help.
-  cqlsh&gt; desc KEYSPACE test2;
-  
-  CREATE KEYSPACE test2 WITH replication = {'class': 'NetworkTopologyStrategy', 'DC1': '1'}  AND durable_writes = true;
-  
-  CREATE TABLE test2.docs (
-      &quot;_id&quot; text PRIMARY KEY,
-      first list&lt;text&gt;,
-      last text
-  ) WITH bloom_filter_fp_chance = 0.01
-      AND caching = {'keys': 'ALL', 'rows_per_partition': 'NONE'}
-      AND comment = ''
-      AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy', 'max_threshold': '32', 'min_threshold': '4'}
-      AND compression = {'chunk_length_in_kb': '64', 'class': 'org.apache.cassandra.io.compress.LZ4Compressor'}
-      AND crc_check_chance = 1.0
-      AND dclocal_read_repair_chance = 0.1
-      AND default_time_to_live = 0
-      AND gc_grace_seconds = 864000
-      AND max_index_interval = 2048
-      AND memtable_flush_period_in_ms = 0
-      AND min_index_interval = 128
-      AND read_repair_chance = 0.0
-      AND speculative_retry = '99PERCENTILE';
-  CREATE CUSTOM INDEX elastic_docs_idx ON test2.docs () USING 'org.elassandra.index.ExtendedElasticSecondaryIndex'; 
-</code></pre><h3 id=搜索文档>搜索文档</h3><p>通过Elasticsearch API搜索文档：</p><pre><code class=language-bash>$ curl &quot;http://localhost:9200/test/_search?pretty&quot;
-  {
-    &quot;took&quot; : 53,
-    &quot;timed_out&quot; : false,
-    &quot;_shards&quot; : {
-      &quot;total&quot; : 1,
-      &quot;successful&quot; : 1,
-      &quot;skipped&quot; : 0,
-      &quot;failed&quot; : 0
-    },
-    &quot;hits&quot; : {
-      &quot;total&quot; : 2,
-      &quot;max_score&quot; : 1.0,
-      &quot;hits&quot; : [
-        {
-          &quot;_index&quot; : &quot;test&quot;,
-          &quot;_type&quot; : &quot;docs&quot;,
-          &quot;_id&quot; : &quot;1&quot;,
-          &quot;_score&quot; : 1.0,
-          &quot;_source&quot; : {
-            &quot;uid&quot; : 1,
-            &quot;login&quot; : &quot;vroyer&quot;,
-            &quot;username&quot; : {
-              &quot;last&quot; : &quot;royer&quot;,
-              &quot;first&quot; : &quot;vince&quot;
-            }
-          }
-        },
-        {
-          &quot;_index&quot; : &quot;test&quot;,
-          &quot;_type&quot; : &quot;docs&quot;,
-          &quot;_id&quot; : &quot;2&quot;,
-          &quot;_score&quot; : 1.0,
-          &quot;_source&quot; : {
-            &quot;uid&quot; : 2,
-            &quot;login&quot; : &quot;barth&quot;,
-            &quot;username&quot; : {
-              &quot;last&quot; : &quot;delemotte&quot;,
-              &quot;first&quot; : &quot;barthelemy&quot;
-            }
-          }
-        }
-      ]
-    }
-  }
-</code></pre><p>要通过CQL驱动程序搜索文档，请在表模式中添加以下两个虚拟列。 然后，执行Elasticsearch嵌套查询。 伪列允许您在索引名称与键空间名称不匹配时指定目标索引。</p><pre><code class=language-bash>$ docker exec -it elassandra cqlsh
-  Connected to Test Cluster at 127.0.0.1:9042.
-  [cqlsh 5.0.1 | Cassandra 3.11.4.2 | CQL spec 3.4.4 | Native protocol v4]
-  Use HELP for help.
-  cqlsh&gt; ALTER TABLE test.docs ADD es_query text;
-  cqlsh&gt; ALTER TABLE test.docs ADD es_options text;
-  cqlsh&gt; SELECT uid, login, username FROM test.docs WHERE es_query='{ &quot;query&quot;:{&quot;nested&quot;:{&quot;path&quot;:&quot;username&quot;,&quot;query&quot;:{&quot;term&quot;:{&quot;username.first&quot;:&quot;barthelemy&quot;}}}}}' AND es_options='indices=test' ALLOW FILTERING;
-  
-   uid | login | username
-  -----+-------+------------------------------------------
-     2 | barth | {first: 'barthelemy', last: 'delemotte'}
-  
-  (1 rows)
-
-</code></pre><h3 id=管理elasticsearch索引>管理Elasticsearch索引</h3><p>获取Elasticsearch集群状态：</p><pre><code class=language-bash>$ curl &quot;http://localhost:9200/_cluster/state?pretty&quot;
-  {
-    &quot;cluster_name&quot; : &quot;Test Cluster&quot;,
-    &quot;compressed_size_in_bytes&quot; : 730,
-    &quot;version&quot; : 14,
-    &quot;state_uuid&quot; : &quot;tMqNt8PpS5ySuaRxHUGc1w&quot;,
-    &quot;master_node&quot; : &quot;81a9e4e0-efe4-458d-861e-8d527835372d&quot;,
-    &quot;blocks&quot; : { },
-    &quot;nodes&quot; : {
-      &quot;81a9e4e0-efe4-458d-861e-8d527835372d&quot; : {
-        &quot;name&quot; : &quot;172.17.0.3&quot;,
-        &quot;status&quot; : &quot;ALIVE&quot;,
-        &quot;ephemeral_id&quot; : &quot;81a9e4e0-efe4-458d-861e-8d527835372d&quot;,
-        &quot;transport_address&quot; : &quot;172.17.0.3:9300&quot;,
-        &quot;attributes&quot; : {
-          &quot;rack&quot; : &quot;r1&quot;,
-          &quot;dc&quot; : &quot;DC1&quot;
-        }
-      }
-    },
-    &quot;metadata&quot; : {
-      &quot;version&quot; : 4,
-      &quot;cluster_uuid&quot; : &quot;81a9e4e0-efe4-458d-861e-8d527835372d&quot;,
-      &quot;templates&quot; : { },
-      &quot;indices&quot; : {
-        &quot;test&quot; : {
-          &quot;state&quot; : &quot;open&quot;,
-          &quot;settings&quot; : {
-            &quot;index&quot; : {
-              &quot;creation_date&quot; : &quot;1561883488853&quot;,
-              &quot;number_of_shards&quot; : &quot;1&quot;,
-              &quot;number_of_replicas&quot; : &quot;0&quot;,
-              &quot;uuid&quot; : &quot;h34je53mSVqojho2gIH91A&quot;,
-              &quot;version&quot; : {
-                &quot;created&quot; : &quot;6020399&quot;
-              },
-              &quot;provided_name&quot; : &quot;test&quot;
-            }
-          },
-          &quot;mappings&quot; : {
-            &quot;docs&quot; : {
-              &quot;properties&quot; : {
-                &quot;uid&quot; : {
-                  &quot;cql_partition_key&quot; : true,
-                  &quot;cql_primary_key_order&quot; : 0,
-                  &quot;type&quot; : &quot;integer&quot;,
-                  &quot;cql_collection&quot; : &quot;singleton&quot;
-                },
-                &quot;login&quot; : {
-                  &quot;type&quot; : &quot;keyword&quot;,
-                  &quot;cql_collection&quot; : &quot;singleton&quot;
-                },
-                &quot;username&quot; : {
-                  &quot;cql_udt_name&quot; : &quot;user_type&quot;,
-                  &quot;type&quot; : &quot;nested&quot;,
-                  &quot;properties&quot; : {
-                    &quot;last&quot; : {
-                      &quot;type&quot; : &quot;keyword&quot;,
-                      &quot;cql_collection&quot; : &quot;singleton&quot;
-                    },
-                    &quot;first&quot; : {
-                      &quot;type&quot; : &quot;keyword&quot;,
-                      &quot;cql_collection&quot; : &quot;singleton&quot;
-                    }
-                  },
-                  &quot;cql_collection&quot; : &quot;singleton&quot;
-                }
-              }
-            }
-          },
-          &quot;aliases&quot; : [ ],
-          &quot;primary_terms&quot; : {
-            &quot;0&quot; : 0
-          },
-          &quot;in_sync_allocations&quot; : {
-            &quot;0&quot; : [ ]
-          }
-        },
-        &quot;test2&quot; : {
-          &quot;state&quot; : &quot;open&quot;,
-          &quot;settings&quot; : {
-            &quot;index&quot; : {
-              &quot;creation_date&quot; : &quot;1561883720880&quot;,
-              &quot;number_of_shards&quot; : &quot;1&quot;,
-              &quot;number_of_replicas&quot; : &quot;0&quot;,
-              &quot;uuid&quot; : &quot;u7BgODwuT_idHbcuenvi6g&quot;,
-              &quot;version&quot; : {
-                &quot;created&quot; : &quot;6020399&quot;
-              },
-              &quot;provided_name&quot; : &quot;test2&quot;
-            }
-          },
-          &quot;mappings&quot; : {
-            &quot;docs&quot; : {
-              &quot;properties&quot; : {
-                &quot;last&quot; : {
-                  &quot;type&quot; : &quot;text&quot;,
-                  &quot;cql_collection&quot; : &quot;singleton&quot;
-                },
-                &quot;first&quot; : {
-                  &quot;type&quot; : &quot;text&quot;
-                }
-              }
-            }
-          },
-          &quot;aliases&quot; : [ ],
-          &quot;primary_terms&quot; : {
-            &quot;0&quot; : 0
-          },
-          &quot;in_sync_allocations&quot; : {
-            &quot;0&quot; : [ ]
-          }
-        }
-      },
-      &quot;index-graveyard&quot; : {
-        &quot;tombstones&quot; : [ ]
-      }
-    },
-    &quot;routing_table&quot; : {
-      &quot;indices&quot; : {
-        &quot;test&quot; : {
-          &quot;shards&quot; : {
-            &quot;0&quot; : [
-              {
-                &quot;state&quot; : &quot;STARTED&quot;,
-                &quot;primary&quot; : true,
-                &quot;node&quot; : &quot;81a9e4e0-efe4-458d-861e-8d527835372d&quot;,
-                &quot;relocating_node&quot; : null,
-                &quot;shard&quot; : 0,
-                &quot;index&quot; : &quot;test&quot;,
-                &quot;token_ranges&quot; : [
-                  &quot;(-9223372036854775808,9223372036854775807]&quot;
-                ],
-                &quot;allocation_id&quot; : {
-                  &quot;id&quot; : &quot;dummy_alloc_id&quot;
-                }
-              }
-            ]
-          }
-        },
-        &quot;test2&quot; : {
-          &quot;shards&quot; : {
-            &quot;0&quot; : [
-              {
-                &quot;state&quot; : &quot;STARTED&quot;,
-                &quot;primary&quot; : true,
-                &quot;node&quot; : &quot;81a9e4e0-efe4-458d-861e-8d527835372d&quot;,
-                &quot;relocating_node&quot; : null,
-                &quot;shard&quot; : 0,
-                &quot;index&quot; : &quot;test2&quot;,
-                &quot;token_ranges&quot; : [
-                  &quot;(-9223372036854775808,9223372036854775807]&quot;
-                ],
-                &quot;allocation_id&quot; : {
-                  &quot;id&quot; : &quot;dummy_alloc_id&quot;
-                }
-              }
-            ]
-          }
-        }
-      }
-    },
-    &quot;routing_nodes&quot; : {
-      &quot;unassigned&quot; : [ ],
-      &quot;nodes&quot; : {
-        &quot;81a9e4e0-efe4-458d-861e-8d527835372d&quot; : [
-          {
-            &quot;state&quot; : &quot;STARTED&quot;,
-            &quot;primary&quot; : true,
-            &quot;node&quot; : &quot;81a9e4e0-efe4-458d-861e-8d527835372d&quot;,
-            &quot;relocating_node&quot; : null,
-            &quot;shard&quot; : 0,
-            &quot;index&quot; : &quot;test&quot;,
-            &quot;token_ranges&quot; : [
-              &quot;(-9223372036854775808,9223372036854775807]&quot;
-            ],
-            &quot;allocation_id&quot; : {
-              &quot;id&quot; : &quot;dummy_alloc_id&quot;
-            }
-          },
-          {
-            &quot;state&quot; : &quot;STARTED&quot;,
-            &quot;primary&quot; : true,
-            &quot;node&quot; : &quot;81a9e4e0-efe4-458d-861e-8d527835372d&quot;,
-            &quot;relocating_node&quot; : null,
-            &quot;shard&quot; : 0,
-            &quot;index&quot; : &quot;test2&quot;,
-            &quot;token_ranges&quot; : [
-              &quot;(-9223372036854775808,9223372036854775807]&quot;
-            ],
-            &quot;allocation_id&quot; : {
-              &quot;id&quot; : &quot;dummy_alloc_id&quot;
-            }
-          }
-        ]
-      }
-    },
-    &quot;snapshots&quot; : {
-      &quot;snapshots&quot; : [ ]
-    },
-    &quot;restore&quot; : {
-      &quot;snapshots&quot; : [ ]
-    },
-    &quot;snapshot_deletions&quot; : {
-      &quot;snapshot_deletions&quot; : [ ]
-    }
-  }
-</code></pre><p>获取Elasticsearch索引信息：</p><pre><code class=language-bash>$ curl &quot;http://localhost:9200/_cat/indices?v&quot;
-  health status index uuid                   pri rep docs.count docs.deleted store.size pri.store.size
-  green  open   test2 u7BgODwuT_idHbcuenvi6g   1   0          0            0       208b           208b
-  green  open   test  h34je53mSVqojho2gIH91A   1   0          4            0        4kb            4kb
-</code></pre><p>删除Elasticsearch索引（默认情况下不删除底层的Cassandra表）：</p><pre><code class=language-bash>curl -XDELETE http://localhost:9200/test
-{&quot;acknowledged&quot;:true}
-</code></pre></div><div class=post-copyright><p class=copyright-item><span>Author:</span>
-<span>Soi</span></p><p class=copyright-item><span>Link:</span>
-<a href=https://ronggle.com/2019/elassandra-getting-and-started/>https://ronggle.com/2019/elassandra-getting-and-started/</span></p><p class="copyright-item lincese">本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p></div><div class=post-tags><section><i class="iconfont icon-tag"></i>Tag(s):
-<span class=tag><a href=https://ronggle.com/tags/database/>#Database</a></span>
-<span class=tag><a href=https://ronggle.com/tags/cassandra/>#Cassandra</a></span>
-<span class=tag><a href=https://ronggle.com/tags/elasticsearch/>#Elasticsearch</a></span></section><section><a href=javascript:window.history.back();>back</a></span> ·
-<span><a href=https://ronggle.com/>home</a></span></section></div><div class=post-nav><a href=https://ronggle.com/2019/graph-db-getting-and-started/ class=prev rel=prev title=图形数据库简单介绍><i class="iconfont icon-left"></i>&nbsp;图形数据库简单介绍</a>
-<a href=https://ronggle.com/2019/lile-getting-and-started/ class=next rel=next title=Lile简单介绍>Lile简单介绍&nbsp;<i class="iconfont icon-right"></i></a></div><div class=post-comment><link rel=stylesheet href=/css/gitalk.min.css><script src=/js/gitalk.min.min.js></script><div id=gitalk-container></div><script>var gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:"ycrxun",id:location.pathname,distractionFreeMode:false});gitalk.render('gitalk-container');</script></div></article></div></main><footer class=footer><div class=copyright>&copy;
-<span itemprop=copyrightYear>2015 - 2019</span>
-<span class=with-love><i class="iconfont icon-love"></i></span><span class=author itemprop=copyrightHolder><a href=https://ronggle.com/>Soi</a> |</span>
-<a href=http://www.beian.miit.gov.cn/ target=_blank rel="external nofollow">黔ICP备15015267号</a> |
-<span>Powered by <a href=https://gohugo.io/ target=_blank rel="external nofollow">Hugo</a> & <a href=https://github.com/liuzc/leaveit target=_blank rel="external nofollow">LeaveIt</a></span></div></footer><link href=//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css rel=stylesheet><script src=/js/vendor_gallery.min.js async></script><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?VNkd8ZiQJH29dqsu";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script><div id=landlord style=left:30px><div class=message style=opacity:0></div><canvas id=live2d width=280 height=250 class=live2d></canvas><div class=hide-button>隐藏</div></div><link rel=stylesheet href=/css/live2d.min.css><script src=/js/live2d.min.js></script><script src=/live2d/message.js defer></script><script type=text/javascript defer>var message_Path="\/live2d\/";var home_Path="https:\/\/ronggle.com\/"
-loadlive2d("live2d","\/live2d\/model\/tia\/model.json");</script></div></body></html>
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="Elassandra是Elasticsearch的一个分支，经过修改，可以作为Apache Cassandra的插件运行，具有可扩展和灵活的点对点架构。"><title>Elassandra简单介绍</title>
+<link rel=canonical href=https://ronggle.com/2019/elassandra-getting-and-started/><link rel=stylesheet href=/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css><meta property='og:title' content="Elassandra简单介绍"><meta property='og:description' content="Elassandra是Elasticsearch的一个分支，经过修改，可以作为Apache Cassandra的插件运行，具有可扩展和灵活的点对点架构。"><meta property='og:url' content='https://ronggle.com/2019/elassandra-getting-and-started/'><meta property='og:site_name' content='凉都小道'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='Database'><meta property='article:tag' content='Cassandra'><meta property='article:tag' content='Elasticsearch'><meta property='article:published_time' content='2019-03-08T11:27:29+08:00'><meta property='article:modified_time' content='2019-03-08T11:27:29+08:00'><meta property='og:image' content='https://ronggle.com/2019/elassandra-getting-and-started/elassandra-logo.png'><meta name=twitter:title content="Elassandra简单介绍"><meta name=twitter:description content="Elassandra是Elasticsearch的一个分支，经过修改，可以作为Apache Cassandra的插件运行，具有可扩展和灵活的点对点架构。"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://ronggle.com/2019/elassandra-getting-and-started/elassandra-logo.png'><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu1aa4dd0456be0d06f4d83ce8e29586b6_40169_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🍥</span></figure><div class=site-meta><h1 class=site-name><a href=/>凉都小道</a></h1><h2 class=site-description>道生一，一生二，二生三，三生万物</h2></div></header><ol class=menu-social><li><a href=https://github.com/ycrxun target=_blank title=GitHub rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com/ChangrongYang target=_blank title=Twitter rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li><a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/about/><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-message-user"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 18l-5 3v-3H6a3 3 0 01-3-3V7a3 3 0 013-3h12a3 3 0 013 3v4.5"/><path d="M19 17m-2 0a2 2 0 104 0 2 2 0 10-4 0"/><path d="M22 22a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+<span>关于我</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#elassandra>Elassandra</a></li><li><a href=#elassandra的好处>Elassandra的好处</a></li><li><a href=#快速开始>快速开始</a><ol><li><a href=#从cassandra表创建elasticsearch索引>从Cassandra表创建Elasticsearch索引</a></li><li><a href=#从头开始创建elasticsearch索引>从头开始创建Elasticsearch索引</a></li><li><a href=#搜索文档>搜索文档</a></li><li><a href=#管理elasticsearch索引>管理Elasticsearch索引</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/2019/elassandra-getting-and-started/><img src=/2019/elassandra-getting-and-started/elassandra-logo_hua9e5fe0b2e07510695edbfcb16d06847_2125_800x0_resize_box_3.png srcset="/2019/elassandra-getting-and-started/elassandra-logo_hua9e5fe0b2e07510695edbfcb16d06847_2125_800x0_resize_box_3.png 800w, /2019/elassandra-getting-and-started/elassandra-logo_hua9e5fe0b2e07510695edbfcb16d06847_2125_1600x0_resize_box_3.png 1600w" width=800 height=377 loading=lazy alt="Featured image of post Elassandra简单介绍"></a></div><div class=article-details><header class=article-category><a href=/categories/translation/>Translation</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/2019/elassandra-getting-and-started/>Elassandra简单介绍</a></h2><h3 class=article-subtitle>Elassandra是Elasticsearch的一个分支，经过修改，可以作为Apache Cassandra的插件运行，具有可扩展和灵活的点对点架构。</h3></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Mar 08, 2019</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 7 分钟</time></div></footer></div></header><section class=article-content><h2 id=elassandra>Elassandra</h2><p><a class=link href=http://www.elassandra.io/ target=_blank rel=noopener>Elassandra</a>是<a class=link href=https://github.com/elastic/elasticsearch target=_blank rel=noopener>Elasticsearch</a>的一个分支，经过修改，可以作为<a class=link href=http://cassandra.apache.org/ target=_blank rel=noopener>Apache Cassandra</a>的插件运行，具有可扩展和灵活的点对点架构。 Elasticsearch代码嵌入在Cassanda节点中，在Cassandra表上提供高级搜索功能，Cassandra用作Elasticsearch数据和配置存储。</p><p><img src=/2019/elassandra-getting-and-started/elassandra-arch.jpg width=780 height=315 srcset="/2019/elassandra-getting-and-started/elassandra-arch_hu5e54fc2f701de6f043005fd2b0713d79_91960_480x0_resize_q75_box.jpg 480w, /2019/elassandra-getting-and-started/elassandra-arch_hu5e54fc2f701de6f043005fd2b0713d79_91960_1024x0_resize_q75_box.jpg 1024w" loading=lazy class=gallery-image data-flex-grow=247 data-flex-basis=594px></p><p>Elassandra支持Cassandra vnodes，并通过添加更多节点进行水平扩展。</p><p>项目文档可在<a class=link href=https://doc.elassandra.io target=_blank rel=noopener>doc.elassandra.io</a>上获得。</p><h2 id=elassandra的好处>Elassandra的好处</h2><p>对于Cassandra用户，elassandra提供Elasticsearch功能：</p><ul><li>在Elasticsearch中更新Cassandra索引。</li><li>对Cassandra数据进行全文和空间搜索。</li><li>实时聚合（不需要Spark或Hadoop来完成GROUP BY）</li><li>在一个查询中提供对多个键空间和表的搜索。</li><li>使用“用户定义的类型”提供自动模式创建和支持嵌套文档。</li><li>提供JSON REST API对Cassandra数据的读/写访问。</li><li>许多Elasticsearch插件和Kibana等产品。</li><li>管理并发弹性搜索映射更改并应用批处理原子CQL架构更改。</li><li>支持Elasticsearch摄取处理器，允许转换输入数据。</li></ul><p>对于Elasticsearch用户，elassandra提供了有用的功能：</p><ul><li>Elassandra是无主的。群集状态通过cassandra轻量级事务进行管理。</li><li>Elassandra是一个分片的多主数据库，其中Elasticsearch是分片主从。因此，Elassandra没有单点写入，有助于实现高可用性。</li><li>Elassandra继承了Cassandra数据修复机制（暗示切换，读取修复和nodetool修复），为跨数据中心复制提供支持。</li><li>将节点添加到Elassandra集群时，只有从现有节点提取的数据才会在Elasticsearch中重新编制索引。</li><li>Cassandra可能是您索引和非索引数据的唯一数据存储区。它更易于管理和保护。源文档现在存储在Cassandra中，如果您需要NoSQL数据库和Elasticsearch，则会减少磁盘空间。</li><li>写操作不限于一个主分片，而是分布在虚拟数据中心的所有Cassandra节点上。分片数量不会限制您的写入吞吐量。添加elassandra节点会增加读写吞吐量。</li><li>Elasticsearch索引可以在许多Cassandra数据中心之间复制，允许写入最近的数据中心并进行全局搜索。</li><li>cassandra驱动程序可识别数据中心和令牌，提供自动负载平衡和故障转移。</li><li>Elassandra有效地将Elasticsearch文档存储在二进制SSTable中，而不会产生任何JSON开销。</li></ul><h2 id=快速开始>快速开始</h2><p>使用docker启动单节点的Elassandra集群：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=c1># 下载docker镜像</span>
+</span></span><span class=line><span class=cl>$ docker pull docker.io/strapdata/elassandra:latest
+</span></span><span class=line><span class=cl><span class=c1># 启动</span>
+</span></span><span class=line><span class=cl>$ docker run -d --rm <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  --name elassandra <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -p 9042:9042 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -p 9200:9200 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  -e <span class=nv>JVM_OPTS</span><span class=o>=</span><span class=s2>&#34;-Dcassandra.custom_query_handler_class=org.elassandra.index.ElasticQueryHandler&#34;</span> <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>  docker.io/strapdata/elassandra:latest
+</span></span></code></pre></td></tr></table></div></div><p>检查Elassandra集群状态：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ docker <span class=nb>exec</span> -i elassandra nodetool status
+</span></span><span class=line><span class=cl>  Datacenter: <span class=nv>DC1</span>
+</span></span><span class=line><span class=cl>  <span class=o>===============</span>
+</span></span><span class=line><span class=cl>  <span class=nv>Status</span><span class=o>=</span>Up/Down
+</span></span><span class=line><span class=cl>  <span class=p>|</span>/ <span class=nv>State</span><span class=o>=</span>Normal/Leaving/Joining/Moving
+</span></span><span class=line><span class=cl>  --  Address     Load       Tokens       Owns <span class=o>(</span>effective<span class=o>)</span>  Host ID                               Rack
+</span></span><span class=line><span class=cl>  UN  172.17.0.3  80.97 KiB  <span class=m>8</span>            100.0%            81a9e4e0-efe4-458d-861e-8d527835372d  r1
+</span></span></code></pre></td></tr></table></div></div><h3 id=从cassandra表创建elasticsearch索引>从Cassandra表创建Elasticsearch索引</h3><p>使用cassandra CQLSH创建一个cassandra Keyspace，一个User Defined Type，一个Table并添加两行：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ docker <span class=nb>exec</span> -i elassandra cqlsh <span class=s>&lt;&lt;EOF
+</span></span></span><span class=line><span class=cl><span class=s>CREATE KEYSPACE IF NOT EXISTS test WITH replication = {&#39;class&#39;: &#39;NetworkTopologyStrategy&#39;, &#39;DC1&#39;: 1};
+</span></span></span><span class=line><span class=cl><span class=s>CREATE TYPE IF NOT EXISTS test.user_type (first text, last text);
+</span></span></span><span class=line><span class=cl><span class=s>CREATE TABLE IF NOT EXISTS test.docs (uid int, username frozen&lt;user_type&gt;, login text, PRIMARY KEY (uid));
+</span></span></span><span class=line><span class=cl><span class=s>INSERT INTO test.docs (uid, username, login) VALUES (1, {first:&#39;vince&#39;,last:&#39;royer&#39;}, &#39;vroyer&#39;);
+</span></span></span><span class=line><span class=cl><span class=s>INSERT INTO test.docs (uid, username, login) VALUES (2, {first:&#39;barthelemy&#39;,last:&#39;delemotte&#39;}, &#39;barth&#39;);
+</span></span></span><span class=line><span class=cl><span class=s>EOF</span>
+</span></span></code></pre></td></tr></table></div></div><p>通过发现CQL结构从Cassandra表架构创建Elasticsearch索引：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ curl -XPUT -H <span class=s1>&#39;Content-Type: application/json&#39;</span> http://localhost:9200/test -d<span class=s1>&#39;{&#34;mappings&#34;:{&#34;docs&#34;:{&#34;discover&#34;:&#34;.*&#34;}}}&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>{</span><span class=s2>&#34;acknowledged&#34;</span>:true,<span class=s2>&#34;shards_acknowledged&#34;</span>:true,<span class=s2>&#34;index&#34;</span>:<span class=s2>&#34;test&#34;</span><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>此命令发现与提供的正则表达式匹配的所有列，并创建Eslasticsearch索引。</p><h3 id=从头开始创建elasticsearch索引>从头开始创建Elasticsearch索引</h3><p>Elassandra在创建索引或使用新字段更新映射时自动生成基础CQL结构。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ curl -XPUT -H <span class=s1>&#39;Content-Type: application/json&#39;</span> http://localhost:9200/test2 -d<span class=s1>&#39;{
+</span></span></span><span class=line><span class=cl><span class=s1>   &#34;mappings&#34;:{
+</span></span></span><span class=line><span class=cl><span class=s1>      &#34;docs&#34;:{
+</span></span></span><span class=line><span class=cl><span class=s1>         &#34;properties&#34;: {
+</span></span></span><span class=line><span class=cl><span class=s1>            &#34;first&#34;: {
+</span></span></span><span class=line><span class=cl><span class=s1>               &#34;type&#34;:&#34;text&#34;
+</span></span></span><span class=line><span class=cl><span class=s1>            },
+</span></span></span><span class=line><span class=cl><span class=s1>            &#34;last&#34;: {
+</span></span></span><span class=line><span class=cl><span class=s1>               &#34;type&#34;:&#34;text&#34;,
+</span></span></span><span class=line><span class=cl><span class=s1>               &#34;cql_collection&#34;:&#34;singleton&#34;
+</span></span></span><span class=line><span class=cl><span class=s1>            }
+</span></span></span><span class=line><span class=cl><span class=s1>         }
+</span></span></span><span class=line><span class=cl><span class=s1>      }
+</span></span></span><span class=line><span class=cl><span class=s1>   }
+</span></span></span><span class=line><span class=cl><span class=s1>}&#39;</span>
+</span></span><span class=line><span class=cl><span class=o>{</span><span class=s2>&#34;acknowledged&#34;</span>:true,<span class=s2>&#34;shards_acknowledged&#34;</span>:true,<span class=s2>&#34;index&#34;</span>:<span class=s2>&#34;test2&#34;</span><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>生成的CQL结构：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ docker <span class=nb>exec</span> -it elassandra cqlsh         
+</span></span><span class=line><span class=cl>  Connected to Test Cluster at 127.0.0.1:9042.
+</span></span><span class=line><span class=cl>  <span class=o>[</span>cqlsh 5.0.1 <span class=p>|</span> Cassandra 3.11.4.2 <span class=p>|</span> CQL spec 3.4.4 <span class=p>|</span> Native protocol v4<span class=o>]</span>
+</span></span><span class=line><span class=cl>  Use HELP <span class=k>for</span> help.
+</span></span><span class=line><span class=cl>  cqlsh&gt; desc KEYSPACE test2<span class=p>;</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  CREATE KEYSPACE test2 WITH <span class=nv>replication</span> <span class=o>=</span> <span class=o>{</span><span class=s1>&#39;class&#39;</span>: <span class=s1>&#39;NetworkTopologyStrategy&#39;</span>, <span class=s1>&#39;DC1&#39;</span>: <span class=s1>&#39;1&#39;</span><span class=o>}</span>  AND <span class=nv>durable_writes</span> <span class=o>=</span> true<span class=p>;</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  CREATE TABLE test2.docs <span class=o>(</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;_id&#34;</span> text PRIMARY KEY,
+</span></span><span class=line><span class=cl>      first list&lt;text&gt;,
+</span></span><span class=line><span class=cl>      last text
+</span></span><span class=line><span class=cl>  <span class=o>)</span> WITH <span class=nv>bloom_filter_fp_chance</span> <span class=o>=</span> 0.01
+</span></span><span class=line><span class=cl>      AND <span class=nv>caching</span> <span class=o>=</span> <span class=o>{</span><span class=s1>&#39;keys&#39;</span>: <span class=s1>&#39;ALL&#39;</span>, <span class=s1>&#39;rows_per_partition&#39;</span>: <span class=s1>&#39;NONE&#39;</span><span class=o>}</span>
+</span></span><span class=line><span class=cl>      AND <span class=nv>comment</span> <span class=o>=</span> <span class=s1>&#39;&#39;</span>
+</span></span><span class=line><span class=cl>      AND <span class=nv>compaction</span> <span class=o>=</span> <span class=o>{</span><span class=s1>&#39;class&#39;</span>: <span class=s1>&#39;org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy&#39;</span>, <span class=s1>&#39;max_threshold&#39;</span>: <span class=s1>&#39;32&#39;</span>, <span class=s1>&#39;min_threshold&#39;</span>: <span class=s1>&#39;4&#39;</span><span class=o>}</span>
+</span></span><span class=line><span class=cl>      AND <span class=nv>compression</span> <span class=o>=</span> <span class=o>{</span><span class=s1>&#39;chunk_length_in_kb&#39;</span>: <span class=s1>&#39;64&#39;</span>, <span class=s1>&#39;class&#39;</span>: <span class=s1>&#39;org.apache.cassandra.io.compress.LZ4Compressor&#39;</span><span class=o>}</span>
+</span></span><span class=line><span class=cl>      AND <span class=nv>crc_check_chance</span> <span class=o>=</span> 1.0
+</span></span><span class=line><span class=cl>      AND <span class=nv>dclocal_read_repair_chance</span> <span class=o>=</span> 0.1
+</span></span><span class=line><span class=cl>      AND <span class=nv>default_time_to_live</span> <span class=o>=</span> <span class=m>0</span>
+</span></span><span class=line><span class=cl>      AND <span class=nv>gc_grace_seconds</span> <span class=o>=</span> <span class=m>864000</span>
+</span></span><span class=line><span class=cl>      AND <span class=nv>max_index_interval</span> <span class=o>=</span> <span class=m>2048</span>
+</span></span><span class=line><span class=cl>      AND <span class=nv>memtable_flush_period_in_ms</span> <span class=o>=</span> <span class=m>0</span>
+</span></span><span class=line><span class=cl>      AND <span class=nv>min_index_interval</span> <span class=o>=</span> <span class=m>128</span>
+</span></span><span class=line><span class=cl>      AND <span class=nv>read_repair_chance</span> <span class=o>=</span> 0.0
+</span></span><span class=line><span class=cl>      AND <span class=nv>speculative_retry</span> <span class=o>=</span> <span class=s1>&#39;99PERCENTILE&#39;</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>  CREATE CUSTOM INDEX elastic_docs_idx ON test2.docs <span class=o>()</span> USING <span class=s1>&#39;org.elassandra.index.ExtendedElasticSecondaryIndex&#39;</span><span class=p>;</span> 
+</span></span></code></pre></td></tr></table></div></div><h3 id=搜索文档>搜索文档</h3><p>通过Elasticsearch API搜索文档：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ curl <span class=s2>&#34;http://localhost:9200/test/_search?pretty&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;took&#34;</span> : 53,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;timed_out&#34;</span> : false,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;_shards&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;total&#34;</span> : 1,
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;successful&#34;</span> : 1,
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;skipped&#34;</span> : 0,
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;failed&#34;</span> : <span class=m>0</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;hits&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;total&#34;</span> : 2,
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;max_score&#34;</span> : 1.0,
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;hits&#34;</span> : <span class=o>[</span>
+</span></span><span class=line><span class=cl>        <span class=o>{</span>
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;_index&#34;</span> : <span class=s2>&#34;test&#34;</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;_type&#34;</span> : <span class=s2>&#34;docs&#34;</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;_id&#34;</span> : <span class=s2>&#34;1&#34;</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;_score&#34;</span> : 1.0,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;_source&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;uid&#34;</span> : 1,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;login&#34;</span> : <span class=s2>&#34;vroyer&#34;</span>,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;username&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;last&#34;</span> : <span class=s2>&#34;royer&#34;</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;first&#34;</span> : <span class=s2>&#34;vince&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>,
+</span></span><span class=line><span class=cl>        <span class=o>{</span>
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;_index&#34;</span> : <span class=s2>&#34;test&#34;</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;_type&#34;</span> : <span class=s2>&#34;docs&#34;</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;_id&#34;</span> : <span class=s2>&#34;2&#34;</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;_score&#34;</span> : 1.0,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;_source&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;uid&#34;</span> : 2,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;login&#34;</span> : <span class=s2>&#34;barth&#34;</span>,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;username&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;last&#34;</span> : <span class=s2>&#34;delemotte&#34;</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;first&#34;</span> : <span class=s2>&#34;barthelemy&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>      <span class=o>]</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>要通过CQL驱动程序搜索文档，请在表模式中添加以下两个虚拟列。 然后，执行Elasticsearch嵌套查询。 伪列允许您在索引名称与键空间名称不匹配时指定目标索引。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ docker <span class=nb>exec</span> -it elassandra cqlsh
+</span></span><span class=line><span class=cl>  Connected to Test Cluster at 127.0.0.1:9042.
+</span></span><span class=line><span class=cl>  <span class=o>[</span>cqlsh 5.0.1 <span class=p>|</span> Cassandra 3.11.4.2 <span class=p>|</span> CQL spec 3.4.4 <span class=p>|</span> Native protocol v4<span class=o>]</span>
+</span></span><span class=line><span class=cl>  Use HELP <span class=k>for</span> help.
+</span></span><span class=line><span class=cl>  cqlsh&gt; ALTER TABLE test.docs ADD es_query text<span class=p>;</span>
+</span></span><span class=line><span class=cl>  cqlsh&gt; ALTER TABLE test.docs ADD es_options text<span class=p>;</span>
+</span></span><span class=line><span class=cl>  cqlsh&gt; SELECT uid, login, username FROM test.docs WHERE <span class=nv>es_query</span><span class=o>=</span><span class=s1>&#39;{ &#34;query&#34;:{&#34;nested&#34;:{&#34;path&#34;:&#34;username&#34;,&#34;query&#34;:{&#34;term&#34;:{&#34;username.first&#34;:&#34;barthelemy&#34;}}}}}&#39;</span> AND <span class=nv>es_options</span><span class=o>=</span><span class=s1>&#39;indices=test&#39;</span> ALLOW FILTERING<span class=p>;</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>   uid <span class=p>|</span> login <span class=p>|</span> username
+</span></span><span class=line><span class=cl>  -----+-------+------------------------------------------
+</span></span><span class=line><span class=cl>     <span class=m>2</span> <span class=p>|</span> barth <span class=p>|</span> <span class=o>{</span>first: <span class=s1>&#39;barthelemy&#39;</span>, last: <span class=s1>&#39;delemotte&#39;</span><span class=o>}</span>
+</span></span><span class=line><span class=cl>  
+</span></span><span class=line><span class=cl>  <span class=o>(</span><span class=m>1</span> rows<span class=o>)</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=管理elasticsearch索引>管理Elasticsearch索引</h3><p>获取Elasticsearch集群状态：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span><span class=lnt>130
+</span><span class=lnt>131
+</span><span class=lnt>132
+</span><span class=lnt>133
+</span><span class=lnt>134
+</span><span class=lnt>135
+</span><span class=lnt>136
+</span><span class=lnt>137
+</span><span class=lnt>138
+</span><span class=lnt>139
+</span><span class=lnt>140
+</span><span class=lnt>141
+</span><span class=lnt>142
+</span><span class=lnt>143
+</span><span class=lnt>144
+</span><span class=lnt>145
+</span><span class=lnt>146
+</span><span class=lnt>147
+</span><span class=lnt>148
+</span><span class=lnt>149
+</span><span class=lnt>150
+</span><span class=lnt>151
+</span><span class=lnt>152
+</span><span class=lnt>153
+</span><span class=lnt>154
+</span><span class=lnt>155
+</span><span class=lnt>156
+</span><span class=lnt>157
+</span><span class=lnt>158
+</span><span class=lnt>159
+</span><span class=lnt>160
+</span><span class=lnt>161
+</span><span class=lnt>162
+</span><span class=lnt>163
+</span><span class=lnt>164
+</span><span class=lnt>165
+</span><span class=lnt>166
+</span><span class=lnt>167
+</span><span class=lnt>168
+</span><span class=lnt>169
+</span><span class=lnt>170
+</span><span class=lnt>171
+</span><span class=lnt>172
+</span><span class=lnt>173
+</span><span class=lnt>174
+</span><span class=lnt>175
+</span><span class=lnt>176
+</span><span class=lnt>177
+</span><span class=lnt>178
+</span><span class=lnt>179
+</span><span class=lnt>180
+</span><span class=lnt>181
+</span><span class=lnt>182
+</span><span class=lnt>183
+</span><span class=lnt>184
+</span><span class=lnt>185
+</span><span class=lnt>186
+</span><span class=lnt>187
+</span><span class=lnt>188
+</span><span class=lnt>189
+</span><span class=lnt>190
+</span><span class=lnt>191
+</span><span class=lnt>192
+</span><span class=lnt>193
+</span><span class=lnt>194
+</span><span class=lnt>195
+</span><span class=lnt>196
+</span><span class=lnt>197
+</span><span class=lnt>198
+</span><span class=lnt>199
+</span><span class=lnt>200
+</span><span class=lnt>201
+</span><span class=lnt>202
+</span><span class=lnt>203
+</span><span class=lnt>204
+</span><span class=lnt>205
+</span><span class=lnt>206
+</span><span class=lnt>207
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ curl <span class=s2>&#34;http://localhost:9200/_cluster/state?pretty&#34;</span>
+</span></span><span class=line><span class=cl>  <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;cluster_name&#34;</span> : <span class=s2>&#34;Test Cluster&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;compressed_size_in_bytes&#34;</span> : 730,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;version&#34;</span> : 14,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;state_uuid&#34;</span> : <span class=s2>&#34;tMqNt8PpS5ySuaRxHUGc1w&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;master_node&#34;</span> : <span class=s2>&#34;81a9e4e0-efe4-458d-861e-8d527835372d&#34;</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;blocks&#34;</span> : <span class=o>{</span> <span class=o>}</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;nodes&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;81a9e4e0-efe4-458d-861e-8d527835372d&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;name&#34;</span> : <span class=s2>&#34;172.17.0.3&#34;</span>,
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;status&#34;</span> : <span class=s2>&#34;ALIVE&#34;</span>,
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;ephemeral_id&#34;</span> : <span class=s2>&#34;81a9e4e0-efe4-458d-861e-8d527835372d&#34;</span>,
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;transport_address&#34;</span> : <span class=s2>&#34;172.17.0.3:9300&#34;</span>,
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;attributes&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;rack&#34;</span> : <span class=s2>&#34;r1&#34;</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;dc&#34;</span> : <span class=s2>&#34;DC1&#34;</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>      <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;metadata&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;version&#34;</span> : 4,
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;cluster_uuid&#34;</span> : <span class=s2>&#34;81a9e4e0-efe4-458d-861e-8d527835372d&#34;</span>,
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;templates&#34;</span> : <span class=o>{</span> <span class=o>}</span>,
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;indices&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;test&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;state&#34;</span> : <span class=s2>&#34;open&#34;</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;settings&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;index&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;creation_date&#34;</span> : <span class=s2>&#34;1561883488853&#34;</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;number_of_shards&#34;</span> : <span class=s2>&#34;1&#34;</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;number_of_replicas&#34;</span> : <span class=s2>&#34;0&#34;</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;uuid&#34;</span> : <span class=s2>&#34;h34je53mSVqojho2gIH91A&#34;</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;version&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;created&#34;</span> : <span class=s2>&#34;6020399&#34;</span>
+</span></span><span class=line><span class=cl>              <span class=o>}</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;provided_name&#34;</span> : <span class=s2>&#34;test&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;mappings&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;docs&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;properties&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;uid&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;cql_partition_key&#34;</span> : true,
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;cql_primary_key_order&#34;</span> : 0,
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;type&#34;</span> : <span class=s2>&#34;integer&#34;</span>,
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;cql_collection&#34;</span> : <span class=s2>&#34;singleton&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;login&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;type&#34;</span> : <span class=s2>&#34;keyword&#34;</span>,
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;cql_collection&#34;</span> : <span class=s2>&#34;singleton&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;username&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;cql_udt_name&#34;</span> : <span class=s2>&#34;user_type&#34;</span>,
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;type&#34;</span> : <span class=s2>&#34;nested&#34;</span>,
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;properties&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                    <span class=s2>&#34;last&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                      <span class=s2>&#34;type&#34;</span> : <span class=s2>&#34;keyword&#34;</span>,
+</span></span><span class=line><span class=cl>                      <span class=s2>&#34;cql_collection&#34;</span> : <span class=s2>&#34;singleton&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=o>}</span>,
+</span></span><span class=line><span class=cl>                    <span class=s2>&#34;first&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                      <span class=s2>&#34;type&#34;</span> : <span class=s2>&#34;keyword&#34;</span>,
+</span></span><span class=line><span class=cl>                      <span class=s2>&#34;cql_collection&#34;</span> : <span class=s2>&#34;singleton&#34;</span>
+</span></span><span class=line><span class=cl>                    <span class=o>}</span>
+</span></span><span class=line><span class=cl>                  <span class=o>}</span>,
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;cql_collection&#34;</span> : <span class=s2>&#34;singleton&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>
+</span></span><span class=line><span class=cl>              <span class=o>}</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;aliases&#34;</span> : <span class=o>[</span> <span class=o>]</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;primary_terms&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;0&#34;</span> : <span class=m>0</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;in_sync_allocations&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;0&#34;</span> : <span class=o>[</span> <span class=o>]</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>,
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;test2&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;state&#34;</span> : <span class=s2>&#34;open&#34;</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;settings&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;index&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;creation_date&#34;</span> : <span class=s2>&#34;1561883720880&#34;</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;number_of_shards&#34;</span> : <span class=s2>&#34;1&#34;</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;number_of_replicas&#34;</span> : <span class=s2>&#34;0&#34;</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;uuid&#34;</span> : <span class=s2>&#34;u7BgODwuT_idHbcuenvi6g&#34;</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;version&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;created&#34;</span> : <span class=s2>&#34;6020399&#34;</span>
+</span></span><span class=line><span class=cl>              <span class=o>}</span>,
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;provided_name&#34;</span> : <span class=s2>&#34;test2&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;mappings&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;docs&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;properties&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;last&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;type&#34;</span> : <span class=s2>&#34;text&#34;</span>,
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;cql_collection&#34;</span> : <span class=s2>&#34;singleton&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;first&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;type&#34;</span> : <span class=s2>&#34;text&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>
+</span></span><span class=line><span class=cl>              <span class=o>}</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;aliases&#34;</span> : <span class=o>[</span> <span class=o>]</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;primary_terms&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;0&#34;</span> : <span class=m>0</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>,
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;in_sync_allocations&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;0&#34;</span> : <span class=o>[</span> <span class=o>]</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>      <span class=o>}</span>,
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;index-graveyard&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;tombstones&#34;</span> : <span class=o>[</span> <span class=o>]</span>
+</span></span><span class=line><span class=cl>      <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;routing_table&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;indices&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;test&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;shards&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;0&#34;</span> : <span class=o>[</span>
+</span></span><span class=line><span class=cl>              <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;state&#34;</span> : <span class=s2>&#34;STARTED&#34;</span>,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;primary&#34;</span> : true,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;node&#34;</span> : <span class=s2>&#34;81a9e4e0-efe4-458d-861e-8d527835372d&#34;</span>,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;relocating_node&#34;</span> : null,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;shard&#34;</span> : 0,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;index&#34;</span> : <span class=s2>&#34;test&#34;</span>,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;token_ranges&#34;</span> : <span class=o>[</span>
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;(-9223372036854775808,9223372036854775807]&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=o>]</span>,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;allocation_id&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;id&#34;</span> : <span class=s2>&#34;dummy_alloc_id&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>
+</span></span><span class=line><span class=cl>              <span class=o>}</span>
+</span></span><span class=line><span class=cl>            <span class=o>]</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>,
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;test2&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>          <span class=s2>&#34;shards&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;0&#34;</span> : <span class=o>[</span>
+</span></span><span class=line><span class=cl>              <span class=o>{</span>
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;state&#34;</span> : <span class=s2>&#34;STARTED&#34;</span>,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;primary&#34;</span> : true,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;node&#34;</span> : <span class=s2>&#34;81a9e4e0-efe4-458d-861e-8d527835372d&#34;</span>,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;relocating_node&#34;</span> : null,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;shard&#34;</span> : 0,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;index&#34;</span> : <span class=s2>&#34;test2&#34;</span>,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;token_ranges&#34;</span> : <span class=o>[</span>
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;(-9223372036854775808,9223372036854775807]&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=o>]</span>,
+</span></span><span class=line><span class=cl>                <span class=s2>&#34;allocation_id&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>                  <span class=s2>&#34;id&#34;</span> : <span class=s2>&#34;dummy_alloc_id&#34;</span>
+</span></span><span class=line><span class=cl>                <span class=o>}</span>
+</span></span><span class=line><span class=cl>              <span class=o>}</span>
+</span></span><span class=line><span class=cl>            <span class=o>]</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>}</span>
+</span></span><span class=line><span class=cl>      <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;routing_nodes&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;unassigned&#34;</span> : <span class=o>[</span> <span class=o>]</span>,
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;nodes&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>        <span class=s2>&#34;81a9e4e0-efe4-458d-861e-8d527835372d&#34;</span> : <span class=o>[</span>
+</span></span><span class=line><span class=cl>          <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;state&#34;</span> : <span class=s2>&#34;STARTED&#34;</span>,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;primary&#34;</span> : true,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;node&#34;</span> : <span class=s2>&#34;81a9e4e0-efe4-458d-861e-8d527835372d&#34;</span>,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;relocating_node&#34;</span> : null,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;shard&#34;</span> : 0,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;index&#34;</span> : <span class=s2>&#34;test&#34;</span>,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;token_ranges&#34;</span> : <span class=o>[</span>
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;(-9223372036854775808,9223372036854775807]&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=o>]</span>,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;allocation_id&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;id&#34;</span> : <span class=s2>&#34;dummy_alloc_id&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>,
+</span></span><span class=line><span class=cl>          <span class=o>{</span>
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;state&#34;</span> : <span class=s2>&#34;STARTED&#34;</span>,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;primary&#34;</span> : true,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;node&#34;</span> : <span class=s2>&#34;81a9e4e0-efe4-458d-861e-8d527835372d&#34;</span>,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;relocating_node&#34;</span> : null,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;shard&#34;</span> : 0,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;index&#34;</span> : <span class=s2>&#34;test2&#34;</span>,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;token_ranges&#34;</span> : <span class=o>[</span>
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;(-9223372036854775808,9223372036854775807]&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=o>]</span>,
+</span></span><span class=line><span class=cl>            <span class=s2>&#34;allocation_id&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>              <span class=s2>&#34;id&#34;</span> : <span class=s2>&#34;dummy_alloc_id&#34;</span>
+</span></span><span class=line><span class=cl>            <span class=o>}</span>
+</span></span><span class=line><span class=cl>          <span class=o>}</span>
+</span></span><span class=line><span class=cl>        <span class=o>]</span>
+</span></span><span class=line><span class=cl>      <span class=o>}</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;snapshots&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;snapshots&#34;</span> : <span class=o>[</span> <span class=o>]</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;restore&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;snapshots&#34;</span> : <span class=o>[</span> <span class=o>]</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>,
+</span></span><span class=line><span class=cl>    <span class=s2>&#34;snapshot_deletions&#34;</span> : <span class=o>{</span>
+</span></span><span class=line><span class=cl>      <span class=s2>&#34;snapshot_deletions&#34;</span> : <span class=o>[</span> <span class=o>]</span>
+</span></span><span class=line><span class=cl>    <span class=o>}</span>
+</span></span><span class=line><span class=cl>  <span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>获取Elasticsearch索引信息：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ curl <span class=s2>&#34;http://localhost:9200/_cat/indices?v&#34;</span>
+</span></span><span class=line><span class=cl>  health status index uuid                   pri rep docs.count docs.deleted store.size pri.store.size
+</span></span><span class=line><span class=cl>  green  open   test2 u7BgODwuT_idHbcuenvi6g   <span class=m>1</span>   <span class=m>0</span>          <span class=m>0</span>            <span class=m>0</span>       208b           208b
+</span></span><span class=line><span class=cl>  green  open   <span class=nb>test</span>  h34je53mSVqojho2gIH91A   <span class=m>1</span>   <span class=m>0</span>          <span class=m>4</span>            <span class=m>0</span>        4kb            4kb
+</span></span></code></pre></td></tr></table></div></div><p>删除Elasticsearch索引（默认情况下不删除底层的Cassandra表）：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>curl -XDELETE http://localhost:9200/test
+</span></span><span class=line><span class=cl><span class=o>{</span><span class=s2>&#34;acknowledged&#34;</span>:true<span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div></section><footer class=article-footer><section class=article-tags><a href=/tags/database/>Database</a>
+<a href=/tags/cassandra/>Cassandra</a>
+<a href=/tags/elasticsearch/>Elasticsearch</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><div id=gitalk-container></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css><script src=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js></script><script src=https://cdn.jsdelivr.net/npm/blueimp-md5@2.18.0/js/md5.min.js></script><script>const gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:["ycrxun"],distractionFreeMode:!1,id:md5(location.pathname)});(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("gitalk-container").innerHTML="Gitalk comments not available by default when the website is previewed locally.";return}gitalk.render("gitalk-container")})()</script><footer class=site-footer><section class=copyright>&copy;
+2015 -
+2024 Soi</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.26.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

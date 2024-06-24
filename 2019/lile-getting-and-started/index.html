@@ -1,173 +1,318 @@
-<!doctype html><html lang=en-us><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta name=author content="Soi"><meta name=description content="Search Engine Oriented Programming."><meta name=keywords content="Soi,Programming,Blog,ycrxun"><link rel=prev href=https://ronggle.com/2019/elassandra-getting-and-started/><link rel=next href=https://ronggle.com/2019/hyperledger-fabric-on-swarm/><link rel=canonical href=https://ronggle.com/2019/lile-getting-and-started/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><title>Lile简单介绍 | 凉都小道</title><meta name=title content="Lile简单介绍 | 凉都小道"><link rel=stylesheet href=/font/iconfont.css><link rel=stylesheet href=/css/main.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/ronggle.com\/"},"articleSection":"posts","name":"Lile简单介绍","headline":"Lile简单介绍","description":"Lile是Go中的gRPC服务和一组工具\/库的应用程序生成器","inLanguage":"en-us","author":"Soi","creator":"Soi","publisher":"Soi","accountablePerson":"Soi","copyrightHolder":"Soi","copyrightYear":"2019","datePublished":"2019-07-07 17:47:56 \x2b0800 CST","dateModified":"2019-07-07 17:47:56 \x2b0800 CST","url":"https:\/\/ronggle.com\/2019\/lile-getting-and-started\/","wordCount":"493","keywords":["gRPC","Go","凉都小道"]}</script></head><body><div class=wrapper><nav class=navbar><div class=container><div class="navbar-header header-logo"><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class="menu navbar-right"><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><nav class=navbar-mobile id=nav-mobile style=display:none><div class=container><div class=navbar-header><div><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class=menu-toggle><span></span><span></span><span></span></div></div><div class=menu id=mobile-menu><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><main class=main><div class=container><article class=post-warp itemscope itemtype=http://schema.org/Article><header class=post-header><h1 class=post-title itemprop="name headline">Lile简单介绍</h1><div class=post-meta>Written by <a itemprop=name href=https://ronggle.com/ rel=author>Soi</a>
-with ♥
-<span class=post-time>on <time datetime=2019-07-07 itemprop=datePublished>July 7, 2019</time></span>
-in
-<i class="iconfont icon-folder"></i><span class=post-category><a href=https://ronggle.com/categories/programming/>Programming</a></span></div></header><div class=post-content><img src=/lile-getting-and-started/lile.png class=featured_image><p>继续挖坑，希望将来能静下心来，安静的补坑。</p><p><a href=https://github.com/lileio/lile rel="nofollow noreferrer" target=_blank>Lile</a>是Go中的gRPC服务和一组工具/库的应用程序生成器（类似于create-react-app，rails new或django startproject）。</p><p>Lile的主要焦点是在创建新服务时通过创建基本结构，测试示例，Dockerfile，Makefile等。</p><p>Lile带有基本的预设置，带有可插拔选项，适用于&hellip;&hellip;</p><ul><li>Metrics (例如<a href=https://prometheus.io/ rel="nofollow noreferrer" target=_blank>Prometheus</a>)</li><li>Tracing (例如<a href=https://zipkin.io/ rel="nofollow noreferrer" target=_blank>Zipkin</a>)</li><li>PubSub (例如<a href=https://cloud.google.com/pubsub/docs/overview rel="nofollow noreferrer" target=_blank>Google PubSub</a>)</li><li>Service Discovery</li></ul><h2 id=安装>安装</h2><p>安装Lile非常简单，使用<code>go get</code>就可以安装lile的命令行工具，用于生成新的服务和所需的库。</p><p>首先，您需要安装Google的<a href=https://developers.google.com/protocol-buffers/ rel="nofollow noreferrer" target=_blank>Protocol Buffers</a>。</p><pre><code class=language-bash>$ brew install protobuf
-$ go get -u github.com/lileio/lile/...
-</code></pre><h2 id=快速开始>快速开始</h2><p>使用<code>lile new</code>生成新服务。</p><pre><code class=language-bash>$ lile new lileio/users
-</code></pre><h2 id=指南>指南</h2><ul><li><a href=#创建服务>创建服务</a></li><li><a href=#服务定义>服务定义</a></li><li><a href=#生成RPC方法>生成RPC方法</a></li><li><a href=#编写并运行测试用例>编写并运行测试用例</a></li><li><a href=#使用生成的命令行>使用生成的命令行</a></li><li><a href=#添加你自己的命令行>添加你自己的命令行</a></li></ul><h3 id=创建服务>创建服务</h3><p>Lile附带一个“代码生成器”，可以快速生成新的Lile服务。</p><p>Lile遵循Go关于$GOPATH的约定（参见如何写Go），并且自动解析您的新服务的名称，以在正确的位置创建服务。</p><p>如果您的Github用户名是<code>lileio</code>，并且您想创建一个新的服务为了发布消息到Slack，您可以使用如下命令：</p><pre><code class=language-bash>lile new lileio/slack
-</code></pre><p>这将创建一个项目到<code>$GOPATH/src/github.com/lileio/slack</code></p><h3 id=服务定义>服务定义</h3><p>Lile服务主要使用<a href=https://grpc.io/ rel="nofollow noreferrer" target=_blank>gRPC</a>，因此使用<a href=https://developers.google.com/protocol-buffers/ rel="nofollow noreferrer" target=_blank>protocol buffers</a>作为接口定义语言（IDL），用于描述有效负载消息的服务接口和结构。 如果需要，可以使用其他替代品。</p><p>我强烈建议您先阅读<a href=https://cloud.google.com/apis/design/ rel="nofollow noreferrer" target=_blank>Google API</a>设计文档，以获得有关RPC方法和消息的一般命名的好建议，以及如果需要，可以通过<a href=https://github.com/grpc-ecosystem/grpc-gateway rel="nofollow noreferrer" target=_blank>gRPC Gateway</a>将其转换为REST/JSON。</p><p>下面是一个简单的例子<code>account_service</code>：</p><pre><code class=language-protobuf>service AccountService {
-  rpc List (ListAccountsRequest) returns (ListAccountsResponse) {}
-  rpc GetById (GetByIdRequest) returns (Account) {}
-  rpc GetByEmail (GetByEmailRequest) returns (Account) {}
-  rpc AuthenticateByEmail (AuthenticateByEmailRequest) returns (Account) {}
-  rpc GeneratePasswordToken (GeneratePasswordTokenRequest) returns (GeneratePasswordTokenResponse) {}
-  rpc ResetPassword (ResetPasswordRequest) returns (Account) {}
-  rpc ConfirmAccount (ConfirmAccountRequest) returns (Account) {}
-  rpc Create (CreateAccountRequest) returns (Account) {}
-  rpc Update (UpdateAccountRequest) returns (Account) {}
-  rpc Delete (DeleteAccountRequest) returns (google.protobuf.Empty) {}
-}
-</code></pre><h3 id=生成rpc方法>生成RPC方法</h3><p>默认情况下，Lile将创建一个RPC方法和一个简单的请求和响应消息。</p><pre><code class=language-proto>syntax = &quot;proto3&quot;;
-option go_package = &quot;github.com/lileio/slack&quot;;
-package slack;
-
-message Request {
-  string id = 1;
-}
-
-message Response {
-  string id = 1;
-}
-
-service Slack {
-  rpc Read (Request) returns (Response) {}
-}
-
-</code></pre><p>我们来修改一下使它能够提供真正的服务，并添加自己的方法。</p><p>我们来创建一个Announce方法向Slack发布消息。</p><p>我们假设Slack团队和身份验证已经由服务配置来处理，所以我们服务的用户只需要提供一个房间和他们的消息。 该服务将发送特殊的空响应，因为我们只需要知道是否发生错误，也不需要知道其他任何内容。</p><p>现在我们的proto文件看起来像这样：</p><pre><code class=language-proto>syntax = &quot;proto3&quot;;
-option go_package = &quot;github.com/lileio/slack&quot;;
-import &quot;google/protobuf/empty.proto&quot;;
-package slack;
-
-message AnnounceRequest {
-  string channel = 1;
-  string msg = 2;
-}
-
-service Slack {
-  rpc Announce (AnnounceRequest) returns (google.protobuf.Empty) {}
-}
-</code></pre><p>现在我们运行protoc工具我们的文件，以及Lile生成器插件。</p><pre><code class=language-bash>protoc -I . slack.proto --lile-server_out=. --go_out=plugins=grpc:$GOPATH/src
-</code></pre><p>Lile提供了一个Makefile，每个项目都有一个已经配置的proto构建步骤。 所以我们可以运行它。</p><pre><code class=language-bash>make proto
-</code></pre><p>我们可以看到，Lile将在server目录中为我们创建两个文件。</p><pre><code class=language-bash>$ make proto
-protoc -I . slack.proto --lile-server_out=. --go_out=plugins=grpc:$GOPATH/src
-2017/07/12 15:44:01 [Creating] server/announce.go
-2017/07/12 15:44:01 [Creating test] server/announce_test.go
-</code></pre><p>我们来看看Lile为我们创建的<code>announce.go</code>文件。</p><pre><code class=language-go>package server
-
-import (
-    &quot;errors&quot;
-
-    &quot;github.com/golang/protobuf/ptypes/empty&quot;
-    &quot;github.com/lileio/slack&quot;
-    context &quot;golang.org/x/net/context&quot;
-)
-
-func (s SlackServer) Announce(ctx context.Context, r *slack.AnnounceRequest) (*empty.Empty, error) {
-  return nil, errors.New(&quot;not yet implemented&quot;)
-}
-</code></pre><p>接下来我们实现这个生成的方法，让我们从测试开始吧！</p><h3 id=编写并运行测试用例>编写并运行测试用例</h3><p>当您使用Lile生成RPC方法时，也会创建一个对应的测试文件。例如，给定我们的<code>announce.go</code>文件，Lile将在同一目录中创建<code>announce_test.go</code></p><p>看起来如下:</p><pre><code class=language-go>package server
-
-import (
-	&quot;testing&quot;
-
-	&quot;github.com/lileio/slack&quot;
-	&quot;github.com/stretchr/testify/assert&quot;
-	context &quot;golang.org/x/net/context&quot;
-)
-
-func TestAnnounce(t *testing.T) {
-	ctx := context.Background()
-	req := &amp;slack.AnnounceRequest{}
-
-	res, err := cli.Announce(ctx, req)
-	assert.Nil(t, err)
-	assert.NotNil(t, res)
-}
-</code></pre><p>您现在可以使用<code>Makefile</code>运行测试，并运行<code>make test</code>命令:</p><pre><code class=language-bash>$ make test
-=== RUN   TestAnnounce
---- FAIL: TestAnnounce (0.00s)
-        Error Trace:    announce_test.go:16
-        Error:          Expected nil, but got: &amp;status.statusError{Code:2, Message:&quot;not yet implemented&quot;, Details:[]*any.Any(nil)}
-        Error Trace:    announce_test.go:17
-        Error:          Expected value not to be nil.
-FAIL
-coverage: 100.0% of statements
-FAIL    github.com/lileio/slack/server  0.011s
-make: *** [test] Error 2
-
-</code></pre><p>我们的测试失败了，因为我们还没有实现我们的方法，在我们的方法中返回一个“未实现”的错误。</p><p>让我们在announce.go中实现Announce方法，这里是一个使用nlopes的<a href=https://github.com/nlopes/slack rel="nofollow noreferrer" target=_blank>slack library</a>的例子。</p><pre><code class=language-bash>package server
-
-import (
-	&quot;os&quot;
-	&quot;google.golang.org/grpc/codes&quot;
-	&quot;google.golang.org/grpc/status&quot;
-
-	&quot;github.com/golang/protobuf/ptypes/empty&quot;
-	&quot;github.com/lileio/slack&quot;
-	sl &quot;github.com/nlopes/slack&quot;
-	context &quot;golang.org/x/net/context&quot;
-)
-
-var api = sl.New(os.Getenv(&quot;SLACK_TOKEN&quot;))
-
-func (s SlackServer) Announce(ctx context.Context, r *slack.AnnounceRequest) (*empty.Empty, error) {
-	_, _, err := api.PostMessage(r.Channel, r.Msg, sl.PostMessageParameters{})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, err.Error())
-	}
-
-	return &amp;empty.Empty{}, nil
-}
-</code></pre><p>我们再次修改我们的测试用力，然后再次运行我们的测试:</p><pre><code class=language-go>package server
-
-import (
-	&quot;testing&quot;
-
-	&quot;github.com/lileio/slack&quot;
-	&quot;github.com/stretchr/testify/assert&quot;
-	context &quot;golang.org/x/net/context&quot;
-)
-
-func TestAnnounce(t *testing.T) {
-	ctx := context.Background()
-	req := &amp;slack.AnnounceRequest{
-		Channel: &quot;@alex&quot;,
-		Msg:     &quot;hellooo&quot;,
-	}
-
-	res, err := cli.Announce(ctx, req)
-	assert.Nil(t, err)
-	assert.NotNil(t, res)
-}
-</code></pre><p>现在如果我使用我的Slack令牌作为环境变量运行测试，我应该看到通过测试！</p><pre><code class=language-bash>$ alex@slack: SLACK_TOKEN=zbxkkausdkasugdk make test
-go test -v ./... -cover
-?       github.com/lileio/slack [no test files]
-=== RUN   TestAnnounce
---- PASS: TestAnnounce (0.32s)
-PASS
-coverage: 75.0% of statements
-ok      github.com/lileio/slack/server  0.331s  coverage: 75.0% of statements
-?       github.com/lileio/slack/slack   [no test files]
-?       github.com/lileio/slack/slack/cmd       [no test files]
-?       github.com/lileio/slack/subscribers     [no test files]
-</code></pre><h3 id=使用生成的命令行>使用生成的命令行</h3><p>生成服务时，Lile会基于<a href=https://github.com/spf13/cobra rel="nofollow noreferrer" target=_blank>cobra</a>生成命令行程序。您可以使用自己的cmd扩展应用程序，也可以使用内置cmds来运行服务。</p><p>运行不带任何参数的cmd行应用程序将打印生成的帮助。</p><p>例如<code>go run orders/main.go</code></p><h4 id=启动>启动</h4><p>运行<code>up</code>将同时运行RPC服务器和发布订阅的订阅者。</p><h3 id=添加你自己的命令行>添加你自己的命令行</h3><p>要添加自己的cmd，您可以使用Cobra内置的生成器来生成更多的命令。</p><pre><code class=language-bash>$ cd orders
-$ cobra add import
-</code></pre><p>您现在可以编辑生成的文件，以创建您的命令行，cobra会自动将命令行的名称添加到帮助中。</p></div><div class=post-copyright><p class=copyright-item><span>Author:</span>
-<span>Soi</span></p><p class=copyright-item><span>Link:</span>
-<a href=https://ronggle.com/2019/lile-getting-and-started/>https://ronggle.com/2019/lile-getting-and-started/</span></p><p class="copyright-item lincese">本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p></div><div class=post-tags><section><i class="iconfont icon-tag"></i>Tag(s):
-<span class=tag><a href=https://ronggle.com/tags/grpc/>#gRPC</a></span>
-<span class=tag><a href=https://ronggle.com/tags/go/>#Go</a></span></section><section><a href=javascript:window.history.back();>back</a></span> ·
-<span><a href=https://ronggle.com/>home</a></span></section></div><div class=post-nav><a href=https://ronggle.com/2019/elassandra-getting-and-started/ class=prev rel=prev title=Elassandra简单介绍><i class="iconfont icon-left"></i>&nbsp;Elassandra简单介绍</a>
-<a href=https://ronggle.com/2019/hyperledger-fabric-on-swarm/ class=next rel=next title="使用Docker Swarm部署Hyperledger Fabric">使用Docker Swarm部署Hyperledger Fabric&nbsp;<i class="iconfont icon-right"></i></a></div><div class=post-comment><link rel=stylesheet href=/css/gitalk.min.css><script src=/js/gitalk.min.min.js></script><div id=gitalk-container></div><script>var gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:"ycrxun",id:location.pathname,distractionFreeMode:false});gitalk.render('gitalk-container');</script></div></article></div></main><footer class=footer><div class=copyright>&copy;
-<span itemprop=copyrightYear>2015 - 2019</span>
-<span class=with-love><i class="iconfont icon-love"></i></span><span class=author itemprop=copyrightHolder><a href=https://ronggle.com/>Soi</a> |</span>
-<a href=http://www.beian.miit.gov.cn/ target=_blank rel="external nofollow">黔ICP备15015267号</a> |
-<span>Powered by <a href=https://gohugo.io/ target=_blank rel="external nofollow">Hugo</a> & <a href=https://github.com/liuzc/leaveit target=_blank rel="external nofollow">LeaveIt</a></span></div></footer><script src=/js/vendor_no_gallery.min.js async></script><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?VNkd8ZiQJH29dqsu";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script><div id=landlord style=left:30px><div class=message style=opacity:0></div><canvas id=live2d width=280 height=250 class=live2d></canvas><div class=hide-button>隐藏</div></div><link rel=stylesheet href=/css/live2d.min.css><script src=/js/live2d.min.js></script><script src=/live2d/message.js defer></script><script type=text/javascript defer>var message_Path="\/live2d\/";var home_Path="https:\/\/ronggle.com\/"
-loadlive2d("live2d","\/live2d\/model\/tia\/model.json");</script></div></body></html>
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="Lile是Go中的gRPC服务和一组工具/库的应用程序生成器"><title>Lile简单介绍</title>
+<link rel=canonical href=https://ronggle.com/2019/lile-getting-and-started/><link rel=stylesheet href=/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css><meta property='og:title' content="Lile简单介绍"><meta property='og:description' content="Lile是Go中的gRPC服务和一组工具/库的应用程序生成器"><meta property='og:url' content='https://ronggle.com/2019/lile-getting-and-started/'><meta property='og:site_name' content='凉都小道'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='gRPC'><meta property='article:tag' content='Go'><meta property='article:published_time' content='2019-07-07T17:47:56+08:00'><meta property='article:modified_time' content='2019-07-07T17:47:56+08:00'><meta property='og:image' content='https://ronggle.com/2019/lile-getting-and-started/lile.png'><meta name=twitter:title content="Lile简单介绍"><meta name=twitter:description content="Lile是Go中的gRPC服务和一组工具/库的应用程序生成器"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://ronggle.com/2019/lile-getting-and-started/lile.png'><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu1aa4dd0456be0d06f4d83ce8e29586b6_40169_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🍥</span></figure><div class=site-meta><h1 class=site-name><a href=/>凉都小道</a></h1><h2 class=site-description>道生一，一生二，二生三，三生万物</h2></div></header><ol class=menu-social><li><a href=https://github.com/ycrxun target=_blank title=GitHub rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com/ChangrongYang target=_blank title=Twitter rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li><a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/about/><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-message-user"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 18l-5 3v-3H6a3 3 0 01-3-3V7a3 3 0 013-3h12a3 3 0 013 3v4.5"/><path d="M19 17m-2 0a2 2 0 104 0 2 2 0 10-4 0"/><path d="M22 22a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+<span>关于我</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#安装>安装</a></li><li><a href=#快速开始>快速开始</a></li><li><a href=#指南>指南</a><ol><li><a href=#创建服务>创建服务</a></li><li><a href=#服务定义>服务定义</a></li><li><a href=#生成rpc方法>生成RPC方法</a></li><li><a href=#编写并运行测试用例>编写并运行测试用例</a></li><li><a href=#使用生成的命令行>使用生成的命令行</a><ol><li><a href=#启动>启动</a></li></ol></li><li><a href=#添加你自己的命令行>添加你自己的命令行</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/2019/lile-getting-and-started/><img src=/2019/lile-getting-and-started/lile_huc07f78e848ff3c0cfda834824d5a3104_5265_800x0_resize_box_3.png srcset="/2019/lile-getting-and-started/lile_huc07f78e848ff3c0cfda834824d5a3104_5265_800x0_resize_box_3.png 800w, /2019/lile-getting-and-started/lile_huc07f78e848ff3c0cfda834824d5a3104_5265_1600x0_resize_box_3.png 1600w" width=800 height=348 loading=lazy alt="Featured image of post Lile简单介绍"></a></div><div class=article-details><header class=article-category><a href=/categories/programming/>Programming</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/2019/lile-getting-and-started/>Lile简单介绍</a></h2><h3 class=article-subtitle>Lile是Go中的gRPC服务和一组工具/库的应用程序生成器</h3></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Jul 07, 2019</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 4 分钟</time></div></footer></div></header><section class=article-content><p>继续挖坑，希望将来能静下心来，安静的补坑。</p><p><a class=link href=https://github.com/lileio/lile target=_blank rel=noopener>Lile</a>是Go中的gRPC服务和一组工具/库的应用程序生成器（类似于create-react-app，rails new或django startproject）。</p><p>Lile的主要焦点是在创建新服务时通过创建基本结构，测试示例，Dockerfile，Makefile等。</p><p>Lile带有基本的预设置，带有可插拔选项，适用于&mldr;&mldr;</p><ul><li>Metrics (例如<a class=link href=https://prometheus.io/ target=_blank rel=noopener>Prometheus</a>)</li><li>Tracing (例如<a class=link href=https://zipkin.io/ target=_blank rel=noopener>Zipkin</a>)</li><li>PubSub (例如<a class=link href=https://cloud.google.com/pubsub/docs/overview target=_blank rel=noopener>Google PubSub</a>)</li><li>Service Discovery</li></ul><h2 id=安装>安装</h2><p>安装Lile非常简单，使用<code>go get</code>就可以安装lile的命令行工具，用于生成新的服务和所需的库。</p><p>首先，您需要安装Google的<a class=link href=https://developers.google.com/protocol-buffers/ target=_blank rel=noopener>Protocol Buffers</a>。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ brew install protobuf
+</span></span><span class=line><span class=cl>$ go get -u github.com/lileio/lile/...
+</span></span></code></pre></td></tr></table></div></div><h2 id=快速开始>快速开始</h2><p>使用<code>lile new</code>生成新服务。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ lile new lileio/users
+</span></span></code></pre></td></tr></table></div></div><h2 id=指南>指南</h2><ul><li><a class=link href=#%e5%88%9b%e5%bb%ba%e6%9c%8d%e5%8a%a1>创建服务</a></li><li><a class=link href=#%e6%9c%8d%e5%8a%a1%e5%ae%9a%e4%b9%89>服务定义</a></li><li><a class=link href=#%e7%94%9f%e6%88%90RPC%e6%96%b9%e6%b3%95>生成RPC方法</a></li><li><a class=link href=#%e7%bc%96%e5%86%99%e5%b9%b6%e8%bf%90%e8%a1%8c%e6%b5%8b%e8%af%95%e7%94%a8%e4%be%8b>编写并运行测试用例</a></li><li><a class=link href=#%e4%bd%bf%e7%94%a8%e7%94%9f%e6%88%90%e7%9a%84%e5%91%bd%e4%bb%a4%e8%a1%8c>使用生成的命令行</a></li><li><a class=link href=#%e6%b7%bb%e5%8a%a0%e4%bd%a0%e8%87%aa%e5%b7%b1%e7%9a%84%e5%91%bd%e4%bb%a4%e8%a1%8c>添加你自己的命令行</a></li></ul><h3 id=创建服务>创建服务</h3><p>Lile附带一个“代码生成器”，可以快速生成新的Lile服务。</p><p>Lile遵循Go关于$GOPATH的约定（参见如何写Go），并且自动解析您的新服务的名称，以在正确的位置创建服务。</p><p>如果您的Github用户名是<code>lileio</code>，并且您想创建一个新的服务为了发布消息到Slack，您可以使用如下命令：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>lile new lileio/slack
+</span></span></code></pre></td></tr></table></div></div><p>这将创建一个项目到<code>$GOPATH/src/github.com/lileio/slack</code></p><h3 id=服务定义>服务定义</h3><p>Lile服务主要使用<a class=link href=https://grpc.io/ target=_blank rel=noopener>gRPC</a>，因此使用<a class=link href=https://developers.google.com/protocol-buffers/ target=_blank rel=noopener>protocol buffers</a>作为接口定义语言（IDL），用于描述有效负载消息的服务接口和结构。 如果需要，可以使用其他替代品。</p><p>我强烈建议您先阅读<a class=link href=https://cloud.google.com/apis/design/ target=_blank rel=noopener>Google API</a>设计文档，以获得有关RPC方法和消息的一般命名的好建议，以及如果需要，可以通过<a class=link href=https://github.com/grpc-ecosystem/grpc-gateway target=_blank rel=noopener>gRPC Gateway</a>将其转换为REST/JSON。</p><p>下面是一个简单的例子<code>account_service</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-protobuf data-lang=protobuf><span class=line><span class=cl><span class=kd>service</span> <span class=n>AccountService</span> <span class=p>{</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>List</span> <span class=p>(</span><span class=n>ListAccountsRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>ListAccountsResponse</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>GetById</span> <span class=p>(</span><span class=n>GetByIdRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>Account</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>GetByEmail</span> <span class=p>(</span><span class=n>GetByEmailRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>Account</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>AuthenticateByEmail</span> <span class=p>(</span><span class=n>AuthenticateByEmailRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>Account</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>GeneratePasswordToken</span> <span class=p>(</span><span class=n>GeneratePasswordTokenRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>GeneratePasswordTokenResponse</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>ResetPassword</span> <span class=p>(</span><span class=n>ResetPasswordRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>Account</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>ConfirmAccount</span> <span class=p>(</span><span class=n>ConfirmAccountRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>Account</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>Create</span> <span class=p>(</span><span class=n>CreateAccountRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>Account</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>Update</span> <span class=p>(</span><span class=n>UpdateAccountRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>Account</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>Delete</span> <span class=p>(</span><span class=n>DeleteAccountRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>google.protobuf.Empty</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=p>}</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=生成rpc方法>生成RPC方法</h3><p>默认情况下，Lile将创建一个RPC方法和一个简单的请求和响应消息。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-proto data-lang=proto><span class=line><span class=cl><span class=n>syntax</span> <span class=o>=</span> <span class=s>&#34;proto3&#34;</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>option</span> <span class=n>go_package</span> <span class=o>=</span> <span class=s>&#34;github.com/lileio/slack&#34;</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=kn>package</span> <span class=nn>slack</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=kd>message</span> <span class=nc>Request</span> <span class=p>{</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=kt>string</span> <span class=n>id</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=p>}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=kd>message</span> <span class=nc>Response</span> <span class=p>{</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=kt>string</span> <span class=n>id</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=p>}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=kd>service</span> <span class=n>Slack</span> <span class=p>{</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>Read</span> <span class=p>(</span><span class=n>Request</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>Response</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=p>}</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>我们来修改一下使它能够提供真正的服务，并添加自己的方法。</p><p>我们来创建一个Announce方法向Slack发布消息。</p><p>我们假设Slack团队和身份验证已经由服务配置来处理，所以我们服务的用户只需要提供一个房间和他们的消息。 该服务将发送特殊的空响应，因为我们只需要知道是否发生错误，也不需要知道其他任何内容。</p><p>现在我们的proto文件看起来像这样：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-proto data-lang=proto><span class=line><span class=cl><span class=n>syntax</span> <span class=o>=</span> <span class=s>&#34;proto3&#34;</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>option</span> <span class=n>go_package</span> <span class=o>=</span> <span class=s>&#34;github.com/lileio/slack&#34;</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=k>import</span> <span class=s>&#34;google/protobuf/empty.proto&#34;</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=kn>package</span> <span class=nn>slack</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=kd>message</span> <span class=nc>AnnounceRequest</span> <span class=p>{</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=kt>string</span> <span class=n>channel</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=kt>string</span> <span class=n>msg</span> <span class=o>=</span> <span class=mi>2</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=p>}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=kd>service</span> <span class=n>Slack</span> <span class=p>{</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>Announce</span> <span class=p>(</span><span class=n>AnnounceRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>google.protobuf.Empty</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=p>}</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><p>现在我们运行protoc工具我们的文件，以及Lile生成器插件。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>protoc -I . slack.proto --lile-server_out<span class=o>=</span>. --go_out<span class=o>=</span><span class=nv>plugins</span><span class=o>=</span>grpc:<span class=nv>$GOPATH</span>/src
+</span></span></code></pre></td></tr></table></div></div><p>Lile提供了一个Makefile，每个项目都有一个已经配置的proto构建步骤。 所以我们可以运行它。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>make proto
+</span></span></code></pre></td></tr></table></div></div><p>我们可以看到，Lile将在server目录中为我们创建两个文件。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ make proto
+</span></span><span class=line><span class=cl>protoc -I . slack.proto --lile-server_out<span class=o>=</span>. --go_out<span class=o>=</span><span class=nv>plugins</span><span class=o>=</span>grpc:<span class=nv>$GOPATH</span>/src
+</span></span><span class=line><span class=cl>2017/07/12 15:44:01 <span class=o>[</span>Creating<span class=o>]</span> server/announce.go
+</span></span><span class=line><span class=cl>2017/07/12 15:44:01 <span class=o>[</span>Creating test<span class=o>]</span> server/announce_test.go
+</span></span></code></pre></td></tr></table></div></div><p>我们来看看Lile为我们创建的<code>announce.go</code>文件。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>server</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>    <span class=s>&#34;errors&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=s>&#34;github.com/golang/protobuf/ptypes/empty&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=s>&#34;github.com/lileio/slack&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=nx>context</span> <span class=s>&#34;golang.org/x/net/context&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=p>(</span><span class=nx>s</span> <span class=nx>SlackServer</span><span class=p>)</span> <span class=nf>Announce</span><span class=p>(</span><span class=nx>ctx</span> <span class=nx>context</span><span class=p>.</span><span class=nx>Context</span><span class=p>,</span> <span class=nx>r</span> <span class=o>*</span><span class=nx>slack</span><span class=p>.</span><span class=nx>AnnounceRequest</span><span class=p>)</span> <span class=p>(</span><span class=o>*</span><span class=nx>empty</span><span class=p>.</span><span class=nx>Empty</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=k>return</span> <span class=kc>nil</span><span class=p>,</span> <span class=nx>errors</span><span class=p>.</span><span class=nf>New</span><span class=p>(</span><span class=s>&#34;not yet implemented&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>接下来我们实现这个生成的方法，让我们从测试开始吧！</p><h3 id=编写并运行测试用例>编写并运行测试用例</h3><p>当您使用Lile生成RPC方法时，也会创建一个对应的测试文件。例如，给定我们的<code>announce.go</code>文件，Lile将在同一目录中创建<code>announce_test.go</code></p><p>看起来如下:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>server</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;testing&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/lileio/slack&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/stretchr/testify/assert&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=nx>context</span> <span class=s>&#34;golang.org/x/net/context&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>TestAnnounce</span><span class=p>(</span><span class=nx>t</span> <span class=o>*</span><span class=nx>testing</span><span class=p>.</span><span class=nx>T</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>ctx</span> <span class=o>:=</span> <span class=nx>context</span><span class=p>.</span><span class=nf>Background</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=nx>req</span> <span class=o>:=</span> <span class=o>&amp;</span><span class=nx>slack</span><span class=p>.</span><span class=nx>AnnounceRequest</span><span class=p>{}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>res</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>cli</span><span class=p>.</span><span class=nf>Announce</span><span class=p>(</span><span class=nx>ctx</span><span class=p>,</span> <span class=nx>req</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nx>assert</span><span class=p>.</span><span class=nf>Nil</span><span class=p>(</span><span class=nx>t</span><span class=p>,</span> <span class=nx>err</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nx>assert</span><span class=p>.</span><span class=nf>NotNil</span><span class=p>(</span><span class=nx>t</span><span class=p>,</span> <span class=nx>res</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>您现在可以使用<code>Makefile</code>运行测试，并运行<code>make test</code>命令:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ make <span class=nb>test</span>
+</span></span><span class=line><span class=cl><span class=o>===</span> RUN   TestAnnounce
+</span></span><span class=line><span class=cl>--- FAIL: TestAnnounce <span class=o>(</span>0.00s<span class=o>)</span>
+</span></span><span class=line><span class=cl>        Error Trace:    announce_test.go:16
+</span></span><span class=line><span class=cl>        Error:          Expected nil, but got: <span class=p>&amp;</span>status.statusError<span class=o>{</span>Code:2, Message:<span class=s2>&#34;not yet implemented&#34;</span>, Details:<span class=o>[]</span>*any.Any<span class=o>(</span>nil<span class=o>)}</span>
+</span></span><span class=line><span class=cl>        Error Trace:    announce_test.go:17
+</span></span><span class=line><span class=cl>        Error:          Expected value not to be nil.
+</span></span><span class=line><span class=cl>FAIL
+</span></span><span class=line><span class=cl>coverage: 100.0% of statements
+</span></span><span class=line><span class=cl>FAIL    github.com/lileio/slack/server  0.011s
+</span></span><span class=line><span class=cl>make: *** <span class=o>[</span>test<span class=o>]</span> Error <span class=m>2</span>
+</span></span></code></pre></td></tr></table></div></div><p>我们的测试失败了，因为我们还没有实现我们的方法，在我们的方法中返回一个“未实现”的错误。</p><p>让我们在announce.go中实现Announce方法，这里是一个使用nlopes的<a class=link href=https://github.com/nlopes/slack target=_blank rel=noopener>slack library</a>的例子。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>package server
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>import <span class=o>(</span>
+</span></span><span class=line><span class=cl>	<span class=s2>&#34;os&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s2>&#34;google.golang.org/grpc/codes&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s2>&#34;google.golang.org/grpc/status&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=s2>&#34;github.com/golang/protobuf/ptypes/empty&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s2>&#34;github.com/lileio/slack&#34;</span>
+</span></span><span class=line><span class=cl>	sl <span class=s2>&#34;github.com/nlopes/slack&#34;</span>
+</span></span><span class=line><span class=cl>	context <span class=s2>&#34;golang.org/x/net/context&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>var <span class=nv>api</span> <span class=o>=</span> sl.New<span class=o>(</span>os.Getenv<span class=o>(</span><span class=s2>&#34;SLACK_TOKEN&#34;</span><span class=o>))</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>func <span class=o>(</span>s SlackServer<span class=o>)</span> Announce<span class=o>(</span>ctx context.Context, r *slack.AnnounceRequest<span class=o>)</span> <span class=o>(</span>*empty.Empty, error<span class=o>)</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>	_, _, err :<span class=o>=</span> api.PostMessage<span class=o>(</span>r.Channel, r.Msg, sl.PostMessageParameters<span class=o>{})</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> err !<span class=o>=</span> nil <span class=o>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> nil, status.Errorf<span class=o>(</span>codes.Internal, err.Error<span class=o>())</span>
+</span></span><span class=line><span class=cl>	<span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=p>&amp;</span>empty.Empty<span class=o>{}</span>, nil
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>我们再次修改我们的测试用力，然后再次运行我们的测试:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-go data-lang=go><span class=line><span class=cl><span class=kn>package</span> <span class=nx>server</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;testing&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/lileio/slack&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/stretchr/testify/assert&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=nx>context</span> <span class=s>&#34;golang.org/x/net/context&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>TestAnnounce</span><span class=p>(</span><span class=nx>t</span> <span class=o>*</span><span class=nx>testing</span><span class=p>.</span><span class=nx>T</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>ctx</span> <span class=o>:=</span> <span class=nx>context</span><span class=p>.</span><span class=nf>Background</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=nx>req</span> <span class=o>:=</span> <span class=o>&amp;</span><span class=nx>slack</span><span class=p>.</span><span class=nx>AnnounceRequest</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>Channel</span><span class=p>:</span> <span class=s>&#34;@alex&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>		<span class=nx>Msg</span><span class=p>:</span>     <span class=s>&#34;hellooo&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>res</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>cli</span><span class=p>.</span><span class=nf>Announce</span><span class=p>(</span><span class=nx>ctx</span><span class=p>,</span> <span class=nx>req</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nx>assert</span><span class=p>.</span><span class=nf>Nil</span><span class=p>(</span><span class=nx>t</span><span class=p>,</span> <span class=nx>err</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=nx>assert</span><span class=p>.</span><span class=nf>NotNil</span><span class=p>(</span><span class=nx>t</span><span class=p>,</span> <span class=nx>res</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>现在如果我使用我的Slack令牌作为环境变量运行测试，我应该看到通过测试！</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ alex@slack: <span class=nv>SLACK_TOKEN</span><span class=o>=</span>zbxkkausdkasugdk make <span class=nb>test</span>
+</span></span><span class=line><span class=cl>go <span class=nb>test</span> -v ./... -cover
+</span></span><span class=line><span class=cl>?       github.com/lileio/slack <span class=o>[</span>no <span class=nb>test</span> files<span class=o>]</span>
+</span></span><span class=line><span class=cl><span class=o>===</span> RUN   TestAnnounce
+</span></span><span class=line><span class=cl>--- PASS: TestAnnounce <span class=o>(</span>0.32s<span class=o>)</span>
+</span></span><span class=line><span class=cl>PASS
+</span></span><span class=line><span class=cl>coverage: 75.0% of statements
+</span></span><span class=line><span class=cl>ok      github.com/lileio/slack/server  0.331s  coverage: 75.0% of statements
+</span></span><span class=line><span class=cl>?       github.com/lileio/slack/slack   <span class=o>[</span>no <span class=nb>test</span> files<span class=o>]</span>
+</span></span><span class=line><span class=cl>?       github.com/lileio/slack/slack/cmd       <span class=o>[</span>no <span class=nb>test</span> files<span class=o>]</span>
+</span></span><span class=line><span class=cl>?       github.com/lileio/slack/subscribers     <span class=o>[</span>no <span class=nb>test</span> files<span class=o>]</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=使用生成的命令行>使用生成的命令行</h3><p>生成服务时，Lile会基于<a class=link href=https://github.com/spf13/cobra target=_blank rel=noopener>cobra</a>生成命令行程序。您可以使用自己的cmd扩展应用程序，也可以使用内置cmds来运行服务。</p><p>运行不带任何参数的cmd行应用程序将打印生成的帮助。</p><p>例如<code>go run orders/main.go</code></p><h4 id=启动>启动</h4><p>运行<code>up</code>将同时运行RPC服务器和发布订阅的订阅者。</p><h3 id=添加你自己的命令行>添加你自己的命令行</h3><p>要添加自己的cmd，您可以使用Cobra内置的生成器来生成更多的命令。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ <span class=nb>cd</span> orders
+</span></span><span class=line><span class=cl>$ cobra add import
+</span></span></code></pre></td></tr></table></div></div><p>您现在可以编辑生成的文件，以创建您的命令行，cobra会自动将命令行的名称添加到帮助中。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/grpc/>GRPC</a>
+<a href=/tags/go/>Go</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article class=has-image><a href=/2018/registry-microservies-via-grpc/><div class=article-image><img src=/2018/registry-microservies-via-grpc/consul.4be1f2f3cdc550398d09fc0127aa233a_hu3856c57a2da839c1c05d9a86cb7503bb_22688_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post 使用gRPC开发微服务-服务注册与发现" data-key=registry-microservies-via-grpc data-hash="md5-S+Hy883FUDmNCfwBJ6ojOg=="></div><div class=article-details><h2 class=article-title>使用gRPC开发微服务-服务注册与发现</h2></div></a></article><article class=has-image><a href=/2018/setup-microservies-via-grpc/><div class=article-image><img src=/2018/setup-microservies-via-grpc/grpc.svg loading=lazy data-key=setup-microservies-via-grpc data-hash=/2018/setup-microservies-via-grpc/grpc.svg></div><div class=article-details><h2 class=article-title>使用gRPC开发微服务-开始</h2></div></a></article><article class=has-image><a href=/2019/hyperledger-fabric-on-swarm/><div class=article-image><img src=/2019/hyperledger-fabric-on-swarm/hyperledger-fabric-on-swarm.svg loading=lazy data-key=hyperledger-fabric-on-swarm data-hash=/2019/hyperledger-fabric-on-swarm/hyperledger-fabric-on-swarm.svg></div><div class=article-details><h2 class=article-title>使用Docker Swarm部署Hyperledger Fabric</h2></div></a></article><article class=has-image><a href=/2019/graph-db-getting-and-started/><div class=article-image><img src=/2019/graph-db-getting-and-started/graph.b4d483c4bfa3f9db0d103e3c305eed29_hu3f4d3da678a88c24d39c2337492109c8_2384_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post 图形数据库简单介绍" data-key=graph-db-getting-and-started data-hash="md5-tNSDxL+j+dsNED48MF7tKQ=="></div><div class=article-details><h2 class=article-title>图形数据库简单介绍</h2></div></a></article><article class=has-image><a href=/2018/traefik-on-kubernetes/><div class=article-image><img src=/2018/traefik-on-kubernetes/traefik.svg loading=lazy data-key=traefik-on-kubernetes data-hash=/2018/traefik-on-kubernetes/traefik.svg></div><div class=article-details><h2 class=article-title>Traefik on Kubernetes</h2></div></a></article></div></div></aside><div id=gitalk-container></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css><script src=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js></script><script src=https://cdn.jsdelivr.net/npm/blueimp-md5@2.18.0/js/md5.min.js></script><script>const gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:["ycrxun"],distractionFreeMode:!1,id:md5(location.pathname)});(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("gitalk-container").innerHTML="Gitalk comments not available by default when the website is previewed locally.";return}gitalk.render("gitalk-container")})()</script><footer class=site-footer><section class=copyright>&copy;
+2015 -
+2024 Soi</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.26.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

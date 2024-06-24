@@ -1,1 +1,220 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>API on 凉都小道</title><link>https://ronggle.com/tags/api/</link><description>Recent content in API on 凉都小道</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 03 Sep 2017 12:38:11 +0800</lastBuildDate><atom:link href="https://ronggle.com/tags/api/index.xml" rel="self" type="application/rss+xml"/><item><title>Easy Mock 试玩</title><link>https://ronggle.com/2017/easy-mock-getting-and-started/</link><pubDate>Sun, 03 Sep 2017 12:38:11 +0800</pubDate><guid>https://ronggle.com/2017/easy-mock-getting-and-started/</guid><description>&lt;p&gt;在过去的开发模式中，或许是一群人坐在一起，风风火火的一起码一个项目，大家在一起，口头沟通交流，并不太涉及到跨团队间的数据调用，基本上涉及的API也是不断沟通修改。&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>API on 凉都小道</title><link>https://ronggle.com/tags/api/</link><description>Recent content in API on 凉都小道</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Soi</copyright><lastBuildDate>Sun, 03 Sep 2017 12:38:11 +0800</lastBuildDate><atom:link href="https://ronggle.com/tags/api/index.xml" rel="self" type="application/rss+xml"/><item><title>Easy Mock 试玩</title><link>https://ronggle.com/2017/easy-mock-getting-and-started/</link><pubDate>Sun, 03 Sep 2017 12:38:11 +0800</pubDate><guid>https://ronggle.com/2017/easy-mock-getting-and-started/</guid><description>&lt;img src="https://ronggle.com/2017/easy-mock-getting-and-started/my-project.png" alt="Featured image of post Easy Mock 试玩" />&lt;h2 id="不搭的前言">不搭的前言
+&lt;/h2>&lt;p>而今，开发的项目庞大而且复杂，涉及多个模块，跨多个项目组，如果再按照口头沟通协调，很难想象是多么艰难。而在日常的一些开发过程中，我们也需要不停的对自己开发的代码进行调试，比如某些公司，有些产品线根本没有稳定的开发环境提供给开发人员使用，那么，怎么办，只能使用mock的方式。&lt;/p>
+&lt;p>说到mock，其实我也再使用，有时候，不能每时每刻都调用真实的服务，我们就会再自己项目中设置开关，当再开发环境下时，使用自己再本地文件中伪造的数据，这些文件有JSON、TXT、CSV/EXCEL，往往再不同的模块和借口会写很多不同的Mock数据处理的逻辑，没有复用性，且没有良好的版本控制与管理。&lt;/p>
+&lt;p>那么要怎么处理这些Mock数据呢？今天我们来试玩一下Easy Mock。&lt;/p>
+&lt;h2 id="什么是easy-mock">什么是Easy Mock
+&lt;/h2>&lt;p>伪造数据，我们更高效；但，不仅于此。&lt;/p>
+&lt;p>这是Easy Mock的&lt;a class="link" href="https://www.easy-mock.com" target="_blank" rel="noopener"
+>官网&lt;/a>上面的介绍。&lt;/p>
+&lt;p>Easy Mock是一个极其简单、高效、可视化、并且能快速生成模拟数据的在线Mock服务。以项目管理的方式组织Mock数据，能帮助我们更好的管理Mock数据，不怕丢失。&lt;/p>
+&lt;h3 id="特性">特性
+&lt;/h3>&lt;ul>
+&lt;li>支持接口代理&lt;/li>
+&lt;li>支持快捷键操作&lt;/li>
+&lt;li>支持协同编辑&lt;/li>
+&lt;li>支持团队项目&lt;/li>
+&lt;li>支持 Restful&lt;/li>
+&lt;li>支持 Swagger 1.2 &amp;amp; 2.0
+&lt;ul>
+&lt;li>基于 Swagger 快速创建项目&lt;/li>
+&lt;li>支持显示接口入参与返回值&lt;/li>
+&lt;li>支持显示实体类&lt;/li>
+&lt;/ul>
+&lt;/li>
+&lt;li>支持灵活性与扩展性更高的响应式数据开发&lt;/li>
+&lt;li>支持 Mock.js 语法&lt;/li>
+&lt;li>支持 restc 方式的接口预览&lt;/li>
+&lt;/ul>
+&lt;blockquote>
+&lt;p>&lt;a class="link" href="https://easy-mock.com/docs" target="_blank" rel="noopener"
+>在线使用文档&lt;/a>&lt;br>
+&lt;a class="link" href="https://github.com/easy-mock/easy-mock-cli" target="_blank" rel="noopener"
+>Easy Mock CLI&lt;/a> - 基于 Easy Mock 快速生成 api.js 的命令行工具。&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="数据伪造">数据伪造
+&lt;/h2>&lt;p>我前面也提到过，我们才有的是编程式的伪造数据，利用请求拦截或者配置文件开关，来切换我们的正常数据请求与Mock数据。&lt;/p>
+&lt;p>这些方法虽然可以解决我们的问题，但同样伴随着一些问题，比如说，依赖特定的框架，主要体现再我们使用spring的配置文件profile作为切换开关；又比如，脏代码，主要是我们会带项目源码中以编程的方式伪造Mock数据；又比如说，这些数据没法统一管理，变更困难等等。his&lt;/p>
+&lt;p>说到以上的这些困难，可能还是没能触及你的痛点，但是无所谓了，哈哈哈，接下来，我们试试Easy Mock吧。&lt;/p>
+&lt;h2 id="安装">安装
+&lt;/h2>&lt;blockquote>
+&lt;p>在开始之前，假设你已经成功安装了 Node.js (v7.4 以上) 和 MongoDB (v3.4 以上)&lt;/p>
+&lt;/blockquote>
+&lt;blockquote>
+&lt;p>注意，在安装项目依赖时，bcrypt需要c++编译环境g++，如果你没有安装，那需要自行安装&lt;/p>
+&lt;blockquote>
+&lt;p>$ sudo dnf install gcc-c++ # 注意，本屌使用的是Fedora，你需要根据自己的操作系统找到安装方式&lt;/p>
+&lt;/blockquote>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">$ git clone https://github.com/easy-mock/easy-mock.git
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">$ &lt;span class="nb">cd&lt;/span> easy-mock &lt;span class="o">&amp;amp;&amp;amp;&lt;/span> npm install
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;h2 id="配置">配置
+&lt;/h2>&lt;blockquote>
+&lt;p>不同环境会加载不同的配置文件，在此之前你应该对 node-config 有所了解。&lt;/p>
+&lt;/blockquote>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">$ &lt;span class="nb">pwd&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">/home/soi/web/easy-mock
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">$ &lt;span class="nb">cd&lt;/span> config
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">$ cat default.json
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;port&amp;#34;&lt;/span>: 7300,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;pageSize&amp;#34;&lt;/span>: 30,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;routerPrefix&amp;#34;&lt;/span>: &lt;span class="o">{&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;mock&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;/mock&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;api&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;/api&amp;#34;&lt;/span>
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="o">}&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> &lt;span class="s2">&amp;#34;db&amp;#34;&lt;/span>: &lt;span class="s2">&amp;#34;mongodb://192.168.31.28:27017/easy-mock&amp;#34;&lt;/span>,
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl"> ...
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="o">}&lt;/span>
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;blockquote>
+&lt;p>注意，这里我们需要配置的是MongoDB，可以不配置其他的。如果你需要一些高级用法，你可以参考github仓库的文档进行配置。&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="启动">启动
+&lt;/h2>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-shell" data-lang="shell">&lt;span class="line">&lt;span class="cl">$ npm run dev
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;blockquote>
+&lt;p>这里使用的开发模式启动，可以在你的浏览器中访问&lt;code>http://127.0.0.1:7300&lt;/code>&lt;br>
+更多命令：&lt;br>
+$ npm run build # 前端静态资源构建打包&lt;br>
+$ npm run start # 以生产环境方式启动，需要提前执行 build&lt;br>
+$ npm run test # 测试&lt;br>
+$ npm run lint # 语法检测&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="使用">使用
+&lt;/h2>&lt;h3 id="登录页">登录页
+&lt;/h3>&lt;p>&lt;img src="https://ronggle.com/2017/easy-mock-getting-and-started/login.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/easy-mock-getting-and-started/login_hu588c0917936047c6ada7b378bd895193_2345954_480x0_resize_box_3.png 480w, https://ronggle.com/2017/easy-mock-getting-and-started/login_hu588c0917936047c6ada7b378bd895193_2345954_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="easy mock login"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2017/easy-mock-getting-and-started/login-input.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/easy-mock-getting-and-started/login-input_hu588c0917936047c6ada7b378bd895193_1777789_480x0_resize_box_3.png 480w, https://ronggle.com/2017/easy-mock-getting-and-started/login-input_hu588c0917936047c6ada7b378bd895193_1777789_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="easy mock login input"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;blockquote>
+&lt;p>注意，这里如果你没有用户名和密码的话，直接输入用户名密码，会给新建一个用户&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="个人项目">个人项目
+&lt;/h3>&lt;p>登录成功后，进入我的个人项目面板。&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2017/easy-mock-getting-and-started/my-project.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/easy-mock-getting-and-started/my-project_huda48920455a3f353154d1a2a68d6945c_69133_480x0_resize_box_3.png 480w, https://ronggle.com/2017/easy-mock-getting-and-started/my-project_huda48920455a3f353154d1a2a68d6945c_69133_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="easy mock project"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>点击项目可以查看项目接口列表。&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2017/easy-mock-getting-and-started/my-project-api.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/easy-mock-getting-and-started/my-project-api_hu8569f91c9118ec5f5b9638e58d10268e_123069_480x0_resize_box_3.png 480w, https://ronggle.com/2017/easy-mock-getting-and-started/my-project-api_hu8569f91c9118ec5f5b9638e58d10268e_123069_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="easy mock project api"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;h3 id="团队项目">团队项目
+&lt;/h3>&lt;ul>
+&lt;li>首先，我们来初始化一个团队。&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://ronggle.com/2017/easy-mock-getting-and-started/my-team-new.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/easy-mock-getting-and-started/my-team-new_hudb1ec9a1920c9b3a0944a1b99a242383_67883_480x0_resize_box_3.png 480w, https://ronggle.com/2017/easy-mock-getting-and-started/my-team-new_hudb1ec9a1920c9b3a0944a1b99a242383_67883_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="easy mock team"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;ul>
+&lt;li>新建团队项目&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://ronggle.com/2017/easy-mock-getting-and-started/my-team-project-new.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/easy-mock-getting-and-started/my-team-project-new_hu8ebac6d4ca7557320e9993fbcbdaebb9_92025_480x0_resize_box_3.png 480w, https://ronggle.com/2017/easy-mock-getting-and-started/my-team-project-new_hu8ebac6d4ca7557320e9993fbcbdaebb9_92025_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="easy mock team project"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;ul>
+&lt;li>编辑项目API&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://ronggle.com/2017/easy-mock-getting-and-started/my-team-project-api-edit.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/easy-mock-getting-and-started/my-team-project-api-edit_hub1e8623b1d82c9a695424f3e935aff20_65132_480x0_resize_box_3.png 480w, https://ronggle.com/2017/easy-mock-getting-and-started/my-team-project-api-edit_hub1e8623b1d82c9a695424f3e935aff20_65132_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="easy mock team project api"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;ul>
+&lt;li>预览项目API&lt;/li>
+&lt;/ul>
+&lt;p>&lt;img src="https://ronggle.com/2017/easy-mock-getting-and-started/my-team-project-api-preview.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/easy-mock-getting-and-started/my-team-project-api-preview_hu189adb20a10cf5eb6304c3f640968473_81663_480x0_resize_box_3.png 480w, https://ronggle.com/2017/easy-mock-getting-and-started/my-team-project-api-preview_hu189adb20a10cf5eb6304c3f640968473_81663_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="easy mock team project api previw"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;h2 id="后语">后语
+&lt;/h2>&lt;p>这里我就水完了一篇博客了，对你有没有帮助我不知道。&lt;/p>
+&lt;p>不过首先的感谢下&lt;a class="link" href="http://f2e.souche.com/blog/" target="_blank" rel="noopener"
+>大搜车无线架构团队&lt;/a>给我们开源这个好用的Mock神器。&lt;/p></description></item></channel></rss>

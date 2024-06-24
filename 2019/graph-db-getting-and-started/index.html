@@ -1,261 +1,493 @@
-<!doctype html><html lang=en-us><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta name=author content="Soi"><meta name=description content="Search Engine Oriented Programming."><meta name=keywords content="Soi,Programming,Blog,ycrxun"><link rel=prev href=https://ronggle.com/2018/traefik-on-kubernetes/><link rel=next href=https://ronggle.com/2019/elassandra-getting-and-started/><link rel=canonical href=https://ronggle.com/2019/graph-db-getting-and-started/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><title>图形数据库简单介绍 | 凉都小道</title><meta name=title content="图形数据库简单介绍 | 凉都小道"><link rel=stylesheet href=/font/iconfont.css><link rel=stylesheet href=/css/main.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/ronggle.com\/"},"articleSection":"posts","name":"图形数据库简单介绍","headline":"图形数据库简单介绍","description":"图形数据库是NoSQL数据库的一种类型，它应用图形理论存储实体之间的关系信息。图形数据库是一种非关系型数据库，它应用图形理论存储实体之间的关系信息。","inLanguage":"en-us","author":"Soi","creator":"Soi","publisher":"Soi","accountablePerson":"Soi","copyrightHolder":"Soi","copyrightYear":"2019","datePublished":"2019-03-08 11:27:29 \x2b0800 CST","dateModified":"2019-03-08 11:27:29 \x2b0800 CST","url":"https:\/\/ronggle.com\/2019\/graph-db-getting-and-started\/","wordCount":"559","keywords":["Database","GraphDB","Graph","DGraph","Neo4j","凉都小道"]}</script></head><body><div class=wrapper><nav class=navbar><div class=container><div class="navbar-header header-logo"><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class="menu navbar-right"><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><nav class=navbar-mobile id=nav-mobile style=display:none><div class=container><div class=navbar-header><div><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class=menu-toggle><span></span><span></span><span></span></div></div><div class=menu id=mobile-menu><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><main class=main><div class=container><article class=post-warp itemscope itemtype=http://schema.org/Article><header class=post-header><h1 class=post-title itemprop="name headline">图形数据库简单介绍</h1><div class=post-meta>Written by <a itemprop=name href=https://ronggle.com/ rel=author>Soi</a>
-with ♥
-<span class=post-time>on <time datetime=2019-03-08 itemprop=datePublished>March 8, 2019</time></span>
-in
-<i class="iconfont icon-folder"></i><span class=post-category><a href=https://ronggle.com/categories/programming/>Programming</a></span></div></header><div class=post-content><img src=/graph-db-getting-and-started/graph.png class=featured_image><h2 id=关系型数据库>关系型数据库</h2><p>关系数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。</p><p>现实世界中的各种实体以及实体之间的各种联系均用关系模型来表示。关系模型是由埃德加·科德于1970年首先提出的，并配合“科德十二定律”。现如今虽然对此模型有一些批评意见，但它还是数据存储的传统标准。标准数据查询语言SQL就是一种基于关系数据库的语言，这种语言执行对关系数据库中数据的检索和操作。 关系模型由关系数据结构、关系操作集合、关系完整性约束三部分组成。</p><p>简单说，关系型数据库是由多张能互相联接的二维行列表格组成的数据库。</p><h2 id=nosql>NoSQL</h2><p>NoSQL(Not Only SQL)，泛指非关系型的数据库。</p><p>随着互联网Web2.0网站的兴起，传统的关系数据库在应付Web2.0网站，特别是超大规模和高并发的SNS类型的Web2.0纯动态网站已经显得力不从心，暴露了很多难以克服的问题，而非关系型的数据库则由于其本身的特点得到了非常迅速的发展。NoSQL数据库的产生就是为了解决大规模数据集合多重数据种类带来的挑战，尤其是大数据应用难题。</p><p>NoSQL数据库的四大分类:</p><ul><li>KV数据库</li><li>图型数据库</li><li>文档型数据库</li><li>列存储数据库</li></ul><p>今天我们要说的，便是图形数据库。</p><h2 id=图形数据库>图形数据库</h2><p>图形数据库是NoSQL数据库的一种类型，它应用图形理论存储实体之间的关系信息。图形数据库是一种非关系型数据库，它应用图形理论存储实体之间的关系信息。最常见例子就是社会网络中人与人之间的关系。关系型数据库用于存储“关系型”数据的效果并不好，其查询复杂、缓慢、超出预期，而图形数据库的独特设计恰恰弥补了这个缺陷。</p><p>和其他以列、行或者KV等形式存储数据的数据库不同，图形数据库以节点（Node）和边（Edge）的网络存储所有信息。边表示那些代表对象的节点之间的联系。因为边和节点都可以被描述为对象，开发者可以为其指定属性（Attribute，或者 property）。为边增加方向最终会创建一个属性图，它代表图形数据库中的明确结构。</p><h2 id=我们为什么需要图形数据库>我们为什么需要图形数据库？</h2><p>图形数据库可以通过使用操作、所有权和父项关系等来表示实体之间的关联关系。如果实体间的连接或关系是您正在尝试建模的数据的核心，那就适合使用图形数据库。因此，图形数据库对于建模和查询社交网络、推荐引擎、知识图谱、驾驶方向 (路线查找)、业务关系、依赖关系、货物移动等类似项目非常有用。</p><h3 id=社交网络>社交网络</h3><p>适合采用图形的常见使用案例的一个示例就是社交网络数据。<figure><img src=/images/ring.svg data-sizes=auto data-src=/graph-db-getting-and-started/friend-likes.png alt="graph db friend links" class=lazyload><figcaption class=image-caption>graph db friend links</figcaption></figure></p><h3 id=推荐引擎>推荐引擎</h3><p>可以在图形数据库中存储客户兴趣、好友和购买历史等信息类别之间的关系。然后，快速查询它以提出个性化和相关的建议。例如，可以使用高度可用的图形数据库，根据关注相同运动内容且具有类似购买历史记录的其他人购买的产品，向用户提供产品推荐。或者，可以识别有共同好友但还不认识对方的人员，然后提供好友推荐。</p><h3 id=知识图谱>知识图谱</h3><p>利用知识图形，您可以将信息存储在图形模型中，并可以使用图形查询帮助用户更轻松地导航高度关联的数据集。例如，如果用户对 Leonardo da Vinci 创作的 Mona Lisa 感兴趣，您可以帮助他们发现同一艺术家的其他艺术作品或发现在卢浮宫展览的其他作品。
-利用知识图谱，您可以将主题信息添加到产品目录，构建和查询复杂的监管规则模型，或者进行一般信息建模 (如维基数据)。</p><h2 id=neo4j>Neo4j</h2><p><a href=https://neo4j.com/docs/getting-started/current/ rel="nofollow noreferrer" target=_blank>Neo4j</a>是世界领先的图形数据库。 它是一个高性能的图形存储，具有成熟和强大的数据库所需的所有功能，如友好的查询语言和ACID事务。 程序员使用灵活的节点和关系网络结构而不是静态表 - 但享受企业级数据库的所有好处。 对于许多应用程序，与关系数据库相比，Neo4j提供了数量级的性能优势。</p><h3 id=安装>安装</h3><p>老样子，我依旧会适用Docker来进行安装。</p><pre><code class=language-bash>$ docker run -d \
-    --name neo4j \
-    -p 7474:7474 -p 7687:7687 \
-    -v $HOME/neo4j/data:/data \
-    -v $HOME/neo4j/logs:/logs \
-    neo4j
-</code></pre><p><figure><img src=/images/ring.svg data-sizes=auto data-src=/graph-db-getting-and-started/neo4j-dashboard.png alt=neo4j-dashboard class=lazyload><figcaption class=image-caption>neo4j-dashboard</figcaption></figure></p><h3 id=实例>实例</h3><h4 id=添加依赖>添加依赖</h4><pre><code class=language-gradle>dependencies {
-    compile(&quot;org.neo4j:neo4j-ogm-core:3.1.7&quot;)
-    compile(&quot;org.neo4j:neo4j-ogm-http-driver:3.1.7&quot;)
-}
-</code></pre><h4 id=代码>代码</h4><pre><code class=language-java>package team.soi.demo;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.neo4j.ogm.annotation.GeneratedValue;
-import org.neo4j.ogm.annotation.Id;
-import org.neo4j.ogm.annotation.NodeEntity;
-import org.neo4j.ogm.annotation.Relationship;
-import org.neo4j.ogm.config.Configuration;
-import org.neo4j.ogm.session.Session;
-import org.neo4j.ogm.session.SessionFactory;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-public class App {
-    public static void main(String[] args) {
-        Configuration configuration = new Configuration.Builder()
-                .uri(&quot;http://neo4j:qazplm@localhost:7474&quot;)
-                .build();
-        SessionFactory sessionFactory = new SessionFactory(configuration, &quot;team.soi.demo&quot;);
-        Session session = sessionFactory.openSession();
-
-        User tom = new User();
-        tom.setName(&quot;Tom&quot;);
-
-        User bobby = new User();
-        bobby.setName(&quot;Bobby&quot;);
-
-        User linda = new User();
-        linda.setName(&quot;Linda&quot;);
-
-        linda.setFriends(Arrays.asList(tom, bobby));
-
-        session.save(linda);
-    }
-}
-
-@NodeEntity
-@Getter
-@Setter
-class User implements Serializable {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-    private String name;
-    @Relationship(type = &quot;friend&quot;)
-    private List&lt;User&gt; friends = new ArrayList&lt;&gt;();
-}
-
-</code></pre><p><figure><img src=/images/ring.svg data-sizes=auto data-src=/graph-db-getting-and-started/neo4j-friend.png alt=neo4j-friend class=lazyload><figcaption class=image-caption>neo4j-friend</figcaption></figure></p><blockquote><p><a href=https://www.w3cschool.cn/neo4j/ rel="nofollow noreferrer" target=_blank>neo4j教程</a></p></blockquote><h2 id=dgraph>Dgraph</h2><p>Dgraph是一个水平可扩展的分布式图形数据库，提供ACID事务，一致的复制和线性化读取。 它是从头开始构建的，用于执行丰富的查询。 作为本机图形数据库，它严格控制数据在磁盘上的排列方式，以优化查询性能和吞吐量，减少磁盘搜索和群集中的网络调用。</p><p>Dgraph的目标是提供谷歌生产水平的规模和吞吐量，具有足够低的延迟，可以提供超过数TB的结构化数据的实时用户查询。 Dgraph支持类似GraphQL的查询语法，并通过GRPC和HTTP响应JSON和Protocol Buffers。</p><h3 id=安装-1>安装</h3><p>由于Dgraph至少要有一个zero和一个server才能使用，所以我们采用docker-compose.yaml</p><pre><code class=language-yaml>version: &quot;3.2&quot;
-services:
-  zero:
-    image: dgraph/dgraph:latest
-    volumes:
-      - type: volume
-        source: dgraph
-        target: /dgraph
-        volume:
-          nocopy: true
-    ports:
-      - 5080:5080
-      - 6080:6080
-    restart: on-failure
-    command: dgraph zero --my=zero:5080
-  server:
-    image: dgraph/dgraph:latest
-    volumes:
-      - type: volume
-        source: dgraph
-        target: /dgraph
-        volume:
-          nocopy: true
-    ports:
-      - 8080:8080
-      - 9080:9080
-    restart: on-failure
-    command: dgraph alpha --my=server:7080 --lru_mb=2048 --zero=zero:5080
-  ratel:
-    image: dgraph/dgraph:latest
-    volumes:
-      - type: volume
-        source: dgraph
-        target: /dgraph
-        volume:
-          nocopy: true
-    ports:
-      - 8000:8000
-    command: dgraph-ratel
-
-volumes:
-  dgraph:
-</code></pre><h3 id=实例-1>实例</h3><h4 id=依赖>依赖</h4><pre><code>compile(&quot;io.dgraph:dgraph4j:1.7.1&quot;)
-</code></pre><h4 id=代码-1>代码</h4><pre><code class=language-java>package team.soi.demo;
-
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
-import com.google.protobuf.ByteString;
-import io.dgraph.DgraphClient;
-import io.dgraph.DgraphGrpc;
-import io.dgraph.DgraphProto;
-import io.dgraph.Transaction;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
-import java.util.*;
-
-public class DgraphApp {
-
-    public static void main(String[] args) {
-        ManagedChannel channel = ManagedChannelBuilder
-                .forAddress(&quot;localhost&quot;, 9080)
-                .usePlaintext()
-                .build();
-        DgraphGrpc.DgraphStub stub = DgraphGrpc.newStub(channel);
-        DgraphClient dgraph = new DgraphClient(stub);
-
-        //
-        dgraph.alter(DgraphProto.Operation.newBuilder().setDropAll(true).build());
-
-        Gson gson = new Gson();
-
-        Transaction tx = dgraph.newTransaction();
-        try {
-            Tag database = new Tag();
-            database.setName(&quot;Database&quot;);
-
-            Tag graph = new Tag();
-            graph.setName(&quot;Graph&quot;);
-
-            Category category = new Category();
-            category.setName(&quot;GraphDB&quot;);
-
-            Post post = new Post();
-            post.setTitle(&quot;Hello dgraph&quot;);
-            post.setDigest(&quot;Dgraph demo.&quot;);
-            post.setContent(&quot;Hello dgraph,this is a demo.&quot;);
-            post.setViews(0);
-            post.setCreated(LocalDateTime.now().toString());
-            post.setTags(Arrays.asList(database, graph));
-            post.setCategories(Collections.singletonList(category));
-
-            String json = gson.toJson(post);
-            DgraphProto.Mutation mu = DgraphProto.Mutation
-                    .newBuilder()
-                    .setSetJson(ByteString.copyFromUtf8(json))
-                    .build();
-            tx.mutate(mu);
-            tx.commit();
-        } finally {
-            tx.discard();
-        }
-
-        // query
-        String query = &quot;query posts($offset: int, $count: int){\n&quot; +
-                &quot;\t\tposts(func: has(title), orderdesc: created, orderdesc: views, offset: $offset, first: $count){\n&quot; +
-                &quot;\t\t\tuid\n&quot; +
-                &quot;\t\t\ttitle\n&quot; +
-                &quot;\t\t\tcategories {\n&quot; +
-                &quot;\t\t\t\tuid\n&quot; +
-                &quot;\t\t\t\tname\n&quot; +
-                &quot;\t\t\t}\n&quot; +
-                &quot;\t\t\ttags {\n&quot; +
-                &quot;\t\t\t\tuid\n&quot; +
-                &quot;\t\t\t\tname\n&quot; +
-                &quot;\t\t\t}\n&quot; +
-                &quot;\t\t\tdigest\n&quot; +
-                &quot;\t\t\tcreated\n&quot; +
-                &quot;\t\t}\n&quot; +
-                &quot;\t}&quot;;
-        Map&lt;String, String&gt; vars = new HashMap&lt;&gt;();
-        vars.put(&quot;$offset&quot;, &quot;0&quot;);
-        vars.put(&quot;$count&quot;, &quot;25&quot;);
-
-        DgraphProto.Response response = dgraph.newReadOnlyTransaction().queryWithVars(query, vars);
-        Posts posts = gson.fromJson(response.getJson().toStringUtf8(), Posts.class);
-
-        System.out.printf(&quot;Found hot post: %d\n&quot;, posts.getPosts().size());
-
-        posts.getPosts().forEach(post -&gt; System.out.println(post.getTitle()));
-    }
-}
-
-@Getter
-@Setter
-class Posts implements Serializable {
-    List&lt;Post&gt; posts;
-}
-
-@Getter
-@Setter
-class Post implements Serializable {
-    @SerializedName(&quot;uid&quot;)
-    private String id;
-    private String title;
-    private String digest;
-    private String content;
-    private String created;
-    private Integer views;
-    private List&lt;Tag&gt; tags = new ArrayList&lt;&gt;();
-    private List&lt;Category&gt; categories = new ArrayList&lt;&gt;();
-}
-
-@Getter
-@Setter
-class Tag implements Serializable {
-    @SerializedName(&quot;uid&quot;)
-    private String id;
-    private String name;
-}
-
-@Setter
-@Getter
-class Category implements Serializable {
-    @SerializedName(&quot;uid&quot;)
-    private String id;
-    private String name;
-}
-</code></pre><p><figure><img src=/images/ring.svg data-sizes=auto data-src=/graph-db-getting-and-started/dgraph-post.png alt=dgraph-post class=lazyload><figcaption class=image-caption>dgraph-post</figcaption></figure></p><blockquote><p><a href=https://dgraph-zh.cn/#/home/index rel="nofollow noreferrer" target=_blank>Dgraph中文文档</a></p></blockquote><h2 id=结束语>结束语</h2><p>当然，本次知识粗略介绍了下图数据库，如果有时间，后续我应该会找一个场景来实际应用，先挖个坑，后续努力补上 😄 。</p></div><div class=post-copyright><p class=copyright-item><span>Author:</span>
-<span>Soi</span></p><p class=copyright-item><span>Link:</span>
-<a href=https://ronggle.com/2019/graph-db-getting-and-started/>https://ronggle.com/2019/graph-db-getting-and-started/</span></p><p class="copyright-item lincese">本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p></div><div class=post-tags><section><i class="iconfont icon-tag"></i>Tag(s):
-<span class=tag><a href=https://ronggle.com/tags/database/>#Database</a></span>
-<span class=tag><a href=https://ronggle.com/tags/graphdb/>#GraphDB</a></span>
-<span class=tag><a href=https://ronggle.com/tags/graph/>#Graph</a></span>
-<span class=tag><a href=https://ronggle.com/tags/dgraph/>#DGraph</a></span>
-<span class=tag><a href=https://ronggle.com/tags/neo4j/>#Neo4j</a></span></section><section><a href=javascript:window.history.back();>back</a></span> ·
-<span><a href=https://ronggle.com/>home</a></span></section></div><div class=post-nav><a href=https://ronggle.com/2018/traefik-on-kubernetes/ class=prev rel=prev title="Traefik on Kubernetes"><i class="iconfont icon-left"></i>&nbsp;Traefik on Kubernetes</a>
-<a href=https://ronggle.com/2019/elassandra-getting-and-started/ class=next rel=next title=Elassandra简单介绍>Elassandra简单介绍&nbsp;<i class="iconfont icon-right"></i></a></div><div class=post-comment><link rel=stylesheet href=/css/gitalk.min.css><script src=/js/gitalk.min.min.js></script><div id=gitalk-container></div><script>var gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:"ycrxun",id:location.pathname,distractionFreeMode:false});gitalk.render('gitalk-container');</script></div></article></div></main><footer class=footer><div class=copyright>&copy;
-<span itemprop=copyrightYear>2015 - 2019</span>
-<span class=with-love><i class="iconfont icon-love"></i></span><span class=author itemprop=copyrightHolder><a href=https://ronggle.com/>Soi</a> |</span>
-<a href=http://www.beian.miit.gov.cn/ target=_blank rel="external nofollow">黔ICP备15015267号</a> |
-<span>Powered by <a href=https://gohugo.io/ target=_blank rel="external nofollow">Hugo</a> & <a href=https://github.com/liuzc/leaveit target=_blank rel="external nofollow">LeaveIt</a></span></div></footer><link href=//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css rel=stylesheet><script src=/js/vendor_gallery.min.js async></script><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?VNkd8ZiQJH29dqsu";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script><div id=landlord style=left:30px><div class=message style=opacity:0></div><canvas id=live2d width=280 height=250 class=live2d></canvas><div class=hide-button>隐藏</div></div><link rel=stylesheet href=/css/live2d.min.css><script src=/js/live2d.min.js></script><script src=/live2d/message.js defer></script><script type=text/javascript defer>var message_Path="\/live2d\/";var home_Path="https:\/\/ronggle.com\/"
-loadlive2d("live2d","\/live2d\/model\/tia\/model.json");</script></div></body></html>
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="图形数据库是NoSQL数据库的一种类型，它应用图形理论存储实体之间的关系信息。图形数据库是一种非关系型数据库，它应用图形理论存储实体之间的关系信息。"><title>图形数据库简单介绍</title>
+<link rel=canonical href=https://ronggle.com/2019/graph-db-getting-and-started/><link rel=stylesheet href=/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css><meta property='og:title' content="图形数据库简单介绍"><meta property='og:description' content="图形数据库是NoSQL数据库的一种类型，它应用图形理论存储实体之间的关系信息。图形数据库是一种非关系型数据库，它应用图形理论存储实体之间的关系信息。"><meta property='og:url' content='https://ronggle.com/2019/graph-db-getting-and-started/'><meta property='og:site_name' content='凉都小道'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='Database'><meta property='article:tag' content='GraphDB'><meta property='article:tag' content='Graph'><meta property='article:tag' content='DGraph'><meta property='article:tag' content='Neo4j'><meta property='article:published_time' content='2019-03-08T11:27:29+08:00'><meta property='article:modified_time' content='2019-03-08T11:27:29+08:00'><meta property='og:image' content='https://ronggle.com/2019/graph-db-getting-and-started/graph.png'><meta name=twitter:title content="图形数据库简单介绍"><meta name=twitter:description content="图形数据库是NoSQL数据库的一种类型，它应用图形理论存储实体之间的关系信息。图形数据库是一种非关系型数据库，它应用图形理论存储实体之间的关系信息。"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://ronggle.com/2019/graph-db-getting-and-started/graph.png'><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu1aa4dd0456be0d06f4d83ce8e29586b6_40169_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🍥</span></figure><div class=site-meta><h1 class=site-name><a href=/>凉都小道</a></h1><h2 class=site-description>道生一，一生二，二生三，三生万物</h2></div></header><ol class=menu-social><li><a href=https://github.com/ycrxun target=_blank title=GitHub rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com/ChangrongYang target=_blank title=Twitter rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li><a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/about/><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-message-user"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 18l-5 3v-3H6a3 3 0 01-3-3V7a3 3 0 013-3h12a3 3 0 013 3v4.5"/><path d="M19 17m-2 0a2 2 0 104 0 2 2 0 10-4 0"/><path d="M22 22a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+<span>关于我</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#关系型数据库>关系型数据库</a></li><li><a href=#nosql>NoSQL</a></li><li><a href=#图形数据库>图形数据库</a></li><li><a href=#我们为什么需要图形数据库>我们为什么需要图形数据库？</a><ol><li><a href=#社交网络>社交网络</a></li><li><a href=#推荐引擎>推荐引擎</a></li><li><a href=#知识图谱>知识图谱</a></li></ol></li><li><a href=#neo4j>Neo4j</a><ol><li><a href=#安装>安装</a></li><li><a href=#实例>实例</a><ol><li><a href=#添加依赖>添加依赖</a></li><li><a href=#代码>代码</a></li></ol></li></ol></li><li><a href=#dgraph>Dgraph</a><ol><li><a href=#安装-1>安装</a></li><li><a href=#实例-1>实例</a><ol><li><a href=#依赖>依赖</a></li><li><a href=#代码-1>代码</a></li></ol></li></ol></li><li><a href=#结束语>结束语</a></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/2019/graph-db-getting-and-started/><img src=/2019/graph-db-getting-and-started/graph_hu3f4d3da678a88c24d39c2337492109c8_2384_800x0_resize_box_3.png srcset="/2019/graph-db-getting-and-started/graph_hu3f4d3da678a88c24d39c2337492109c8_2384_800x0_resize_box_3.png 800w, /2019/graph-db-getting-and-started/graph_hu3f4d3da678a88c24d39c2337492109c8_2384_1600x0_resize_box_3.png 1600w" width=800 height=609 loading=lazy alt="Featured image of post 图形数据库简单介绍"></a></div><div class=article-details><header class=article-category><a href=/categories/programming/>Programming</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/2019/graph-db-getting-and-started/>图形数据库简单介绍</a></h2><h3 class=article-subtitle>图形数据库是NoSQL数据库的一种类型，它应用图形理论存储实体之间的关系信息。图形数据库是一种非关系型数据库，它应用图形理论存储实体之间的关系信息。</h3></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Mar 08, 2019</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 4 分钟</time></div></footer></div></header><section class=article-content><h2 id=关系型数据库>关系型数据库</h2><p>关系数据库，是建立在关系模型基础上的数据库，借助于集合代数等数学概念和方法来处理数据库中的数据。</p><p>现实世界中的各种实体以及实体之间的各种联系均用关系模型来表示。关系模型是由埃德加·科德于1970年首先提出的，并配合“科德十二定律”。现如今虽然对此模型有一些批评意见，但它还是数据存储的传统标准。标准数据查询语言SQL就是一种基于关系数据库的语言，这种语言执行对关系数据库中数据的检索和操作。 关系模型由关系数据结构、关系操作集合、关系完整性约束三部分组成。</p><p>简单说，关系型数据库是由多张能互相联接的二维行列表格组成的数据库。</p><h2 id=nosql>NoSQL</h2><p>NoSQL(Not Only SQL)，泛指非关系型的数据库。</p><p>随着互联网Web2.0网站的兴起，传统的关系数据库在应付Web2.0网站，特别是超大规模和高并发的SNS类型的Web2.0纯动态网站已经显得力不从心，暴露了很多难以克服的问题，而非关系型的数据库则由于其本身的特点得到了非常迅速的发展。NoSQL数据库的产生就是为了解决大规模数据集合多重数据种类带来的挑战，尤其是大数据应用难题。</p><p>NoSQL数据库的四大分类:</p><ul><li>KV数据库</li><li>图型数据库</li><li>文档型数据库</li><li>列存储数据库</li></ul><p>今天我们要说的，便是图形数据库。</p><h2 id=图形数据库>图形数据库</h2><p>图形数据库是NoSQL数据库的一种类型，它应用图形理论存储实体之间的关系信息。图形数据库是一种非关系型数据库，它应用图形理论存储实体之间的关系信息。最常见例子就是社会网络中人与人之间的关系。关系型数据库用于存储“关系型”数据的效果并不好，其查询复杂、缓慢、超出预期，而图形数据库的独特设计恰恰弥补了这个缺陷。</p><p>和其他以列、行或者KV等形式存储数据的数据库不同，图形数据库以节点（Node）和边（Edge）的网络存储所有信息。边表示那些代表对象的节点之间的联系。因为边和节点都可以被描述为对象，开发者可以为其指定属性（Attribute，或者 property）。为边增加方向最终会创建一个属性图，它代表图形数据库中的明确结构。</p><h2 id=我们为什么需要图形数据库>我们为什么需要图形数据库？</h2><p>图形数据库可以通过使用操作、所有权和父项关系等来表示实体之间的关联关系。如果实体间的连接或关系是您正在尝试建模的数据的核心，那就适合使用图形数据库。因此，图形数据库对于建模和查询社交网络、推荐引擎、知识图谱、驾驶方向 (路线查找)、业务关系、依赖关系、货物移动等类似项目非常有用。</p><h3 id=社交网络>社交网络</h3><p>适合采用图形的常见使用案例的一个示例就是社交网络数据。
+<img src=/2019/graph-db-getting-and-started/friend-likes.png width=488 height=194 srcset="/2019/graph-db-getting-and-started/friend-likes_hue3c434ddb77be786c54c55d17ec8f4a5_8118_480x0_resize_box_3.png 480w, /2019/graph-db-getting-and-started/friend-likes_hue3c434ddb77be786c54c55d17ec8f4a5_8118_1024x0_resize_box_3.png 1024w" loading=lazy alt="graph db friend links" class=gallery-image data-flex-grow=251 data-flex-basis=603px></p><h3 id=推荐引擎>推荐引擎</h3><p>可以在图形数据库中存储客户兴趣、好友和购买历史等信息类别之间的关系。然后，快速查询它以提出个性化和相关的建议。例如，可以使用高度可用的图形数据库，根据关注相同运动内容且具有类似购买历史记录的其他人购买的产品，向用户提供产品推荐。或者，可以识别有共同好友但还不认识对方的人员，然后提供好友推荐。</p><h3 id=知识图谱>知识图谱</h3><p>利用知识图形，您可以将信息存储在图形模型中，并可以使用图形查询帮助用户更轻松地导航高度关联的数据集。例如，如果用户对 Leonardo da Vinci 创作的 Mona Lisa 感兴趣，您可以帮助他们发现同一艺术家的其他艺术作品或发现在卢浮宫展览的其他作品。
+利用知识图谱，您可以将主题信息添加到产品目录，构建和查询复杂的监管规则模型，或者进行一般信息建模 (如维基数据)。</p><h2 id=neo4j>Neo4j</h2><p><a class=link href=https://neo4j.com/docs/getting-started/current/ target=_blank rel=noopener>Neo4j</a>是世界领先的图形数据库。 它是一个高性能的图形存储，具有成熟和强大的数据库所需的所有功能，如友好的查询语言和ACID事务。 程序员使用灵活的节点和关系网络结构而不是静态表 - 但享受企业级数据库的所有好处。 对于许多应用程序，与关系数据库相比，Neo4j提供了数量级的性能优势。</p><h3 id=安装>安装</h3><p>老样子，我依旧会适用Docker来进行安装。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ docker run -d <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    --name neo4j <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    -p 7474:7474 -p 7687:7687 <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    -v <span class=nv>$HOME</span>/neo4j/data:/data <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    -v <span class=nv>$HOME</span>/neo4j/logs:/logs <span class=se>\
+</span></span></span><span class=line><span class=cl><span class=se></span>    neo4j
+</span></span></code></pre></td></tr></table></div></div><p><img src=/2019/graph-db-getting-and-started/neo4j-dashboard.png width=1347 height=628 srcset="/2019/graph-db-getting-and-started/neo4j-dashboard_hued3ff04a238925f8e7a373889ce72361_49860_480x0_resize_box_3.png 480w, /2019/graph-db-getting-and-started/neo4j-dashboard_hued3ff04a238925f8e7a373889ce72361_49860_1024x0_resize_box_3.png 1024w" loading=lazy alt=neo4j-dashboard class=gallery-image data-flex-grow=214 data-flex-basis=514px></p><h3 id=实例>实例</h3><h4 id=添加依赖>添加依赖</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-gradle data-lang=gradle><span class=line><span class=cl><span class=n>dependencies</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=n>compile</span><span class=o>(</span><span class=s2>&#34;org.neo4j:neo4j-ogm-core:3.1.7&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>compile</span><span class=o>(</span><span class=s2>&#34;org.neo4j:neo4j-ogm-http-driver:3.1.7&#34;</span><span class=o>)</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=代码>代码</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>team.soi.demo</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>lombok.Getter</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>lombok.Setter</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.neo4j.ogm.annotation.GeneratedValue</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.neo4j.ogm.annotation.Id</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.neo4j.ogm.annotation.NodeEntity</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.neo4j.ogm.annotation.Relationship</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.neo4j.ogm.config.Configuration</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.neo4j.ogm.session.Session</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>org.neo4j.ogm.session.SessionFactory</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.Serializable</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.ArrayList</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.Arrays</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.List</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>App</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Configuration</span><span class=w> </span><span class=n>configuration</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Configuration</span><span class=p>.</span><span class=na>Builder</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>.</span><span class=na>uri</span><span class=p>(</span><span class=s>&#34;http://neo4j:qazplm@localhost:7474&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>.</span><span class=na>build</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>SessionFactory</span><span class=w> </span><span class=n>sessionFactory</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>SessionFactory</span><span class=p>(</span><span class=n>configuration</span><span class=p>,</span><span class=w> </span><span class=s>&#34;team.soi.demo&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Session</span><span class=w> </span><span class=n>session</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>sessionFactory</span><span class=p>.</span><span class=na>openSession</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>User</span><span class=w> </span><span class=n>tom</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>User</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>tom</span><span class=p>.</span><span class=na>setName</span><span class=p>(</span><span class=s>&#34;Tom&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>User</span><span class=w> </span><span class=n>bobby</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>User</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>bobby</span><span class=p>.</span><span class=na>setName</span><span class=p>(</span><span class=s>&#34;Bobby&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>User</span><span class=w> </span><span class=n>linda</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>User</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>linda</span><span class=p>.</span><span class=na>setName</span><span class=p>(</span><span class=s>&#34;Linda&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>linda</span><span class=p>.</span><span class=na>setFriends</span><span class=p>(</span><span class=n>Arrays</span><span class=p>.</span><span class=na>asList</span><span class=p>(</span><span class=n>tom</span><span class=p>,</span><span class=w> </span><span class=n>bobby</span><span class=p>));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>session</span><span class=p>.</span><span class=na>save</span><span class=p>(</span><span class=n>linda</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@NodeEntity</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@Getter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@Setter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>class</span> <span class=nc>User</span><span class=w> </span><span class=kd>implements</span><span class=w> </span><span class=n>Serializable</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@Id</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@GeneratedValue</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>Long</span><span class=w> </span><span class=n>id</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>name</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@Relationship</span><span class=p>(</span><span class=n>type</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;friend&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>List</span><span class=o>&lt;</span><span class=n>User</span><span class=o>&gt;</span><span class=w> </span><span class=n>friends</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ArrayList</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><img src=/2019/graph-db-getting-and-started/neo4j-friend.png width=1365 height=638 srcset="/2019/graph-db-getting-and-started/neo4j-friend_hu5b700c8634bd6db6817a2ff334497312_24644_480x0_resize_box_3.png 480w, /2019/graph-db-getting-and-started/neo4j-friend_hu5b700c8634bd6db6817a2ff334497312_24644_1024x0_resize_box_3.png 1024w" loading=lazy alt=neo4j-friend class=gallery-image data-flex-grow=213 data-flex-basis=513px></p><blockquote><p><a class=link href=https://www.w3cschool.cn/neo4j/ target=_blank rel=noopener>neo4j教程</a></p></blockquote><h2 id=dgraph>Dgraph</h2><p>Dgraph是一个水平可扩展的分布式图形数据库，提供ACID事务，一致的复制和线性化读取。 它是从头开始构建的，用于执行丰富的查询。 作为本机图形数据库，它严格控制数据在磁盘上的排列方式，以优化查询性能和吞吐量，减少磁盘搜索和群集中的网络调用。</p><p>Dgraph的目标是提供谷歌生产水平的规模和吞吐量，具有足够低的延迟，可以提供超过数TB的结构化数据的实时用户查询。 Dgraph支持类似GraphQL的查询语法，并通过GRPC和HTTP响应JSON和Protocol Buffers。</p><h3 id=安装-1>安装</h3><p>由于Dgraph至少要有一个zero和一个server才能使用，所以我们采用docker-compose.yaml</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-yaml data-lang=yaml><span class=line><span class=cl><span class=nt>version</span><span class=p>:</span><span class=w> </span><span class=s2>&#34;3.2&#34;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>services</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>zero</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>dgraph/dgraph:latest</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>volume</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>source</span><span class=p>:</span><span class=w> </span><span class=l>dgraph</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>target</span><span class=p>:</span><span class=w> </span><span class=l>/dgraph</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>volume</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>nocopy</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=m>5080</span><span class=p>:</span><span class=m>5080</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=m>6080</span><span class=p>:</span><span class=m>6080</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=kc>on</span>-<span class=l>failure</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=l>dgraph zero --my=zero:5080</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>server</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>dgraph/dgraph:latest</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>volume</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>source</span><span class=p>:</span><span class=w> </span><span class=l>dgraph</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>target</span><span class=p>:</span><span class=w> </span><span class=l>/dgraph</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>volume</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>nocopy</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=m>8080</span><span class=p>:</span><span class=m>8080</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=m>9080</span><span class=p>:</span><span class=m>9080</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>restart</span><span class=p>:</span><span class=w> </span><span class=kc>on</span>-<span class=l>failure</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=l>dgraph alpha --my=server:7080 --lru_mb=2048 --zero=zero:5080</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>ratel</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>image</span><span class=p>:</span><span class=w> </span><span class=l>dgraph/dgraph:latest</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=nt>type</span><span class=p>:</span><span class=w> </span><span class=l>volume</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>source</span><span class=p>:</span><span class=w> </span><span class=l>dgraph</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>target</span><span class=p>:</span><span class=w> </span><span class=l>/dgraph</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=nt>volume</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>          </span><span class=nt>nocopy</span><span class=p>:</span><span class=w> </span><span class=kc>true</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>ports</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>      </span>- <span class=m>8000</span><span class=p>:</span><span class=m>8000</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nt>command</span><span class=p>:</span><span class=w> </span><span class=l>dgraph-ratel</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nt>volumes</span><span class=p>:</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>  </span><span class=nt>dgraph</span><span class=p>:</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=实例-1>实例</h3><h4 id=依赖>依赖</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>compile(&#34;io.dgraph:dgraph4j:1.7.1&#34;)
+</span></span></code></pre></td></tr></table></div></div><h4 id=代码-1>代码</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>  1
+</span><span class=lnt>  2
+</span><span class=lnt>  3
+</span><span class=lnt>  4
+</span><span class=lnt>  5
+</span><span class=lnt>  6
+</span><span class=lnt>  7
+</span><span class=lnt>  8
+</span><span class=lnt>  9
+</span><span class=lnt> 10
+</span><span class=lnt> 11
+</span><span class=lnt> 12
+</span><span class=lnt> 13
+</span><span class=lnt> 14
+</span><span class=lnt> 15
+</span><span class=lnt> 16
+</span><span class=lnt> 17
+</span><span class=lnt> 18
+</span><span class=lnt> 19
+</span><span class=lnt> 20
+</span><span class=lnt> 21
+</span><span class=lnt> 22
+</span><span class=lnt> 23
+</span><span class=lnt> 24
+</span><span class=lnt> 25
+</span><span class=lnt> 26
+</span><span class=lnt> 27
+</span><span class=lnt> 28
+</span><span class=lnt> 29
+</span><span class=lnt> 30
+</span><span class=lnt> 31
+</span><span class=lnt> 32
+</span><span class=lnt> 33
+</span><span class=lnt> 34
+</span><span class=lnt> 35
+</span><span class=lnt> 36
+</span><span class=lnt> 37
+</span><span class=lnt> 38
+</span><span class=lnt> 39
+</span><span class=lnt> 40
+</span><span class=lnt> 41
+</span><span class=lnt> 42
+</span><span class=lnt> 43
+</span><span class=lnt> 44
+</span><span class=lnt> 45
+</span><span class=lnt> 46
+</span><span class=lnt> 47
+</span><span class=lnt> 48
+</span><span class=lnt> 49
+</span><span class=lnt> 50
+</span><span class=lnt> 51
+</span><span class=lnt> 52
+</span><span class=lnt> 53
+</span><span class=lnt> 54
+</span><span class=lnt> 55
+</span><span class=lnt> 56
+</span><span class=lnt> 57
+</span><span class=lnt> 58
+</span><span class=lnt> 59
+</span><span class=lnt> 60
+</span><span class=lnt> 61
+</span><span class=lnt> 62
+</span><span class=lnt> 63
+</span><span class=lnt> 64
+</span><span class=lnt> 65
+</span><span class=lnt> 66
+</span><span class=lnt> 67
+</span><span class=lnt> 68
+</span><span class=lnt> 69
+</span><span class=lnt> 70
+</span><span class=lnt> 71
+</span><span class=lnt> 72
+</span><span class=lnt> 73
+</span><span class=lnt> 74
+</span><span class=lnt> 75
+</span><span class=lnt> 76
+</span><span class=lnt> 77
+</span><span class=lnt> 78
+</span><span class=lnt> 79
+</span><span class=lnt> 80
+</span><span class=lnt> 81
+</span><span class=lnt> 82
+</span><span class=lnt> 83
+</span><span class=lnt> 84
+</span><span class=lnt> 85
+</span><span class=lnt> 86
+</span><span class=lnt> 87
+</span><span class=lnt> 88
+</span><span class=lnt> 89
+</span><span class=lnt> 90
+</span><span class=lnt> 91
+</span><span class=lnt> 92
+</span><span class=lnt> 93
+</span><span class=lnt> 94
+</span><span class=lnt> 95
+</span><span class=lnt> 96
+</span><span class=lnt> 97
+</span><span class=lnt> 98
+</span><span class=lnt> 99
+</span><span class=lnt>100
+</span><span class=lnt>101
+</span><span class=lnt>102
+</span><span class=lnt>103
+</span><span class=lnt>104
+</span><span class=lnt>105
+</span><span class=lnt>106
+</span><span class=lnt>107
+</span><span class=lnt>108
+</span><span class=lnt>109
+</span><span class=lnt>110
+</span><span class=lnt>111
+</span><span class=lnt>112
+</span><span class=lnt>113
+</span><span class=lnt>114
+</span><span class=lnt>115
+</span><span class=lnt>116
+</span><span class=lnt>117
+</span><span class=lnt>118
+</span><span class=lnt>119
+</span><span class=lnt>120
+</span><span class=lnt>121
+</span><span class=lnt>122
+</span><span class=lnt>123
+</span><span class=lnt>124
+</span><span class=lnt>125
+</span><span class=lnt>126
+</span><span class=lnt>127
+</span><span class=lnt>128
+</span><span class=lnt>129
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>team.soi.demo</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.google.gson.Gson</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.google.gson.annotations.SerializedName</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>com.google.protobuf.ByteString</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>io.dgraph.DgraphClient</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>io.dgraph.DgraphGrpc</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>io.dgraph.DgraphProto</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>io.dgraph.Transaction</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>io.grpc.ManagedChannel</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>io.grpc.ManagedChannelBuilder</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>lombok.Getter</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>lombok.Setter</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.io.Serializable</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.time.LocalDateTime</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>java.util.*</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>DgraphApp</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>ManagedChannel</span><span class=w> </span><span class=n>channel</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>ManagedChannelBuilder</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>.</span><span class=na>forAddress</span><span class=p>(</span><span class=s>&#34;localhost&#34;</span><span class=p>,</span><span class=w> </span><span class=n>9080</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>.</span><span class=na>usePlaintext</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=p>.</span><span class=na>build</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>DgraphGrpc</span><span class=p>.</span><span class=na>DgraphStub</span><span class=w> </span><span class=n>stub</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>DgraphGrpc</span><span class=p>.</span><span class=na>newStub</span><span class=p>(</span><span class=n>channel</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>DgraphClient</span><span class=w> </span><span class=n>dgraph</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>DgraphClient</span><span class=p>(</span><span class=n>stub</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>//</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>dgraph</span><span class=p>.</span><span class=na>alter</span><span class=p>(</span><span class=n>DgraphProto</span><span class=p>.</span><span class=na>Operation</span><span class=p>.</span><span class=na>newBuilder</span><span class=p>().</span><span class=na>setDropAll</span><span class=p>(</span><span class=kc>true</span><span class=p>).</span><span class=na>build</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Gson</span><span class=w> </span><span class=n>gson</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Gson</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Transaction</span><span class=w> </span><span class=n>tx</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>dgraph</span><span class=p>.</span><span class=na>newTransaction</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>try</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Tag</span><span class=w> </span><span class=n>database</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Tag</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>database</span><span class=p>.</span><span class=na>setName</span><span class=p>(</span><span class=s>&#34;Database&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Tag</span><span class=w> </span><span class=n>graph</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Tag</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>graph</span><span class=p>.</span><span class=na>setName</span><span class=p>(</span><span class=s>&#34;Graph&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Category</span><span class=w> </span><span class=n>category</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Category</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>category</span><span class=p>.</span><span class=na>setName</span><span class=p>(</span><span class=s>&#34;GraphDB&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>Post</span><span class=w> </span><span class=n>post</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>Post</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>post</span><span class=p>.</span><span class=na>setTitle</span><span class=p>(</span><span class=s>&#34;Hello dgraph&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>post</span><span class=p>.</span><span class=na>setDigest</span><span class=p>(</span><span class=s>&#34;Dgraph demo.&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>post</span><span class=p>.</span><span class=na>setContent</span><span class=p>(</span><span class=s>&#34;Hello dgraph,this is a demo.&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>post</span><span class=p>.</span><span class=na>setViews</span><span class=p>(</span><span class=n>0</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>post</span><span class=p>.</span><span class=na>setCreated</span><span class=p>(</span><span class=n>LocalDateTime</span><span class=p>.</span><span class=na>now</span><span class=p>().</span><span class=na>toString</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>post</span><span class=p>.</span><span class=na>setTags</span><span class=p>(</span><span class=n>Arrays</span><span class=p>.</span><span class=na>asList</span><span class=p>(</span><span class=n>database</span><span class=p>,</span><span class=w> </span><span class=n>graph</span><span class=p>));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>post</span><span class=p>.</span><span class=na>setCategories</span><span class=p>(</span><span class=n>Collections</span><span class=p>.</span><span class=na>singletonList</span><span class=p>(</span><span class=n>category</span><span class=p>));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>String</span><span class=w> </span><span class=n>json</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>gson</span><span class=p>.</span><span class=na>toJson</span><span class=p>(</span><span class=n>post</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>DgraphProto</span><span class=p>.</span><span class=na>Mutation</span><span class=w> </span><span class=n>mu</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>DgraphProto</span><span class=p>.</span><span class=na>Mutation</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=p>.</span><span class=na>newBuilder</span><span class=p>()</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=p>.</span><span class=na>setSetJson</span><span class=p>(</span><span class=n>ByteString</span><span class=p>.</span><span class=na>copyFromUtf8</span><span class=p>(</span><span class=n>json</span><span class=p>))</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                    </span><span class=p>.</span><span class=na>build</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>tx</span><span class=p>.</span><span class=na>mutate</span><span class=p>(</span><span class=n>mu</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>tx</span><span class=p>.</span><span class=na>commit</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w> </span><span class=k>finally</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>            </span><span class=n>tx</span><span class=p>.</span><span class=na>discard</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=c1>// query</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>query</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=s>&#34;query posts($offset: int, $count: int){\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\tposts(func: has(title), orderdesc: created, orderdesc: views, offset: $offset, first: $count){\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\tuid\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\ttitle\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\tcategories {\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\t\tuid\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\t\tname\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\t}\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\ttags {\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\t\tuid\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\t\tname\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\t}\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\tdigest\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t\tcreated\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t\t}\n&#34;</span><span class=w> </span><span class=o>+</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>                </span><span class=s>&#34;\t}&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Map</span><span class=o>&lt;</span><span class=n>String</span><span class=p>,</span><span class=w> </span><span class=n>String</span><span class=o>&gt;</span><span class=w> </span><span class=n>vars</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HashMap</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>vars</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=s>&#34;$offset&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;0&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>vars</span><span class=p>.</span><span class=na>put</span><span class=p>(</span><span class=s>&#34;$count&#34;</span><span class=p>,</span><span class=w> </span><span class=s>&#34;25&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>DgraphProto</span><span class=p>.</span><span class=na>Response</span><span class=w> </span><span class=n>response</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>dgraph</span><span class=p>.</span><span class=na>newReadOnlyTransaction</span><span class=p>().</span><span class=na>queryWithVars</span><span class=p>(</span><span class=n>query</span><span class=p>,</span><span class=w> </span><span class=n>vars</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Posts</span><span class=w> </span><span class=n>posts</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=n>gson</span><span class=p>.</span><span class=na>fromJson</span><span class=p>(</span><span class=n>response</span><span class=p>.</span><span class=na>getJson</span><span class=p>().</span><span class=na>toStringUtf8</span><span class=p>(),</span><span class=w> </span><span class=n>Posts</span><span class=p>.</span><span class=na>class</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>printf</span><span class=p>(</span><span class=s>&#34;Found hot post: %d\n&#34;</span><span class=p>,</span><span class=w> </span><span class=n>posts</span><span class=p>.</span><span class=na>getPosts</span><span class=p>().</span><span class=na>size</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>posts</span><span class=p>.</span><span class=na>getPosts</span><span class=p>().</span><span class=na>forEach</span><span class=p>(</span><span class=n>post</span><span class=w> </span><span class=o>-&gt;</span><span class=w> </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=n>post</span><span class=p>.</span><span class=na>getTitle</span><span class=p>()));</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@Getter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@Setter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>class</span> <span class=nc>Posts</span><span class=w> </span><span class=kd>implements</span><span class=w> </span><span class=n>Serializable</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>List</span><span class=o>&lt;</span><span class=n>Post</span><span class=o>&gt;</span><span class=w> </span><span class=n>posts</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@Getter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@Setter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>class</span> <span class=nc>Post</span><span class=w> </span><span class=kd>implements</span><span class=w> </span><span class=n>Serializable</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@SerializedName</span><span class=p>(</span><span class=s>&#34;uid&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>id</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>title</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>digest</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>content</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>created</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>Integer</span><span class=w> </span><span class=n>views</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>List</span><span class=o>&lt;</span><span class=n>Tag</span><span class=o>&gt;</span><span class=w> </span><span class=n>tags</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ArrayList</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>List</span><span class=o>&lt;</span><span class=n>Category</span><span class=o>&gt;</span><span class=w> </span><span class=n>categories</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>ArrayList</span><span class=o>&lt;&gt;</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@Getter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@Setter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>class</span> <span class=nc>Tag</span><span class=w> </span><span class=kd>implements</span><span class=w> </span><span class=n>Serializable</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@SerializedName</span><span class=p>(</span><span class=s>&#34;uid&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>id</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>name</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@Setter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@Getter</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>class</span> <span class=nc>Category</span><span class=w> </span><span class=kd>implements</span><span class=w> </span><span class=n>Serializable</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=nd>@SerializedName</span><span class=p>(</span><span class=s>&#34;uid&#34;</span><span class=p>)</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>id</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>private</span><span class=w> </span><span class=n>String</span><span class=w> </span><span class=n>name</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p><img src=/2019/graph-db-getting-and-started/dgraph-post.png width=1365 height=637 srcset="/2019/graph-db-getting-and-started/dgraph-post_hu8ed4151956feef8dfbe7e0848e1f112a_53969_480x0_resize_box_3.png 480w, /2019/graph-db-getting-and-started/dgraph-post_hu8ed4151956feef8dfbe7e0848e1f112a_53969_1024x0_resize_box_3.png 1024w" loading=lazy alt=dgraph-post class=gallery-image data-flex-grow=214 data-flex-basis=514px></p><blockquote><p><a class=link href=https://dgraph-zh.cn/#/home/index target=_blank rel=noopener>Dgraph中文文档</a></p></blockquote><h2 id=结束语>结束语</h2><p>当然，本次知识粗略介绍了下图数据库，如果有时间，后续我应该会找一个场景来实际应用，先挖个坑，后续努力补上 :smile: 。</p></section><footer class=article-footer><section class=article-tags><a href=/tags/database/>Database</a>
+<a href=/tags/graphdb/>GraphDB</a>
+<a href=/tags/graph/>Graph</a>
+<a href=/tags/dgraph/>DGraph</a>
+<a href=/tags/neo4j/>Neo4j</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article class=has-image><a href=/2019/hyperledger-fabric-on-swarm/><div class=article-image><img src=/2019/hyperledger-fabric-on-swarm/hyperledger-fabric-on-swarm.svg loading=lazy data-key=hyperledger-fabric-on-swarm data-hash=/2019/hyperledger-fabric-on-swarm/hyperledger-fabric-on-swarm.svg></div><div class=article-details><h2 class=article-title>使用Docker Swarm部署Hyperledger Fabric</h2></div></a></article><article class=has-image><a href=/2019/lile-getting-and-started/><div class=article-image><img src=/2019/lile-getting-and-started/lile.9cbe3e7595c00ba0fbb6fe87ba66300b_huc07f78e848ff3c0cfda834824d5a3104_5265_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post Lile简单介绍" data-key=lile-getting-and-started data-hash="md5-nL4+dZXAC6D7tv6HumYwCw=="></div><div class=article-details><h2 class=article-title>Lile简单介绍</h2></div></a></article><article class=has-image><a href=/2018/traefik-on-kubernetes/><div class=article-image><img src=/2018/traefik-on-kubernetes/traefik.svg loading=lazy data-key=traefik-on-kubernetes data-hash=/2018/traefik-on-kubernetes/traefik.svg></div><div class=article-details><h2 class=article-title>Traefik on Kubernetes</h2></div></a></article><article class=has-image><a href=/2018/registry-microservies-via-grpc/><div class=article-image><img src=/2018/registry-microservies-via-grpc/consul.4be1f2f3cdc550398d09fc0127aa233a_hu3856c57a2da839c1c05d9a86cb7503bb_22688_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post 使用gRPC开发微服务-服务注册与发现" data-key=registry-microservies-via-grpc data-hash="md5-S+Hy883FUDmNCfwBJ6ojOg=="></div><div class=article-details><h2 class=article-title>使用gRPC开发微服务-服务注册与发现</h2></div></a></article><article class=has-image><a href=/2018/setup-microservies-via-grpc/><div class=article-image><img src=/2018/setup-microservies-via-grpc/grpc.svg loading=lazy data-key=setup-microservies-via-grpc data-hash=/2018/setup-microservies-via-grpc/grpc.svg></div><div class=article-details><h2 class=article-title>使用gRPC开发微服务-开始</h2></div></a></article></div></div></aside><div id=gitalk-container></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css><script src=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js></script><script src=https://cdn.jsdelivr.net/npm/blueimp-md5@2.18.0/js/md5.min.js></script><script>const gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:["ycrxun"],distractionFreeMode:!1,id:md5(location.pathname)});(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("gitalk-container").innerHTML="Gitalk comments not available by default when the website is previewed locally.";return}gitalk.render("gitalk-container")})()</script><footer class=site-footer><section class=copyright>&copy;
+2015 -
+2024 Soi</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.26.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

@@ -1,1 +1,71 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>体验 on 凉都小道</title><link>https://ronggle.com/tags/%E4%BD%93%E9%AA%8C/</link><description>Recent content in 体验 on 凉都小道</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Thu, 03 Aug 2017 21:39:17 +0800</lastBuildDate><atom:link href="https://ronggle.com/tags/%E4%BD%93%E9%AA%8C/index.xml" rel="self" type="application/rss+xml"/><item><title>Fedora 桌面系统体验</title><link>https://ronggle.com/2017/fedora/</link><pubDate>Thu, 03 Aug 2017 21:39:17 +0800</pubDate><guid>https://ronggle.com/2017/fedora/</guid><description>&lt;p&gt;最开始安装Linux操作系统，那是三四年前了，那时候还在大学，当时安装了Debian，完了一段时间后为了耍游戏，还是换回了Windows。&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>体验 on 凉都小道</title><link>https://ronggle.com/tags/%E4%BD%93%E9%AA%8C/</link><description>Recent content in 体验 on 凉都小道</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Soi</copyright><lastBuildDate>Thu, 03 Aug 2017 21:39:17 +0800</lastBuildDate><atom:link href="https://ronggle.com/tags/%E4%BD%93%E9%AA%8C/index.xml" rel="self" type="application/rss+xml"/><item><title>Fedora 桌面系统体验</title><link>https://ronggle.com/2017/fedora/</link><pubDate>Thu, 03 Aug 2017 21:39:17 +0800</pubDate><guid>https://ronggle.com/2017/fedora/</guid><description>&lt;img src="https://ronggle.com/2017/fedora/home.png" alt="Featured image of post Fedora 桌面系统体验" />&lt;p>再次安装Linux是两年前，自己安装了个Ubuntu，后面安装了Deepin，总体上感觉都很不错，特别是Deepin，国内发行版算是颜值比较高的了，一直都很喜欢。&lt;/p>
+&lt;p>直到去年我的笔记本报废，六七年前的低配电脑，实在扛不住了。在换了新的电脑后，i7、16G、GTX960，很给力的配置，但是在我装Ubuntu的过程中，严重不喜欢这个配置了，显卡不兼容，上面的Windows10还特别讨厌，不得不放弃。&lt;/p>
+&lt;p>其实在很久之前，就听说&lt;a class="link" href="https://getfedora.org/" target="_blank" rel="noopener"
+>Fedora&lt;/a>很不错，最近因为折腾Openshift，突发奇想，安装了一个，然后被Fedora的颜值（肯定是桌面）吸引。&lt;/p>
+&lt;p>一张美美的桌面&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2017/fedora/home.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/fedora/home_hu4149d0921973420729ebb226d45329e8_1405605_480x0_resize_box_3.png 480w, https://ronggle.com/2017/fedora/home_hu4149d0921973420729ebb226d45329e8_1405605_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="fedora home"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>应用列表&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2017/fedora/apps.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/fedora/apps_hu26adf34bb9836ad5844cfb97c25864b9_1171193_480x0_resize_box_3.png 480w, https://ronggle.com/2017/fedora/apps_hu26adf34bb9836ad5844cfb97c25864b9_1171193_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="fedora apps"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>弹出&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2017/fedora/super.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/fedora/super_hubb9f93f79a58eae1afb7f0f279dd59b8_878266_480x0_resize_box_3.png 480w, https://ronggle.com/2017/fedora/super_hubb9f93f79a58eae1afb7f0f279dd59b8_878266_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="fedora pop"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>多窗口&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2017/fedora/edit.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/fedora/edit_hubefcc762d7691ae4f491e67a3efeffe7_1136072_480x0_resize_box_3.png 480w, https://ronggle.com/2017/fedora/edit_hubefcc762d7691ae4f491e67a3efeffe7_1136072_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="fedora edit"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>重命名&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2017/fedora/rename.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/fedora/rename_hu6a451bb8c8fbdf1c4abcc90e3b16b93b_922054_480x0_resize_box_3.png 480w, https://ronggle.com/2017/fedora/rename_hu6a451bb8c8fbdf1c4abcc90e3b16b93b_922054_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="fedora rename"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>终端
+&lt;img src="https://ronggle.com/2017/fedora/terminal.png"
+width="1920"
+height="1080"
+srcset="https://ronggle.com/2017/fedora/terminal_hudbd3f22a09433f088c562d3fed9e1fc1_1296978_480x0_resize_box_3.png 480w, https://ronggle.com/2017/fedora/terminal_hudbd3f22a09433f088c562d3fed9e1fc1_1296978_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="fedora terminal"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>漂亮不？如果你也喜欢，安装个试试呗！&lt;/p></description></item></channel></rss>

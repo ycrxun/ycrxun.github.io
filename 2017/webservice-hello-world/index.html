@@ -1,132 +1,238 @@
-<!doctype html><html lang=en-us><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta name=author content="Soi"><meta name=description content="Search Engine Oriented Programming."><meta name=keywords content="Soi,Programming,Blog,ycrxun"><link rel=prev href=https://ronggle.com/2015/it-is-been-a-long-time/><link rel=next href=https://ronggle.com/2017/microservice-container-and-container-cloud/><link rel=canonical href=https://ronggle.com/2017/webservice-hello-world/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><title>WebService学习记录 | 凉都小道</title><meta name=title content="WebService学习记录 | 凉都小道"><link rel=stylesheet href=/font/iconfont.css><link rel=stylesheet href=/css/main.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/ronggle.com\/"},"articleSection":"posts","name":"WebService学习记录","headline":"WebService学习记录","description":"\x3cp\x3e最近项目要使用WebService，正在学习中，做个记录。\x3c\/p\x3e","inLanguage":"en-us","author":"Soi","creator":"Soi","publisher":"Soi","accountablePerson":"Soi","copyrightHolder":"Soi","copyrightYear":"2017","datePublished":"2017-02-12 19:32:45 \x2b0800 CST","dateModified":"2017-02-12 19:32:45 \x2b0800 CST","url":"https:\/\/ronggle.com\/2017\/webservice-hello-world\/","wordCount":"274","keywords":["Java","凉都小道"]}</script></head><body><div class=wrapper><nav class=navbar><div class=container><div class="navbar-header header-logo"><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class="menu navbar-right"><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><nav class=navbar-mobile id=nav-mobile style=display:none><div class=container><div class=navbar-header><div><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class=menu-toggle><span></span><span></span><span></span></div></div><div class=menu id=mobile-menu><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><main class=main><div class=container><article class=post-warp itemscope itemtype=http://schema.org/Article><header class=post-header><h1 class=post-title itemprop="name headline">WebService学习记录</h1><div class=post-meta>Written by <a itemprop=name href=https://ronggle.com/ rel=author>Soi</a>
-with ♥
-<span class=post-time>on <time datetime=2017-02-12 itemprop=datePublished>February 12, 2017</time></span>
-in
-<i class="iconfont icon-folder"></i><span class=post-category><a href=https://ronggle.com/categories/programming/>Programming</a></span></div></header><div class=post-content><p>最近项目要使用WebService，正在学习中，做个记录。</p><p><strong>WebService</strong>是一个平台独立的，低耦合的，自包含的、基于可编程的web的应用程序，可使用开放的XML（标准通用标记语言下的一个子集）标准来描述、发布、发现、协调和配置这些应用程序，用于开发分布式的互操作的应用程序。
-巴拉巴拉。。。。。。</p><h3 id=开始编写接口>开始编写接口</h3><pre><code class=language-java>package team.soi.service;
-
-public interface HelloService {
-
-    /**
-     * to do sth.
-     * @param to
-     * @return
-     */
-    Object toDoSth(String to);
-}
-</code></pre><h3 id=编写接口的实现类>编写接口的实现类</h3><pre><code class=language-java>package team.soi.service.impl;
-
-import team.soi.service.HelloService;
-
-import javax.jws.WebService;
-
-@WebService
-public class HelloServiceImpl implements HelloService {
-
-    public Object toDoSth(String to) {
-        return &quot;Hello,&quot; + to + &quot;! Welcome to my webservice world!&quot;;
-    }
-}
-</code></pre><h3 id=发布webservice>发布WebService</h3><pre><code class=language-java>package team.soi;
-
-import team.soi.service.impl.HelloServiceImpl;
-
-import javax.xml.ws.Endpoint;
-
-public class App {
-    public static void main(String[] args) {
-        Endpoint.publish(&quot;http://localhost:8899/ws/demo&quot;, new HelloServiceImpl());
-    }
-}
-</code></pre><p>奏是介么仍性，在浏览器输入<code>http://localhost:8899/ws/demo?wsdl</code>
-见证奇迹的时刻到了，Duang&hellip;&hellip;如下：</p><pre><code class=language-xml>This XML file does not appear to have any style information associated with it. The document tree is shown below.
-&lt;!--
- Published by JAX-WS RI (http://jax-ws.java.net). RI's version is JAX-WS RI 2.2.9-b130926.1035 svn-revision#5f6196f2b90e9460065a4c2f4e30e065b245e51e. 
---&gt;
-&lt;!--
- Generated by JAX-WS RI (http://jax-ws.java.net). RI's version is JAX-WS RI 2.2.9-b130926.1035 svn-revision#5f6196f2b90e9460065a4c2f4e30e065b245e51e. 
---&gt;
-&lt;definitions xmlns:wsu=&quot;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&quot; xmlns:wsp=&quot;http://www.w3.org/ns/ws-policy&quot;xmlns:wsp1_2=&quot;http://schemas.xmlsoap.org/ws/2004/09/policy&quot; xmlns:wsam=&quot;http://www.w3.org/2007/05/addressing/metadata&quot; xmlns:soap=&quot;http://schemas.xmlsoap.org/wsdl/soap/&quot;xmlns:tns=&quot;http://impl.service.soi.team/&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns=&quot;http://schemas.xmlsoap.org/wsdl/&quot; targetNamespace=&quot;http://impl.service.soi.team/&quot;name=&quot;HelloServiceImplService&quot;&gt;
-&lt;types&gt;
-&lt;xsd:schema&gt;
-&lt;xsd:import namespace=&quot;http://impl.service.soi.team/&quot; schemaLocation=&quot;http://localhost:8899/ws/demo?xsd=1&quot;/&gt;
-&lt;/xsd:schema&gt;
-&lt;/types&gt;
-&lt;message name=&quot;toDoSth&quot;&gt;
-&lt;part name=&quot;parameters&quot; element=&quot;tns:toDoSth&quot;/&gt;
-&lt;/message&gt;
-&lt;message name=&quot;toDoSthResponse&quot;&gt;
-&lt;part name=&quot;parameters&quot; element=&quot;tns:toDoSthResponse&quot;/&gt;
-&lt;/message&gt;
-&lt;portType name=&quot;HelloServiceImpl&quot;&gt;
-&lt;operation name=&quot;toDoSth&quot;&gt;
-&lt;input wsam:Action=&quot;http://impl.service.soi.team/HelloServiceImpl/toDoSthRequest&quot; message=&quot;tns:toDoSth&quot;/&gt;
-&lt;output wsam:Action=&quot;http://impl.service.soi.team/HelloServiceImpl/toDoSthResponse&quot; message=&quot;tns:toDoSthResponse&quot;/&gt;
-&lt;/operation&gt;
-&lt;/portType&gt;
-&lt;binding name=&quot;HelloServiceImplPortBinding&quot; type=&quot;tns:HelloServiceImpl&quot;&gt;
-&lt;soap:binding transport=&quot;http://schemas.xmlsoap.org/soap/http&quot; style=&quot;document&quot;/&gt;
-&lt;operation name=&quot;toDoSth&quot;&gt;
-&lt;soap:operation soapAction=&quot;&quot;/&gt;
-&lt;input&gt;
-&lt;soap:body use=&quot;literal&quot;/&gt;
-&lt;/input&gt;
-&lt;output&gt;
-&lt;soap:body use=&quot;literal&quot;/&gt;
-&lt;/output&gt;
-&lt;/operation&gt;
-&lt;/binding&gt;
-&lt;service name=&quot;HelloServiceImplService&quot;&gt;
-&lt;port name=&quot;HelloServiceImplPort&quot; binding=&quot;tns:HelloServiceImplPortBinding&quot;&gt;
-&lt;soap:address location=&quot;http://localhost:8899/ws/demo&quot;/&gt;
-&lt;/port&gt;
-&lt;/service&gt;
-&lt;/definitions&gt;
-</code></pre><p>到这里，说明你的WebService服务端编写完成了，接下来，我们要怎么去调用呢？
-说真的，在今天之前，我就知道WebService可以如上的写法，但是不会调用，感觉自己好Low，于是乎，在群里面一吼，很多热心的人回答了我的问题，得知了接下来该做的事情。</p><h3 id=生成jar>生成Jar</h3><p>在你的终端里，输入命令，如下：</p><pre><code class=language-shell>soi@soi:~/workspace/wsc$ wsimport -extension -keep -p team.soi.ws.client -s ./src -d ./bin http://localhost:8899/ws/demo?wsdl
-正在解析 WSDL...
-
-正在生成代码...
-
-正在编译代码...
-
-soi@soi:~/workspace/wsc$ cd bin
-soi@soi:~/workspace/wsc/bin$ jar cvf hello-ws-demo.jar team
-soi@soi:~/workspace/wsc/bin$ ls
-hello-ws-demo.jar  team
-</code></pre><p>此时，我们已经拿到了本WebService的客户端jar包，我们将客户端jar包加入到我们的工程，顺理成章，开始编写客户端代码：</p><pre><code class=language-java>package team.soi;
-
-import junit.framework.TestCase;
-import team.soi.ws.client.HelloServiceImpl;
-import team.soi.ws.client.HelloServiceImplService;
-
-public class AppTest
-        extends TestCase {
-
-    /**
-     * test ws
-     */
-    public void testWs() {
-        HelloServiceImpl service = new HelloServiceImplService().getHelloServiceImplPort();
-        String s = (String) service.toDoSth(&quot;Soi&quot;);
-        System.out.println(s);
-    }
-}
-</code></pre><p>运行测试代码：</p><pre><code class=language-shell>Hello,Soi! Welcome to my webservice world!
-</code></pre><p>撸完收工&hellip;&hellip;.</p></div><div class=post-copyright><p class=copyright-item><span>Author:</span>
-<span>Soi</span></p><p class=copyright-item><span>Link:</span>
-<a href=https://ronggle.com/2017/webservice-hello-world/>https://ronggle.com/2017/webservice-hello-world/</span></p><p class="copyright-item lincese">本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p></div><div class=post-tags><section><i class="iconfont icon-tag"></i>Tag(s):
-<span class=tag><a href=https://ronggle.com/tags/java/>#Java</a></span></section><section><a href=javascript:window.history.back();>back</a></span> ·
-<span><a href=https://ronggle.com/>home</a></span></section></div><div class=post-nav><a href=https://ronggle.com/2015/it-is-been-a-long-time/ class=prev rel=prev title=好久不见><i class="iconfont icon-left"></i>&nbsp;好久不见</a>
-<a href=https://ronggle.com/2017/microservice-container-and-container-cloud/ class=next rel=next title=微服务、容器与容器云-从入门到放弃>微服务、容器与容器云-从入门到放弃&nbsp;<i class="iconfont icon-right"></i></a></div><div class=post-comment><link rel=stylesheet href=/css/gitalk.min.css><script src=/js/gitalk.min.min.js></script><div id=gitalk-container></div><script>var gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:"ycrxun",id:location.pathname,distractionFreeMode:false});gitalk.render('gitalk-container');</script></div></article></div></main><footer class=footer><div class=copyright>&copy;
-<span itemprop=copyrightYear>2015 - 2019</span>
-<span class=with-love><i class="iconfont icon-love"></i></span><span class=author itemprop=copyrightHolder><a href=https://ronggle.com/>Soi</a> |</span>
-<a href=http://www.beian.miit.gov.cn/ target=_blank rel="external nofollow">黔ICP备15015267号</a> |
-<span>Powered by <a href=https://gohugo.io/ target=_blank rel="external nofollow">Hugo</a> & <a href=https://github.com/liuzc/leaveit target=_blank rel="external nofollow">LeaveIt</a></span></div></footer><script src=/js/vendor_no_gallery.min.js async></script><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?VNkd8ZiQJH29dqsu";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script><div id=landlord style=left:30px><div class=message style=opacity:0></div><canvas id=live2d width=280 height=250 class=live2d></canvas><div class=hide-button>隐藏</div></div><link rel=stylesheet href=/css/live2d.min.css><script src=/js/live2d.min.js></script><script src=/live2d/message.js defer></script><script type=text/javascript defer>var message_Path="\/live2d\/";var home_Path="https:\/\/ronggle.com\/"
-loadlive2d("live2d","\/live2d\/model\/tia\/model.json");</script></div></body></html>
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="最近项目要使用WebService，正在学习中，做个记录。"><title>WebService学习记录</title>
+<link rel=canonical href=https://ronggle.com/2017/webservice-hello-world/><link rel=stylesheet href=/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css><meta property='og:title' content="WebService学习记录"><meta property='og:description' content="最近项目要使用WebService，正在学习中，做个记录。"><meta property='og:url' content='https://ronggle.com/2017/webservice-hello-world/'><meta property='og:site_name' content='凉都小道'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='Java'><meta property='article:published_time' content='2017-02-12T19:32:45+08:00'><meta property='article:modified_time' content='2017-02-12T19:32:45+08:00'><meta name=twitter:title content="WebService学习记录"><meta name=twitter:description content="最近项目要使用WebService，正在学习中，做个记录。"><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu1aa4dd0456be0d06f4d83ce8e29586b6_40169_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🍥</span></figure><div class=site-meta><h1 class=site-name><a href=/>凉都小道</a></h1><h2 class=site-description>道生一，一生二，二生三，三生万物</h2></div></header><ol class=menu-social><li><a href=https://github.com/ycrxun target=_blank title=GitHub rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com/ChangrongYang target=_blank title=Twitter rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li><a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/about/><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-message-user"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 18l-5 3v-3H6a3 3 0 01-3-3V7a3 3 0 013-3h12a3 3 0 013 3v4.5"/><path d="M19 17m-2 0a2 2 0 104 0 2 2 0 10-4 0"/><path d="M22 22a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+<span>关于我</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><ol><li><a href=#开始编写接口>开始编写接口</a></li><li><a href=#编写接口的实现类>编写接口的实现类</a></li><li><a href=#发布webservice>发布WebService</a></li><li><a href=#生成jar>生成Jar</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class=main-article><header class=article-header><div class=article-details><header class=article-category><a href=/categories/programming/>Programming</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/2017/webservice-hello-world/>WebService学习记录</a></h2><h3 class=article-subtitle>最近项目要使用WebService，正在学习中，做个记录。</h3></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Feb 12, 2017</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 2 分钟</time></div></footer></div></header><section class=article-content><p><strong>WebService</strong>是一个平台独立的，低耦合的，自包含的、基于可编程的web的应用程序，可使用开放的XML（标准通用标记语言下的一个子集）标准来描述、发布、发现、协调和配置这些应用程序，用于开发分布式的互操作的应用程序。
+巴拉巴拉。。。。。。</p><h3 id=开始编写接口>开始编写接口</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>team.soi.service</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>interface</span> <span class=nc>HelloService</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=cm>/**
+</span></span></span><span class=line><span class=cl><span class=cm>     * to do sth.
+</span></span></span><span class=line><span class=cl><span class=cm>     * @param to
+</span></span></span><span class=line><span class=cl><span class=cm>     * @return
+</span></span></span><span class=line><span class=cl><span class=cm>     */</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=n>Object</span><span class=w> </span><span class=nf>toDoSth</span><span class=p>(</span><span class=n>String</span><span class=w> </span><span class=n>to</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=编写接口的实现类>编写接口的实现类</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>team.soi.service.impl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>team.soi.service.HelloService</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javax.jws.WebService</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=nd>@WebService</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>HelloServiceImpl</span><span class=w> </span><span class=kd>implements</span><span class=w> </span><span class=n>HelloService</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=n>Object</span><span class=w> </span><span class=nf>toDoSth</span><span class=p>(</span><span class=n>String</span><span class=w> </span><span class=n>to</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=k>return</span><span class=w> </span><span class=s>&#34;Hello,&#34;</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=n>to</span><span class=w> </span><span class=o>+</span><span class=w> </span><span class=s>&#34;! Welcome to my webservice world!&#34;</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=发布webservice>发布WebService</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>team.soi</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>team.soi.service.impl.HelloServiceImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>javax.xml.ws.Endpoint</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>App</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kd>static</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>main</span><span class=p>(</span><span class=n>String</span><span class=o>[]</span><span class=w> </span><span class=n>args</span><span class=p>)</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>Endpoint</span><span class=p>.</span><span class=na>publish</span><span class=p>(</span><span class=s>&#34;http://localhost:8899/ws/demo&#34;</span><span class=p>,</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HelloServiceImpl</span><span class=p>());</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>奏是介么仍性，在浏览器输入<code>http://localhost:8899/ws/demo?wsdl</code>
+见证奇迹的时刻到了，Duang&mldr;&mldr;如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-xml data-lang=xml><span class=line><span class=cl>This XML file does not appear to have any style information associated with it. The document tree is shown below.
+</span></span><span class=line><span class=cl><span class=c>&lt;!--
+</span></span></span><span class=line><span class=cl><span class=c> Published by JAX-WS RI (http://jax-ws.java.net). RI&#39;s version is JAX-WS RI 2.2.9-b130926.1035 svn-revision#5f6196f2b90e9460065a4c2f4e30e065b245e51e. 
+</span></span></span><span class=line><span class=cl><span class=c>--&gt;</span>
+</span></span><span class=line><span class=cl><span class=c>&lt;!--
+</span></span></span><span class=line><span class=cl><span class=c> Generated by JAX-WS RI (http://jax-ws.java.net). RI&#39;s version is JAX-WS RI 2.2.9-b130926.1035 svn-revision#5f6196f2b90e9460065a4c2f4e30e065b245e51e. 
+</span></span></span><span class=line><span class=cl><span class=c>--&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;definitions</span> <span class=na>xmlns:wsu=</span><span class=s>&#34;http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd&#34;</span> <span class=na>xmlns:wsp=</span><span class=s>&#34;http://www.w3.org/ns/ws-policy&#34;</span><span class=na>xmlns:wsp1_2=</span><span class=s>&#34;http://schemas.xmlsoap.org/ws/2004/09/policy&#34;</span> <span class=na>xmlns:wsam=</span><span class=s>&#34;http://www.w3.org/2007/05/addressing/metadata&#34;</span> <span class=na>xmlns:soap=</span><span class=s>&#34;http://schemas.xmlsoap.org/wsdl/soap/&#34;</span><span class=na>xmlns:tns=</span><span class=s>&#34;http://impl.service.soi.team/&#34;</span> <span class=na>xmlns:xsd=</span><span class=s>&#34;http://www.w3.org/2001/XMLSchema&#34;</span> <span class=na>xmlns=</span><span class=s>&#34;http://schemas.xmlsoap.org/wsdl/&#34;</span> <span class=na>targetNamespace=</span><span class=s>&#34;http://impl.service.soi.team/&#34;</span><span class=na>name=</span><span class=s>&#34;HelloServiceImplService&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;types&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;xsd:schema&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;xsd:import</span> <span class=na>namespace=</span><span class=s>&#34;http://impl.service.soi.team/&#34;</span> <span class=na>schemaLocation=</span><span class=s>&#34;http://localhost:8899/ws/demo?xsd=1&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/xsd:schema&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/types&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;message</span> <span class=na>name=</span><span class=s>&#34;toDoSth&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;part</span> <span class=na>name=</span><span class=s>&#34;parameters&#34;</span> <span class=na>element=</span><span class=s>&#34;tns:toDoSth&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/message&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;message</span> <span class=na>name=</span><span class=s>&#34;toDoSthResponse&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;part</span> <span class=na>name=</span><span class=s>&#34;parameters&#34;</span> <span class=na>element=</span><span class=s>&#34;tns:toDoSthResponse&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/message&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;portType</span> <span class=na>name=</span><span class=s>&#34;HelloServiceImpl&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;operation</span> <span class=na>name=</span><span class=s>&#34;toDoSth&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;input</span> <span class=na>wsam:Action=</span><span class=s>&#34;http://impl.service.soi.team/HelloServiceImpl/toDoSthRequest&#34;</span> <span class=na>message=</span><span class=s>&#34;tns:toDoSth&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;output</span> <span class=na>wsam:Action=</span><span class=s>&#34;http://impl.service.soi.team/HelloServiceImpl/toDoSthResponse&#34;</span> <span class=na>message=</span><span class=s>&#34;tns:toDoSthResponse&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/operation&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/portType&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;binding</span> <span class=na>name=</span><span class=s>&#34;HelloServiceImplPortBinding&#34;</span> <span class=na>type=</span><span class=s>&#34;tns:HelloServiceImpl&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;soap:binding</span> <span class=na>transport=</span><span class=s>&#34;http://schemas.xmlsoap.org/soap/http&#34;</span> <span class=na>style=</span><span class=s>&#34;document&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;operation</span> <span class=na>name=</span><span class=s>&#34;toDoSth&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;soap:operation</span> <span class=na>soapAction=</span><span class=s>&#34;&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;input&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;soap:body</span> <span class=na>use=</span><span class=s>&#34;literal&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/input&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;output&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;soap:body</span> <span class=na>use=</span><span class=s>&#34;literal&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/output&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/operation&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/binding&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;service</span> <span class=na>name=</span><span class=s>&#34;HelloServiceImplService&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;port</span> <span class=na>name=</span><span class=s>&#34;HelloServiceImplPort&#34;</span> <span class=na>binding=</span><span class=s>&#34;tns:HelloServiceImplPortBinding&#34;</span><span class=nt>&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;soap:address</span> <span class=na>location=</span><span class=s>&#34;http://localhost:8899/ws/demo&#34;</span><span class=nt>/&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/port&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/service&gt;</span>
+</span></span><span class=line><span class=cl><span class=nt>&lt;/definitions&gt;</span>
+</span></span></code></pre></td></tr></table></div></div><p>到这里，说明你的WebService服务端编写完成了，接下来，我们要怎么去调用呢？
+说真的，在今天之前，我就知道WebService可以如上的写法，但是不会调用，感觉自己好Low，于是乎，在群里面一吼，很多热心的人回答了我的问题，得知了接下来该做的事情。</p><h3 id=生成jar>生成Jar</h3><p>在你的终端里，输入命令，如下：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>soi@soi:~/workspace/wsc$ wsimport -extension -keep -p team.soi.ws.client -s ./src -d ./bin http://localhost:8899/ws/demo?wsdl
+</span></span><span class=line><span class=cl>正在解析 WSDL...
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>正在生成代码...
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>正在编译代码...
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>soi@soi:~/workspace/wsc$ <span class=nb>cd</span> bin
+</span></span><span class=line><span class=cl>soi@soi:~/workspace/wsc/bin$ jar cvf hello-ws-demo.jar team
+</span></span><span class=line><span class=cl>soi@soi:~/workspace/wsc/bin$ ls
+</span></span><span class=line><span class=cl>hello-ws-demo.jar  team
+</span></span></code></pre></td></tr></table></div></div><p>此时，我们已经拿到了本WebService的客户端jar包，我们将客户端jar包加入到我们的工程，顺理成章，开始编写客户端代码：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-java data-lang=java><span class=line><span class=cl><span class=kn>package</span><span class=w> </span><span class=nn>team.soi</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>junit.framework.TestCase</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>team.soi.ws.client.HelloServiceImpl</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kn>import</span><span class=w> </span><span class=nn>team.soi.ws.client.HelloServiceImplService</span><span class=p>;</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=kd>public</span><span class=w> </span><span class=kd>class</span> <span class=nc>AppTest</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=kd>extends</span><span class=w> </span><span class=n>TestCase</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=cm>/**
+</span></span></span><span class=line><span class=cl><span class=cm>     * test ws
+</span></span></span><span class=line><span class=cl><span class=cm>     */</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=kd>public</span><span class=w> </span><span class=kt>void</span><span class=w> </span><span class=nf>testWs</span><span class=p>()</span><span class=w> </span><span class=p>{</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>HelloServiceImpl</span><span class=w> </span><span class=n>service</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=k>new</span><span class=w> </span><span class=n>HelloServiceImplService</span><span class=p>().</span><span class=na>getHelloServiceImplPort</span><span class=p>();</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>String</span><span class=w> </span><span class=n>s</span><span class=w> </span><span class=o>=</span><span class=w> </span><span class=p>(</span><span class=n>String</span><span class=p>)</span><span class=w> </span><span class=n>service</span><span class=p>.</span><span class=na>toDoSth</span><span class=p>(</span><span class=s>&#34;Soi&#34;</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>        </span><span class=n>System</span><span class=p>.</span><span class=na>out</span><span class=p>.</span><span class=na>println</span><span class=p>(</span><span class=n>s</span><span class=p>);</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w>    </span><span class=p>}</span><span class=w>
+</span></span></span><span class=line><span class=cl><span class=w></span><span class=p>}</span><span class=w>
+</span></span></span></code></pre></td></tr></table></div></div><p>运行测试代码：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-shell data-lang=shell><span class=line><span class=cl>Hello,Soi! Welcome to my webservice world!
+</span></span></code></pre></td></tr></table></div></div><p>撸完收工&mldr;&mldr;.</p></section><footer class=article-footer><section class=article-tags><a href=/tags/java/>Java</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article class=has-image><a href=/2019/hyperledger-fabric-on-swarm/><div class=article-image><img src=/2019/hyperledger-fabric-on-swarm/hyperledger-fabric-on-swarm.svg loading=lazy data-key=hyperledger-fabric-on-swarm data-hash=/2019/hyperledger-fabric-on-swarm/hyperledger-fabric-on-swarm.svg></div><div class=article-details><h2 class=article-title>使用Docker Swarm部署Hyperledger Fabric</h2></div></a></article><article class=has-image><a href=/2019/lile-getting-and-started/><div class=article-image><img src=/2019/lile-getting-and-started/lile.9cbe3e7595c00ba0fbb6fe87ba66300b_huc07f78e848ff3c0cfda834824d5a3104_5265_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post Lile简单介绍" data-key=lile-getting-and-started data-hash="md5-nL4+dZXAC6D7tv6HumYwCw=="></div><div class=article-details><h2 class=article-title>Lile简单介绍</h2></div></a></article><article class=has-image><a href=/2019/graph-db-getting-and-started/><div class=article-image><img src=/2019/graph-db-getting-and-started/graph.b4d483c4bfa3f9db0d103e3c305eed29_hu3f4d3da678a88c24d39c2337492109c8_2384_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post 图形数据库简单介绍" data-key=graph-db-getting-and-started data-hash="md5-tNSDxL+j+dsNED48MF7tKQ=="></div><div class=article-details><h2 class=article-title>图形数据库简单介绍</h2></div></a></article><article class=has-image><a href=/2018/traefik-on-kubernetes/><div class=article-image><img src=/2018/traefik-on-kubernetes/traefik.svg loading=lazy data-key=traefik-on-kubernetes data-hash=/2018/traefik-on-kubernetes/traefik.svg></div><div class=article-details><h2 class=article-title>Traefik on Kubernetes</h2></div></a></article><article class=has-image><a href=/2018/registry-microservies-via-grpc/><div class=article-image><img src=/2018/registry-microservies-via-grpc/consul.4be1f2f3cdc550398d09fc0127aa233a_hu3856c57a2da839c1c05d9a86cb7503bb_22688_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post 使用gRPC开发微服务-服务注册与发现" data-key=registry-microservies-via-grpc data-hash="md5-S+Hy883FUDmNCfwBJ6ojOg=="></div><div class=article-details><h2 class=article-title>使用gRPC开发微服务-服务注册与发现</h2></div></a></article></div></div></aside><div id=gitalk-container></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css><script src=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js></script><script src=https://cdn.jsdelivr.net/npm/blueimp-md5@2.18.0/js/md5.min.js></script><script>const gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:["ycrxun"],distractionFreeMode:!1,id:md5(location.pathname)});(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("gitalk-container").innerHTML="Gitalk comments not available by default when the website is previewed locally.";return}gitalk.render("gitalk-container")})()</script><footer class=site-footer><section class=copyright>&copy;
+2015 -
+2024 Soi</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.26.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

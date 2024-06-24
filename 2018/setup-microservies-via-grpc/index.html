@@ -1,236 +1,432 @@
-<!doctype html><html lang=en-us><head><meta charset=utf-8><meta http-equiv=x-ua-compatible content="chrome=1"><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><meta name=author content="Soi"><meta name=description content="Search Engine Oriented Programming."><meta name=keywords content="Soi,Programming,Blog,ycrxun"><link rel=prev href=https://ronggle.com/2018/traefik-https/><link rel=next href=https://ronggle.com/2018/registry-microservies-via-grpc/><link rel=canonical href=https://ronggle.com/2018/setup-microservies-via-grpc/><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=manifest href=/site.webmanifest><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><meta name=msapplication-TileColor content="#da532c"><meta name=theme-color content="#ffffff"><title>使用gRPC开发微服务-开始 | 凉都小道</title><meta name=title content="使用gRPC开发微服务-开始 | 凉都小道"><link rel=stylesheet href=/font/iconfont.css><link rel=stylesheet href=/css/main.min.css><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/ronggle.com\/"},"articleSection":"posts","name":"使用gRPC开发微服务-开始","headline":"使用gRPC开发微服务-开始","description":"\x3ch2 id=\x22什么是grpc\x22\x3e什么是gRPC\x3c\/h2\x3e\n\n\x3cp\x3e\x3ca href=\x22https:\/\/grpc.io\/\x22 rel=\x22nofollow noreferrer\x22 target=\x22_blank\x22\x3egRPC\x3c\/a\x3e是一个现代的开源高性能RPC框架，可以在任何环境中运行。它可以有效地连接数据中心内和跨数据中心的服务，并提供可插拔的支持，以实现负载平衡，跟踪，健康检查和身份验证。它支持多种语言。\x3c\/p\x3e","inLanguage":"en-us","author":"Soi","creator":"Soi","publisher":"Soi","accountablePerson":"Soi","copyrightHolder":"Soi","copyrightYear":"2018","datePublished":"2018-08-12 17:44:33 \x2b0800 CST","dateModified":"2018-08-12 17:44:33 \x2b0800 CST","url":"https:\/\/ronggle.com\/2018\/setup-microservies-via-grpc\/","wordCount":"460","keywords":["微服务","gRPC","容器","从入门到放弃","凉都小道"]}</script></head><body><div class=wrapper><nav class=navbar><div class=container><div class="navbar-header header-logo"><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class="menu navbar-right"><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><nav class=navbar-mobile id=nav-mobile style=display:none><div class=container><div class=navbar-header><div><a href=javascript:void(0); class=theme-switch><i class="iconfont icon-xihuan"></i></a>&nbsp;<a href=https://ronggle.com/>凉都小道</a></div><div class=menu-toggle><span></span><span></span><span></span></div></div><div class=menu id=mobile-menu><a class=menu-item href=/posts>文章</a>
-<a class=menu-item href=/categories/>分类</a>
-<a class=menu-item href=/tags/>标签</a>
-<a class=menu-item href=/about/>关于</a></div></div></nav><main class=main><div class=container><article class=post-warp itemscope itemtype=http://schema.org/Article><header class=post-header><h1 class=post-title itemprop="name headline">使用gRPC开发微服务-开始</h1><div class=post-meta>Written by <a itemprop=name href=https://ronggle.com/ rel=author>Soi</a>
-with ♥
-<span class=post-time>on <time datetime=2018-08-12 itemprop=datePublished>August 12, 2018</time></span>
-in
-<i class="iconfont icon-folder"></i><span class=post-category><a href=https://ronggle.com/categories/programming/>Programming</a></span></div></header><div class=post-content><img src=/setup-microservies-via-grpc/grpc.svg class=featured_image><h2 id=什么是grpc>什么是gRPC</h2><p><a href=https://grpc.io/ rel="nofollow noreferrer" target=_blank>gRPC</a>是一个现代的开源高性能RPC框架，可以在任何环境中运行。它可以有效地连接数据中心内和跨数据中心的服务，并提供可插拔的支持，以实现负载平衡，跟踪，健康检查和身份验证。它支持多种语言。</p><p>gRPC使用<a href=https://developers.google.com/protocol-buffers/ rel="nofollow noreferrer" target=_blank>Protocol Buffers</a>作为IDL定义服务，Protocol Buffers是一个功能强大的二进制序列化工具集和语言。</p><p><figure><img src=/images/ring.svg data-sizes=auto data-src=/setup-microservies-via-grpc/grpc.svg alt=grpc.io class=lazyload><figcaption class=image-caption>grpc.io</figcaption></figure></p><h3 id=主要使用场景>主要使用场景</h3><ul><li>在微服务式架构中有效地连接多语言服务</li><li>将移动设备，浏览器客户端连接到后端服务</li><li>生成高效的客户端库</li></ul><h3 id=核心功能>核心功能</h3><ul><li>10种语言的客户端库</li><li>高效和简单的服务定义框架</li><li>基于http/2的传输的双向流</li><li>可插拔身份验证，跟踪，负载平衡和健康检查</li></ul><blockquote><p>安装和前期准备请参阅官方文档。</p></blockquote><h2 id=前置条件>前置条件</h2><ul><li><a href=https://developers.google.com/protocol-buffers/ rel="nofollow noreferrer" target=_blank>Protocol Buffers</a></li><li><a href=https://golang.org/ rel="nofollow noreferrer" target=_blank>Golang</a></li></ul><h2 id=一个简单的开始>一个简单的开始</h2><h3 id=使用protocol-buffers定义服务>使用Protocol Buffers定义服务</h3><pre><code class=language-proto>syntax = &quot;proto3&quot;;
-
-package add;
-
-message AddRequest {
-  uint64 a = 1;
-  uint64 b = 2;
-}
-
-message AddResponse {
-  uint64 result = 1;
-}
-
-service AddService {
-  rpc Add (AddRequest) returns (AddResponse) {}
-}
-
-</code></pre><h3 id=项目结构>项目结构</h3><pre><code class=language-bash>.
-├── add
-│   ├── cmd
-│   │   ├── client.go
-│   │   ├── root.go
-│   │   └── server.go
-│   └── main.go
-├── add.pb.go
-├── add.proto
-└── server
-    └── server.go
-
-</code></pre><h3 id=生成代码>生成代码</h3><pre><code class=language-bash>$ pwd
-/home/soi/golang/src/github.com/ycrxun/add
-
-$ protoc -I . add.proto --go_out=plugins=grpc:.
-</code></pre><p>当我们执行完命令后，会在当前文件夹上生成一个<code>add.pb.go</code>文件，这个文件我们不需要去动，但是我们生成的这个文件中有我们定义的AddServiceServer的接口，需要我们去实现。</p><pre><code class=language-golang>// AddServiceServer is the server API for AddService service.
-type AddServiceServer interface {
-	Add(context.Context, *AddRequest) (*AddResponse, error)
-}
-</code></pre><h3 id=实现addserviceserver>实现AddServiceServer</h3><pre><code class=language-bash>$ pwd
-/home/soi/golang/src/github.com/ycrxun/add
-
-$ mkdir server
-
-$ touch server/server.go
-
-</code></pre><p>然后在<code>server.go</code>中定义一个struct<code>AddServer</code>,并且实现<code>AddServiceServer</code>的<code>Add</code>方法。</p><pre><code class=language-golang>package server
-
-import (
-	&quot;context&quot;
-
-	&quot;github.com/ycrxun/add&quot;
-)
-
-// AddServer struct for AddService
-type AddServer struct {
-}
-
-// Add method
-func (a AddServer) Add(ctx context.Context, r *add.AddRequest) (*add.AddResponse, error) {
-	rs := r.A + r.B
-	s := add.AddResponse{
-		Result: uint64(rs),
-	}
-	return &amp;s, nil
-}
-
-</code></pre><p>到此，我们已经实现了我们的业务逻辑部分，但是并不能对外提供服务，所以我们要完成我们的gRPC的server。</p><h3 id=实现server端>实现Server端</h3><pre><code class=language-bash>$ pwd
-/home/soi/golang/src/github.com/ycrxun/add/add
-
-$ ls
-cmd  main.go
-
-$ cat main.go 
-package main
-
-import &quot;github.com/ycrxun/add/add/cmd&quot;
-
-func main() {
-	cmd.Execute()
-}
-
-$ cat cmd/root.go 
-package cmd
-
-import (
-	&quot;fmt&quot;
-	&quot;os&quot;
-
-	&quot;github.com/spf13/cobra&quot;
-)
-
-var rootCmd = &amp;cobra.Command{
-	Use:   &quot;add&quot;,
-	Short: &quot;grpc add service simple.&quot;,
-}
-
-// Execute cmd
-func Execute() {
-	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(-1)
-	}
-}
-
-</code></pre><blockquote><p>为了后续的操作，我们最好按照这种结构去写，当然，你也可以不这么写。</p></blockquote><p>接下来，我们去实现我们的gRPC Server</p><pre><code class=language-golang>package cmd
-
-import (
-	&quot;net&quot;
-
-	&quot;github.com/ycrxun/add&quot;
-	&quot;github.com/ycrxun/add/server&quot;
-
-	&quot;github.com/sirupsen/logrus&quot;
-	&quot;github.com/spf13/cobra&quot;
-	&quot;google.golang.org/grpc&quot;
-)
-
-var serveCmd = &amp;cobra.Command{
-	Use:   &quot;serve&quot;,
-	Short: &quot;Run the RPC server&quot;,
-	Run: func(cmd *cobra.Command, args []string) {
-		logrus.Fatal(runServe())
-	},
-}
-
-func runServe() error {
-  lis, err := net.Listen(&quot;tcp&quot;, &quot;:8000&quot;)
-  logrus.Infof(&quot;add serve at %s&quot;, &quot;0.0.0.0:8000&quot;)
-	if err != nil {
-		return err
-	}
-	s := grpc.NewServer()
-	add.RegisterAddServiceServer(s, &amp;server.AddServer{})
-	return s.Serve(lis)
-}
-
-func init() {
-	rootCmd.AddCommand(serveCmd)
-}
-
-</code></pre><p>至此，我们的gRPC server以及我们的业务逻辑就完成了。</p><p>是不是很鸡冻呢？</p><p>接下来我们来编译并运行起来。</p><pre><code class=language-bash>$ pwd
-/home/soi/golang/src/github.com/ycrxun/add/add
-
-$ go build
-
-$ ls
-add  cmd  main.go
-
-$ ./add serve
-INFO[0000] add serve at 0.0.0.0:8000
-</code></pre><h3 id=编写客户端>编写客户端</h3><p>上面我们已经编写并完成了gRPC server及其业务逻辑，并可以对外提供服务了，这时候我们需要使用一个客户端去调用我们的服务，为了方便测试，我们选择使用<a href=https://iris-go.com/ rel="nofollow noreferrer" target=_blank>iris</a>来构建一个HTTP的API对外提供服务。</p><pre><code class=language-golang>package cmd
-
-import (
-	&quot;context&quot;
-
-	&quot;github.com/kataras/iris&quot;
-	&quot;github.com/sirupsen/logrus&quot;
-	&quot;github.com/spf13/cobra&quot;
-	&quot;github.com/ycrxun/add&quot;
-	&quot;google.golang.org/grpc&quot;
-)
-
-var clientCmd = &amp;cobra.Command{
-	Use:   &quot;client&quot;,
-	Short: &quot;Run the RPC client&quot;,
-	Run: func(cmd *cobra.Command, args []string) {
-		logrus.Fatal(runClient())
-	},
-}
-
-func runClient() error {
-
-  // 建立一个grpc连接
-	cc, err := grpc.Dial(&quot;0.0.0.0:8000&quot;, grpc.WithInsecure())
-	if err != nil {
-		return err
-	}
-
-  // 创建AddService的客户端
-	cl := add.NewAddServiceClient(cc)
-
-	app := iris.New()
-
-	app.Get(&quot;/:a/:b&quot;, func(ctx iris.Context) {
-		a, _ := ctx.Params().GetInt64(&quot;a&quot;)
-		b, _ := ctx.Params().GetInt64(&quot;b&quot;)
-
-		c := context.Background()
-		rs, err := cl.Add(c, &amp;add.AddRequest{A: uint64(a), B: uint64(b)})
-		if err != nil {
-			ctx.Text(err.Error())
-			return
-		}
-		ctx.JSON(rs)
-	})
-	return app.Run(iris.Addr(&quot;:8100&quot;))
-}
-
-func init() {
-	rootCmd.AddCommand(clientCmd)
-}
-
-</code></pre><p>到此，我们的客户端也完成了，接下来为们重新编译下，并依次将服务端，客户端启动起来。</p><pre><code class=language-bash>$ pwd
-/home/soi/golang/src/github.com/ycrxun/add/add
-
-$ go build
-
-$ ./add serve
-INFO[0000] add serve at 0.0.0.0:8000
-</code></pre><p>重新开一个终端</p><pre><code class=language-bash>$ ./add client
-Now listening on: http://localhost:8100
-Application started. Press CTRL+C to shut down.
-</code></pre><p>打开浏览器，输入<code>http://localhost:8100/1/1</code></p><pre><code class=language-json>{&quot;result&quot;:2}
-</code></pre></div><div class=post-copyright><p class=copyright-item><span>Author:</span>
-<span>Soi</span></p><p class=copyright-item><span>Link:</span>
-<a href=https://ronggle.com/2018/setup-microservies-via-grpc/>https://ronggle.com/2018/setup-microservies-via-grpc/</span></p><p class="copyright-item lincese">本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p></div><div class=post-tags><section><i class="iconfont icon-tag"></i>Tag(s):
-<span class=tag><a href=https://ronggle.com/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/>#微服务</a></span>
-<span class=tag><a href=https://ronggle.com/tags/grpc/>#gRPC</a></span>
-<span class=tag><a href=https://ronggle.com/tags/%E5%AE%B9%E5%99%A8/>#容器</a></span>
-<span class=tag><a href=https://ronggle.com/tags/%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E6%94%BE%E5%BC%83/>#从入门到放弃</a></span></section><section><a href=javascript:window.history.back();>back</a></span> ·
-<span><a href=https://ronggle.com/>home</a></span></section></div><div class=post-nav><a href=https://ronggle.com/2018/traefik-https/ class=prev rel=prev title=开启Traefik的https><i class="iconfont icon-left"></i>&nbsp;开启Traefik的https</a>
-<a href=https://ronggle.com/2018/registry-microservies-via-grpc/ class=next rel=next title=使用gRPC开发微服务-服务注册与发现>使用gRPC开发微服务-服务注册与发现&nbsp;<i class="iconfont icon-right"></i></a></div><div class=post-comment><link rel=stylesheet href=/css/gitalk.min.css><script src=/js/gitalk.min.min.js></script><div id=gitalk-container></div><script>var gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:"ycrxun",id:location.pathname,distractionFreeMode:false});gitalk.render('gitalk-container');</script></div></article></div></main><footer class=footer><div class=copyright>&copy;
-<span itemprop=copyrightYear>2015 - 2019</span>
-<span class=with-love><i class="iconfont icon-love"></i></span><span class=author itemprop=copyrightHolder><a href=https://ronggle.com/>Soi</a> |</span>
-<a href=http://www.beian.miit.gov.cn/ target=_blank rel="external nofollow">黔ICP备15015267号</a> |
-<span>Powered by <a href=https://gohugo.io/ target=_blank rel="external nofollow">Hugo</a> & <a href=https://github.com/liuzc/leaveit target=_blank rel="external nofollow">LeaveIt</a></span></div></footer><link href=//lib.baomitu.com/lightgallery/1.6.11/css/lightgallery.min.css rel=stylesheet><script src=/js/vendor_gallery.min.js async></script><script>var _hmt=_hmt||[];(function(){var hm=document.createElement("script");hm.src="https://hm.baidu.com/hm.js?VNkd8ZiQJH29dqsu";var s=document.getElementsByTagName("script")[0];s.parentNode.insertBefore(hm,s);})();</script><div id=landlord style=left:30px><div class=message style=opacity:0></div><canvas id=live2d width=280 height=250 class=live2d></canvas><div class=hide-button>隐藏</div></div><link rel=stylesheet href=/css/live2d.min.css><script src=/js/live2d.min.js></script><script src=/live2d/message.js defer></script><script type=text/javascript defer>var message_Path="\/live2d\/";var home_Path="https:\/\/ronggle.com\/"
-loadlive2d("live2d","\/live2d\/model\/tia\/model.json");</script></div></body></html>
+<!doctype html><html lang=zh-cn dir=ltr><head><meta charset=utf-8><meta name=viewport content='width=device-width,initial-scale=1'><meta name=description content="什么是gRPC gRPC是一个现代的开源高性能RPC框架，可以在任何环境中运行。它可以有效地连接数据中心内和跨数据中心的服务，并提供可插拔的支持，以实现负载平衡，跟踪，健康检查和身份验证。它支持多种语言。\n"><title>使用gRPC开发微服务-开始</title>
+<link rel=canonical href=https://ronggle.com/2018/setup-microservies-via-grpc/><link rel=stylesheet href=/scss/style.min.0304c6baf04e01a8fe70693791cb744d56a3578a3120a8796cefc66825aa39c7.css><meta property='og:title' content="使用gRPC开发微服务-开始"><meta property='og:description' content="什么是gRPC gRPC是一个现代的开源高性能RPC框架，可以在任何环境中运行。它可以有效地连接数据中心内和跨数据中心的服务，并提供可插拔的支持，以实现负载平衡，跟踪，健康检查和身份验证。它支持多种语言。\n"><meta property='og:url' content='https://ronggle.com/2018/setup-microservies-via-grpc/'><meta property='og:site_name' content='凉都小道'><meta property='og:type' content='article'><meta property='article:section' content='Posts'><meta property='article:tag' content='微服务'><meta property='article:tag' content='gRPC'><meta property='article:tag' content='容器'><meta property='article:tag' content='从入门到放弃'><meta property='article:published_time' content='2018-08-12T17:44:33+08:00'><meta property='article:modified_time' content='2018-08-12T17:44:33+08:00'><meta property='og:image' content='https://ronggle.com/2018/setup-microservies-via-grpc/grpc.svg'><meta name=twitter:title content="使用gRPC开发微服务-开始"><meta name=twitter:description content="什么是gRPC gRPC是一个现代的开源高性能RPC框架，可以在任何环境中运行。它可以有效地连接数据中心内和跨数据中心的服务，并提供可插拔的支持，以实现负载平衡，跟踪，健康检查和身份验证。它支持多种语言。\n"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content='https://ronggle.com/2018/setup-microservies-via-grpc/grpc.svg'><link rel="shortcut icon" href=/favicon.ico></head><body class=article-page><script>(function(){const e="StackColorScheme";localStorage.getItem(e)||localStorage.setItem(e,"auto")})()</script><script>(function(){const t="StackColorScheme",e=localStorage.getItem(t),n=window.matchMedia("(prefers-color-scheme: dark)").matches===!0;e=="dark"||e==="auto"&&n?document.documentElement.dataset.scheme="dark":document.documentElement.dataset.scheme="light"})()</script><div class="container main-container flex on-phone--column extended"><aside class="sidebar left-sidebar sticky"><button class="hamburger hamburger--spin" type=button id=toggle-menu aria-label=切换菜单>
+<span class=hamburger-box><span class=hamburger-inner></span></span></button><header><figure class=site-avatar><a href=/><img src=/img/avatar_hu1aa4dd0456be0d06f4d83ce8e29586b6_40169_300x0_resize_box_3.png width=300 height=300 class=site-logo loading=lazy alt=Avatar>
+</a><span class=emoji>🍥</span></figure><div class=site-meta><h1 class=site-name><a href=/>凉都小道</a></h1><h2 class=site-description>道生一，一生二，二生三，三生万物</h2></div></header><ol class=menu-social><li><a href=https://github.com/ycrxun target=_blank title=GitHub rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-github" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 5v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6.0 00-1.3-3.2 4.2 4.2.0 00-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3.0 00-6.2.0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2.0 00-.1 3.2A4.6 4.6.0 004 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21"/></svg></a></li><li><a href=https://twitter.com/ChangrongYang target=_blank title=Twitter rel=me><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-brand-twitter" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M22 4.01c-1 .49-1.98.689-3 .99-1.121-1.265-2.783-1.335-4.38-.737S11.977 6.323 12 8v1c-3.245.083-6.135-1.395-8-4 0 0-4.182 7.433 4 11-1.872 1.247-3.739 2.088-6 2 3.308 1.803 6.913 2.423 10.034 1.517 3.58-1.04 6.522-3.723 7.651-7.742a13.84 13.84.0 00.497-3.753C20.18 7.773 21.692 5.25 22 4.009z"/></svg></a></li></ol><ol class=menu id=main-menu><li><a href=/archives/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><rect x="3" y="4" width="18" height="4" rx="2"/><path d="M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+<span>归档</span></a></li><li><a href=/search/><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="10" cy="10" r="7"/><line x1="21" y1="21" x2="15" y2="15"/></svg>
+<span>搜索</span></a></li><li><a href=/about/><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-message-user"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M13 18l-5 3v-3H6a3 3 0 01-3-3V7a3 3 0 013-3h12a3 3 0 013 3v4.5"/><path d="M19 17m-2 0a2 2 0 104 0 2 2 0 10-4 0"/><path d="M22 22a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+<span>关于我</span></a></li><li class=menu-bottom-section><ol class=menu><li id=dark-mode-toggle><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="8" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="16" cy="12" r="2"/><rect x="2" y="6" width="20" height="12" rx="6"/></svg>
+<span>暗色模式</span></li></ol></li></ol></aside><aside class="sidebar right-sidebar sticky"><section class="widget archives"><div class=widget-icon><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><line x1="5" y1="9" x2="19" y2="9"/><line x1="5" y1="15" x2="19" y2="15"/><line x1="11" y1="4" x2="7" y2="20"/><line x1="17" y1="4" x2="13" y2="20"/></svg></div><h2 class="widget-title section-title">目录</h2><div class=widget--toc><nav id=TableOfContents><ol><li><a href=#什么是grpc>什么是gRPC</a><ol><li><a href=#主要使用场景>主要使用场景</a></li><li><a href=#核心功能>核心功能</a></li></ol></li><li><a href=#前置条件>前置条件</a></li><li><a href=#一个简单的开始>一个简单的开始</a><ol><li><a href=#使用protocol-buffers定义服务>使用Protocol Buffers定义服务</a></li><li><a href=#项目结构>项目结构</a></li><li><a href=#生成代码>生成代码</a></li><li><a href=#实现addserviceserver>实现AddServiceServer</a></li><li><a href=#实现server端>实现Server端</a></li><li><a href=#编写客户端>编写客户端</a></li></ol></li></ol></nav></div></section></aside><main class="main full-width"><article class="has-image main-article"><header class=article-header><div class=article-image><a href=/2018/setup-microservies-via-grpc/><img src=/2018/setup-microservies-via-grpc/grpc.svg loading=lazy alt="Featured image of post 使用gRPC开发微服务-开始"></a></div><div class=article-details><header class=article-category><a href=/categories/programming/>Programming</a></header><div class=article-title-wrapper><h2 class=article-title><a href=/2018/setup-microservies-via-grpc/>使用gRPC开发微服务-开始</a></h2></div><footer class=article-time><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><path d="M11.795 21H5a2 2 0 01-2-2V7a2 2 0 012-2h12a2 2 0 012 2v4"/><circle cx="18" cy="18" r="4"/><path d="M15 3v4"/><path d="M7 3v4"/><path d="M3 11h16"/><path d="M18 16.496V18l1 1"/></svg>
+<time class=article-time--published>Aug 12, 2018</time></div><div><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 15"/></svg>
+<time class=article-time--reading>阅读时长: 4 分钟</time></div></footer></div></header><section class=article-content><h2 id=什么是grpc>什么是gRPC</h2><p><a class=link href=https://grpc.io/ target=_blank rel=noopener>gRPC</a>是一个现代的开源高性能RPC框架，可以在任何环境中运行。它可以有效地连接数据中心内和跨数据中心的服务，并提供可插拔的支持，以实现负载平衡，跟踪，健康检查和身份验证。它支持多种语言。</p><p>gRPC使用<a class=link href=https://developers.google.com/protocol-buffers/ target=_blank rel=noopener>Protocol Buffers</a>作为IDL定义服务，Protocol Buffers是一个功能强大的二进制序列化工具集和语言。</p><p><img src=/2018/setup-microservies-via-grpc/grpc.svg loading=lazy alt=grpc.io></p><h3 id=主要使用场景>主要使用场景</h3><ul><li>在微服务式架构中有效地连接多语言服务</li><li>将移动设备，浏览器客户端连接到后端服务</li><li>生成高效的客户端库</li></ul><h3 id=核心功能>核心功能</h3><ul><li>10种语言的客户端库</li><li>高效和简单的服务定义框架</li><li>基于http/2的传输的双向流</li><li>可插拔身份验证，跟踪，负载平衡和健康检查</li></ul><blockquote><p>安装和前期准备请参阅官方文档。</p></blockquote><h2 id=前置条件>前置条件</h2><ul><li><a class=link href=https://developers.google.com/protocol-buffers/ target=_blank rel=noopener>Protocol Buffers</a></li><li><a class=link href=https://golang.org/ target=_blank rel=noopener>Golang</a></li></ul><h2 id=一个简单的开始>一个简单的开始</h2><h3 id=使用protocol-buffers定义服务>使用Protocol Buffers定义服务</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-proto data-lang=proto><span class=line><span class=cl><span class=n>syntax</span> <span class=o>=</span> <span class=s>&#34;proto3&#34;</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=kn>package</span> <span class=nn>add</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=kd>message</span> <span class=nc>AddRequest</span> <span class=p>{</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=kt>uint64</span> <span class=n>a</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=kt>uint64</span> <span class=n>b</span> <span class=o>=</span> <span class=mi>2</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=p>}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=kd>message</span> <span class=nc>AddResponse</span> <span class=p>{</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=kt>uint64</span> <span class=n>result</span> <span class=o>=</span> <span class=mi>1</span><span class=p>;</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=p>}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=kd>service</span> <span class=n>AddService</span> <span class=p>{</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span>  <span class=k>rpc</span> <span class=n>Add</span> <span class=p>(</span><span class=n>AddRequest</span><span class=p>)</span> <span class=k>returns</span> <span class=p>(</span><span class=n>AddResponse</span><span class=p>)</span> <span class=p>{}</span><span class=err>
+</span></span></span><span class=line><span class=cl><span class=err></span><span class=p>}</span><span class=err>
+</span></span></span></code></pre></td></tr></table></div></div><h3 id=项目结构>项目结构</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>.
+</span></span><span class=line><span class=cl>├── add
+</span></span><span class=line><span class=cl>│   ├── cmd
+</span></span><span class=line><span class=cl>│   │   ├── client.go
+</span></span><span class=line><span class=cl>│   │   ├── root.go
+</span></span><span class=line><span class=cl>│   │   └── server.go
+</span></span><span class=line><span class=cl>│   └── main.go
+</span></span><span class=line><span class=cl>├── add.pb.go
+</span></span><span class=line><span class=cl>├── add.proto
+</span></span><span class=line><span class=cl>└── server
+</span></span><span class=line><span class=cl>    └── server.go
+</span></span></code></pre></td></tr></table></div></div><h3 id=生成代码>生成代码</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ <span class=nb>pwd</span>
+</span></span><span class=line><span class=cl>/home/soi/golang/src/github.com/ycrxun/add
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ protoc -I . add.proto --go_out<span class=o>=</span><span class=nv>plugins</span><span class=o>=</span>grpc:.
+</span></span></code></pre></td></tr></table></div></div><p>当我们执行完命令后，会在当前文件夹上生成一个<code>add.pb.go</code>文件，这个文件我们不需要去动，但是我们生成的这个文件中有我们定义的AddServiceServer的接口，需要我们去实现。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=c1>// AddServiceServer is the server API for AddService service.
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>type</span> <span class=nx>AddServiceServer</span> <span class=kd>interface</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nf>Add</span><span class=p>(</span><span class=nx>context</span><span class=p>.</span><span class=nx>Context</span><span class=p>,</span> <span class=o>*</span><span class=nx>AddRequest</span><span class=p>)</span> <span class=p>(</span><span class=o>*</span><span class=nx>AddResponse</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h3 id=实现addserviceserver>实现AddServiceServer</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ <span class=nb>pwd</span>
+</span></span><span class=line><span class=cl>/home/soi/golang/src/github.com/ycrxun/add
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ mkdir server
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ touch server/server.go
+</span></span></code></pre></td></tr></table></div></div><p>然后在<code>server.go</code>中定义一个struct<code>AddServer</code>,并且实现<code>AddServiceServer</code>的<code>Add</code>方法。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=kn>package</span> <span class=nx>server</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;context&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/ycrxun/add&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// AddServer struct for AddService
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>type</span> <span class=nx>AddServer</span> <span class=kd>struct</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1>// Add method
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=kd>func</span> <span class=p>(</span><span class=nx>a</span> <span class=nx>AddServer</span><span class=p>)</span> <span class=nf>Add</span><span class=p>(</span><span class=nx>ctx</span> <span class=nx>context</span><span class=p>.</span><span class=nx>Context</span><span class=p>,</span> <span class=nx>r</span> <span class=o>*</span><span class=nx>add</span><span class=p>.</span><span class=nx>AddRequest</span><span class=p>)</span> <span class=p>(</span><span class=o>*</span><span class=nx>add</span><span class=p>.</span><span class=nx>AddResponse</span><span class=p>,</span> <span class=kt>error</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>rs</span> <span class=o>:=</span> <span class=nx>r</span><span class=p>.</span><span class=nx>A</span> <span class=o>+</span> <span class=nx>r</span><span class=p>.</span><span class=nx>B</span>
+</span></span><span class=line><span class=cl>	<span class=nx>s</span> <span class=o>:=</span> <span class=nx>add</span><span class=p>.</span><span class=nx>AddResponse</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>Result</span><span class=p>:</span> <span class=nb>uint64</span><span class=p>(</span><span class=nx>rs</span><span class=p>),</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=o>&amp;</span><span class=nx>s</span><span class=p>,</span> <span class=kc>nil</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>到此，我们已经实现了我们的业务逻辑部分，但是并不能对外提供服务，所以我们要完成我们的gRPC的server。</p><h3 id=实现server端>实现Server端</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ <span class=nb>pwd</span>
+</span></span><span class=line><span class=cl>/home/soi/golang/src/github.com/ycrxun/add/add
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ ls
+</span></span><span class=line><span class=cl>cmd  main.go
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ cat main.go 
+</span></span><span class=line><span class=cl>package main
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>import <span class=s2>&#34;github.com/ycrxun/add/add/cmd&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>func main<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>	cmd.Execute<span class=o>()</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ cat cmd/root.go 
+</span></span><span class=line><span class=cl>package cmd
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>import <span class=o>(</span>
+</span></span><span class=line><span class=cl>	<span class=s2>&#34;fmt&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s2>&#34;os&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=s2>&#34;github.com/spf13/cobra&#34;</span>
+</span></span><span class=line><span class=cl><span class=o>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>var <span class=nv>rootCmd</span> <span class=o>=</span> <span class=p>&amp;</span>cobra.Command<span class=o>{</span>
+</span></span><span class=line><span class=cl>	Use:   <span class=s2>&#34;add&#34;</span>,
+</span></span><span class=line><span class=cl>	Short: <span class=s2>&#34;grpc add service simple.&#34;</span>,
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>// Execute cmd
+</span></span><span class=line><span class=cl>func Execute<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> err :<span class=o>=</span> rootCmd.Execute<span class=o>()</span><span class=p>;</span> err !<span class=o>=</span> nil <span class=o>{</span>
+</span></span><span class=line><span class=cl>		fmt.Println<span class=o>(</span>err<span class=o>)</span>
+</span></span><span class=line><span class=cl>		os.Exit<span class=o>(</span>-1<span class=o>)</span>
+</span></span><span class=line><span class=cl>	<span class=o>}</span>
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p>为了后续的操作，我们最好按照这种结构去写，当然，你也可以不这么写。</p></blockquote><p>接下来，我们去实现我们的gRPC Server</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=kn>package</span> <span class=nx>cmd</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;net&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/ycrxun/add&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/ycrxun/add/server&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/sirupsen/logrus&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/spf13/cobra&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;google.golang.org/grpc&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>serveCmd</span> <span class=p>=</span> <span class=o>&amp;</span><span class=nx>cobra</span><span class=p>.</span><span class=nx>Command</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>Use</span><span class=p>:</span>   <span class=s>&#34;serve&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>	<span class=nx>Short</span><span class=p>:</span> <span class=s>&#34;Run the RPC server&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>	<span class=nx>Run</span><span class=p>:</span> <span class=kd>func</span><span class=p>(</span><span class=nx>cmd</span> <span class=o>*</span><span class=nx>cobra</span><span class=p>.</span><span class=nx>Command</span><span class=p>,</span> <span class=nx>args</span> <span class=p>[]</span><span class=kt>string</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>logrus</span><span class=p>.</span><span class=nf>Fatal</span><span class=p>(</span><span class=nf>runServe</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>	<span class=p>},</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>runServe</span><span class=p>()</span> <span class=kt>error</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>  <span class=nx>lis</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>net</span><span class=p>.</span><span class=nf>Listen</span><span class=p>(</span><span class=s>&#34;tcp&#34;</span><span class=p>,</span> <span class=s>&#34;:8000&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>  <span class=nx>logrus</span><span class=p>.</span><span class=nf>Infof</span><span class=p>(</span><span class=s>&#34;add serve at %s&#34;</span><span class=p>,</span> <span class=s>&#34;0.0.0.0:8000&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=nx>err</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>	<span class=nx>s</span> <span class=o>:=</span> <span class=nx>grpc</span><span class=p>.</span><span class=nf>NewServer</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>	<span class=nx>add</span><span class=p>.</span><span class=nf>RegisterAddServiceServer</span><span class=p>(</span><span class=nx>s</span><span class=p>,</span> <span class=o>&amp;</span><span class=nx>server</span><span class=p>.</span><span class=nx>AddServer</span><span class=p>{})</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>s</span><span class=p>.</span><span class=nf>Serve</span><span class=p>(</span><span class=nx>lis</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>init</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>rootCmd</span><span class=p>.</span><span class=nf>AddCommand</span><span class=p>(</span><span class=nx>serveCmd</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>至此，我们的gRPC server以及我们的业务逻辑就完成了。</p><p>是不是很鸡冻呢？</p><p>接下来我们来编译并运行起来。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ <span class=nb>pwd</span>
+</span></span><span class=line><span class=cl>/home/soi/golang/src/github.com/ycrxun/add/add
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ go build
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ ls
+</span></span><span class=line><span class=cl>add  cmd  main.go
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ ./add serve
+</span></span><span class=line><span class=cl>INFO<span class=o>[</span>0000<span class=o>]</span> add serve at 0.0.0.0:8000
+</span></span></code></pre></td></tr></table></div></div><h3 id=编写客户端>编写客户端</h3><p>上面我们已经编写并完成了gRPC server及其业务逻辑，并可以对外提供服务了，这时候我们需要使用一个客户端去调用我们的服务，为了方便测试，我们选择使用<a class=link href=https://iris-go.com/ target=_blank rel=noopener>iris</a>来构建一个HTTP的API对外提供服务。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-golang data-lang=golang><span class=line><span class=cl><span class=kn>package</span> <span class=nx>cmd</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=p>(</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;context&#34;</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/kataras/iris&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/sirupsen/logrus&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/spf13/cobra&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;github.com/ycrxun/add&#34;</span>
+</span></span><span class=line><span class=cl>	<span class=s>&#34;google.golang.org/grpc&#34;</span>
+</span></span><span class=line><span class=cl><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>var</span> <span class=nx>clientCmd</span> <span class=p>=</span> <span class=o>&amp;</span><span class=nx>cobra</span><span class=p>.</span><span class=nx>Command</span><span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>Use</span><span class=p>:</span>   <span class=s>&#34;client&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>	<span class=nx>Short</span><span class=p>:</span> <span class=s>&#34;Run the RPC client&#34;</span><span class=p>,</span>
+</span></span><span class=line><span class=cl>	<span class=nx>Run</span><span class=p>:</span> <span class=kd>func</span><span class=p>(</span><span class=nx>cmd</span> <span class=o>*</span><span class=nx>cobra</span><span class=p>.</span><span class=nx>Command</span><span class=p>,</span> <span class=nx>args</span> <span class=p>[]</span><span class=kt>string</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>logrus</span><span class=p>.</span><span class=nf>Fatal</span><span class=p>(</span><span class=nf>runClient</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>	<span class=p>},</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>runClient</span><span class=p>()</span> <span class=kt>error</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=c1>// 建立一个grpc连接
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>cc</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>grpc</span><span class=p>.</span><span class=nf>Dial</span><span class=p>(</span><span class=s>&#34;0.0.0.0:8000&#34;</span><span class=p>,</span> <span class=nx>grpc</span><span class=p>.</span><span class=nf>WithInsecure</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>	<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=k>return</span> <span class=nx>err</span>
+</span></span><span class=line><span class=cl>	<span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>  <span class=c1>// 创建AddService的客户端
+</span></span></span><span class=line><span class=cl><span class=c1></span>	<span class=nx>cl</span> <span class=o>:=</span> <span class=nx>add</span><span class=p>.</span><span class=nf>NewAddServiceClient</span><span class=p>(</span><span class=nx>cc</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>app</span> <span class=o>:=</span> <span class=nx>iris</span><span class=p>.</span><span class=nf>New</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>	<span class=nx>app</span><span class=p>.</span><span class=nf>Get</span><span class=p>(</span><span class=s>&#34;/:a/:b&#34;</span><span class=p>,</span> <span class=kd>func</span><span class=p>(</span><span class=nx>ctx</span> <span class=nx>iris</span><span class=p>.</span><span class=nx>Context</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>		<span class=nx>a</span><span class=p>,</span> <span class=nx>_</span> <span class=o>:=</span> <span class=nx>ctx</span><span class=p>.</span><span class=nf>Params</span><span class=p>().</span><span class=nf>GetInt64</span><span class=p>(</span><span class=s>&#34;a&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>		<span class=nx>b</span><span class=p>,</span> <span class=nx>_</span> <span class=o>:=</span> <span class=nx>ctx</span><span class=p>.</span><span class=nf>Params</span><span class=p>().</span><span class=nf>GetInt64</span><span class=p>(</span><span class=s>&#34;b&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>		<span class=nx>c</span> <span class=o>:=</span> <span class=nx>context</span><span class=p>.</span><span class=nf>Background</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>		<span class=nx>rs</span><span class=p>,</span> <span class=nx>err</span> <span class=o>:=</span> <span class=nx>cl</span><span class=p>.</span><span class=nf>Add</span><span class=p>(</span><span class=nx>c</span><span class=p>,</span> <span class=o>&amp;</span><span class=nx>add</span><span class=p>.</span><span class=nx>AddRequest</span><span class=p>{</span><span class=nx>A</span><span class=p>:</span> <span class=nb>uint64</span><span class=p>(</span><span class=nx>a</span><span class=p>),</span> <span class=nx>B</span><span class=p>:</span> <span class=nb>uint64</span><span class=p>(</span><span class=nx>b</span><span class=p>)})</span>
+</span></span><span class=line><span class=cl>		<span class=k>if</span> <span class=nx>err</span> <span class=o>!=</span> <span class=kc>nil</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>			<span class=nx>ctx</span><span class=p>.</span><span class=nf>Text</span><span class=p>(</span><span class=nx>err</span><span class=p>.</span><span class=nf>Error</span><span class=p>())</span>
+</span></span><span class=line><span class=cl>			<span class=k>return</span>
+</span></span><span class=line><span class=cl>		<span class=p>}</span>
+</span></span><span class=line><span class=cl>		<span class=nx>ctx</span><span class=p>.</span><span class=nf>JSON</span><span class=p>(</span><span class=nx>rs</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>	<span class=p>})</span>
+</span></span><span class=line><span class=cl>	<span class=k>return</span> <span class=nx>app</span><span class=p>.</span><span class=nf>Run</span><span class=p>(</span><span class=nx>iris</span><span class=p>.</span><span class=nf>Addr</span><span class=p>(</span><span class=s>&#34;:8100&#34;</span><span class=p>))</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=kd>func</span> <span class=nf>init</span><span class=p>()</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>	<span class=nx>rootCmd</span><span class=p>.</span><span class=nf>AddCommand</span><span class=p>(</span><span class=nx>clientCmd</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>到此，我们的客户端也完成了，接下来为们重新编译下，并依次将服务端，客户端启动起来。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ <span class=nb>pwd</span>
+</span></span><span class=line><span class=cl>/home/soi/golang/src/github.com/ycrxun/add/add
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ go build
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>$ ./add serve
+</span></span><span class=line><span class=cl>INFO<span class=o>[</span>0000<span class=o>]</span> add serve at 0.0.0.0:8000
+</span></span></code></pre></td></tr></table></div></div><p>重新开一个终端</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>$ ./add client
+</span></span><span class=line><span class=cl>Now listening on: http://localhost:8100
+</span></span><span class=line><span class=cl>Application started. Press CTRL+C to shut down.
+</span></span></code></pre></td></tr></table></div></div><p>打开浏览器，输入<code>http://localhost:8100/1/1</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-json data-lang=json><span class=line><span class=cl><span class=p>{</span><span class=nt>&#34;result&#34;</span><span class=p>:</span><span class=mi>2</span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div></section><footer class=article-footer><section class=article-tags><a href=/tags/%E5%BE%AE%E6%9C%8D%E5%8A%A1/>微服务</a>
+<a href=/tags/grpc/>GRPC</a>
+<a href=/tags/%E5%AE%B9%E5%99%A8/>容器</a>
+<a href=/tags/%E4%BB%8E%E5%85%A5%E9%97%A8%E5%88%B0%E6%94%BE%E5%BC%83/>从入门到放弃</a></section><section class=article-copyright><svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentcolor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"/><circle cx="12" cy="12" r="9"/><path d="M14.5 9a3.5 4 0 100 6"/></svg>
+<span>本文采用<a rel=license href=http://creativecommons.org/licenses/by-nc/4.0/ target=_blank>知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</span></section></footer><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css integrity=sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV crossorigin=anonymous><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js integrity=sha384-XjKyOOlGwcjNTAIQHIpgOno0Hl1YQqzUOEleOLALmuqehneUG+vnGctmUb0ZY0l8 crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js integrity=sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05 crossorigin=anonymous defer></script><script>window.addEventListener("DOMContentLoaded",()=>{renderMathInElement(document.body,{delimiters:[{left:"$$",right:"$$",display:!0},{left:"$",right:"$",display:!1},{left:"\\(",right:"\\)",display:!1},{left:"\\[",right:"\\]",display:!0}],ignoredClasses:["gist"]})})</script></article><aside class=related-content--wrapper><h2 class=section-title>相关文章</h2><div class=related-content><div class="flex article-list--tile"><article class=has-image><a href=/2018/registry-microservies-via-grpc/><div class=article-image><img src=/2018/registry-microservies-via-grpc/consul.4be1f2f3cdc550398d09fc0127aa233a_hu3856c57a2da839c1c05d9a86cb7503bb_22688_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post 使用gRPC开发微服务-服务注册与发现" data-key=registry-microservies-via-grpc data-hash="md5-S+Hy883FUDmNCfwBJ6ojOg=="></div><div class=article-details><h2 class=article-title>使用gRPC开发微服务-服务注册与发现</h2></div></a></article><article><a href=/2017/microservice-container-and-container-cloud/><div class=article-details><h2 class=article-title>微服务、容器与容器云-从入门到放弃</h2></div></a></article><article class=has-image><a href=/2019/lile-getting-and-started/><div class=article-image><img src=/2019/lile-getting-and-started/lile.9cbe3e7595c00ba0fbb6fe87ba66300b_huc07f78e848ff3c0cfda834824d5a3104_5265_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post Lile简单介绍" data-key=lile-getting-and-started data-hash="md5-nL4+dZXAC6D7tv6HumYwCw=="></div><div class=article-details><h2 class=article-title>Lile简单介绍</h2></div></a></article><article class=has-image><a href=/2017/easy-mock-getting-and-started/><div class=article-image><img src=/2017/easy-mock-getting-and-started/my-project.c48cc4059e0cc477e12dffa9f27a0e23_huda48920455a3f353154d1a2a68d6945c_69133_250x150_fill_box_smart1_3.png width=250 height=150 loading=lazy alt="Featured image of post Easy Mock 试玩" data-key=easy-mock-getting-and-started data-hash="md5-xIzEBZ4MxHfhLf+p8noOIw=="></div><div class=article-details><h2 class=article-title>Easy Mock 试玩</h2></div></a></article><article class=has-image><a href=/2019/hyperledger-fabric-on-swarm/><div class=article-image><img src=/2019/hyperledger-fabric-on-swarm/hyperledger-fabric-on-swarm.svg loading=lazy data-key=hyperledger-fabric-on-swarm data-hash=/2019/hyperledger-fabric-on-swarm/hyperledger-fabric-on-swarm.svg></div><div class=article-details><h2 class=article-title>使用Docker Swarm部署Hyperledger Fabric</h2></div></a></article></div></div></aside><div id=gitalk-container></div><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.css><script src=https://cdn.jsdelivr.net/npm/gitalk@1.7.2/dist/gitalk.min.js></script><script src=https://cdn.jsdelivr.net/npm/blueimp-md5@2.18.0/js/md5.min.js></script><script>const gitalk=new Gitalk({clientID:"a2f917f5cb45d6dffe92",clientSecret:"879169dfceea28b064c49ef7fd190cdafcc6e5a7",repo:"ycrxun.github.io",owner:"ycrxun",admin:["ycrxun"],distractionFreeMode:!1,id:md5(location.pathname)});(function(){if(["localhost","127.0.0.1"].indexOf(window.location.hostname)!=-1){document.getElementById("gitalk-container").innerHTML="Gitalk comments not available by default when the website is previewed locally.";return}gitalk.render("gitalk-container")})()</script><footer class=site-footer><section class=copyright>&copy;
+2015 -
+2024 Soi</section><section class=powerby>使用 <a href=https://gohugo.io/ target=_blank rel=noopener>Hugo</a> 构建<br>主题 <b><a href=https://github.com/CaiJimmy/hugo-theme-stack target=_blank rel=noopener data-version=3.26.0>Stack</a></b> 由 <a href=https://jimmycai.com target=_blank rel=noopener>Jimmy</a> 设计</section></footer><div class=pswp tabindex=-1 role=dialog aria-hidden=true><div class=pswp__bg></div><div class=pswp__scroll-wrap><div class=pswp__container><div class=pswp__item></div><div class=pswp__item></div><div class=pswp__item></div></div><div class="pswp__ui pswp__ui--hidden"><div class=pswp__top-bar><div class=pswp__counter></div><button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+<button class="pswp__button pswp__button--share" title=Share></button>
+<button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+<button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button><div class=pswp__preloader><div class=pswp__preloader__icn><div class=pswp__preloader__cut><div class=pswp__preloader__donut></div></div></div></div></div><div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap"><div class=pswp__share-tooltip></div></div><button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+</button>
+<button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)"></button><div class=pswp__caption><div class=pswp__caption__center></div></div></div></div></div><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo=" crossorigin=anonymous defer></script><script src=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU=" crossorigin=anonymous defer></script><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css crossorigin=anonymous><link rel=stylesheet href=https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css crossorigin=anonymous></main></div><script src=https://cdn.jsdelivr.net/npm/node-vibrant@3.1.6/dist/vibrant.min.js integrity="sha256-awcR2jno4kI5X0zL8ex0vi2z+KMkF24hUW8WePSA9HM=" crossorigin=anonymous></script><script type=text/javascript src=/ts/main.js defer></script><script>(function(){const e=document.createElement("link");e.href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap",e.type="text/css",e.rel="stylesheet",document.head.appendChild(e)})()</script></body></html>

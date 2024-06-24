@@ -1,1 +1,278 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Portainer on 凉都小道</title><link>https://ronggle.com/tags/portainer/</link><description>Recent content in Portainer on 凉都小道</description><generator>Hugo -- gohugo.io</generator><language>en-us</language><lastBuildDate>Sun, 13 May 2018 18:00:59 +0800</lastBuildDate><atom:link href="https://ronggle.com/tags/portainer/index.xml" rel="self" type="application/rss+xml"/><item><title>使用Docker打造自己的云平台</title><link>https://ronggle.com/2018/cloud-labs/</link><pubDate>Sun, 13 May 2018 18:00:59 +0800</pubDate><guid>https://ronggle.com/2018/cloud-labs/</guid><description>&lt;p&gt;失踪人口回归，经过几个月的失踪，我又终于回归正轨了，前面没有更博客，主要原因是，因为我实在是太忙（懒）了。&lt;/p&gt;</description></item></channel></rss>
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Portainer on 凉都小道</title><link>https://ronggle.com/tags/portainer/</link><description>Recent content in Portainer on 凉都小道</description><generator>Hugo -- gohugo.io</generator><language>zh-cn</language><copyright>Soi</copyright><lastBuildDate>Sun, 13 May 2018 18:00:59 +0800</lastBuildDate><atom:link href="https://ronggle.com/tags/portainer/index.xml" rel="self" type="application/rss+xml"/><item><title>使用Docker打造自己的云平台</title><link>https://ronggle.com/2018/cloud-labs/</link><pubDate>Sun, 13 May 2018 18:00:59 +0800</pubDate><guid>https://ronggle.com/2018/cloud-labs/</guid><description>&lt;img src="https://ronggle.com/2018/cloud-labs/monitor.png" alt="Featured image of post 使用Docker打造自己的云平台" />&lt;p>那么，既然回归，当然是要拿出干货咯。&lt;/p>
+&lt;p>今天说点什么呢？沉寂了这么久，也一直在做与Docker相关的工作与学习，就记录下最近的一些内容，主要是为了防止自己又忘了，每次都要去找各种文档，没法快速复制出一份自己玩过的东西。&lt;/p>
+&lt;h2 id="目标">目标
+&lt;/h2>&lt;p>使用Docker搭建一个自己的”云平台“，大概就是，可以在上面部署应用，并且自动暴露出来。&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2018/cloud-labs/monitor.png"
+width="1280"
+height="720"
+srcset="https://ronggle.com/2018/cloud-labs/monitor_hub4210f43b5c4a58a23469c3591ba2df9_54092_480x0_resize_box_3.png 480w, https://ronggle.com/2018/cloud-labs/monitor_hub4210f43b5c4a58a23469c3591ba2df9_54092_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="traefik"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2018/cloud-labs/console.png"
+width="1280"
+height="720"
+srcset="https://ronggle.com/2018/cloud-labs/console_hu0e3ef9b7933106a37a0ee14016d0265b_65467_480x0_resize_box_3.png 480w, https://ronggle.com/2018/cloud-labs/console_hu0e3ef9b7933106a37a0ee14016d0265b_65467_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="potainer"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2018/cloud-labs/console-services.png"
+width="1280"
+height="720"
+srcset="https://ronggle.com/2018/cloud-labs/console-services_hub9a3d687c2d23706b1fd32681787a662_90717_480x0_resize_box_3.png 480w, https://ronggle.com/2018/cloud-labs/console-services_hub9a3d687c2d23706b1fd32681787a662_90717_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="potainer services"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;h2 id="前期准备">前期准备
+&lt;/h2>&lt;ul>
+&lt;li>&lt;a class="link" href="https://www.docker.com/" target="_blank" rel="noopener"
+>Docker&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://traefik.io/" target="_blank" rel="noopener"
+>Traefik&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://www.portainer.io/" target="_blank" rel="noopener"
+>Portainer&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://docs.docker.com/compose/" target="_blank" rel="noopener"
+>Docker Compose&lt;/a>&lt;/li>
+&lt;li>&lt;a class="link" href="https://docs.docker.com/engine/swarm/" target="_blank" rel="noopener"
+>Docker Swarm&lt;/a>&lt;/li>
+&lt;/ul>
+&lt;p>以上是我们需要前期准备好的，包括它们分别是什么、怎么安装、怎么使用？&lt;/p>
+&lt;p>因为篇幅问题，在此不一一详细节介绍，如果你感兴趣，希望你能够自己通过搜索引擎自行了解，如果有什么问题，你可以联系我。&lt;/p>
+&lt;h2 id="traefik">Traefik
+&lt;/h2>&lt;p>&lt;strong>Træfɪk&lt;/strong> 是一个为了让部署微服务更加便捷而诞生的现代HTTP反向代理、负载均衡工具。 它支持多种后台 (Docker, Swarm, Kubernetes, Marathon, Mesos, Consul, Etcd, Zookeeper, BoltDB, Rest API, file…) 来自动化、动态的应用它的配置文件设置。&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2018/cloud-labs/traefik.png"
+width="1921"
+height="1050"
+srcset="https://ronggle.com/2018/cloud-labs/traefik_hu32c4d01b7a6723ecebac681ab0ba0939_318991_480x0_resize_box_3.png 480w, https://ronggle.com/2018/cloud-labs/traefik_hu32c4d01b7a6723ecebac681ab0ba0939_318991_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="traefik"
+class="gallery-image"
+data-flex-grow="182"
+data-flex-basis="439px"
+>&lt;/p>
+&lt;p>我们用它作什么呢？没错，反向代理和负载均衡，同时因为其提供了好用的动态功能，使得我们可以用它配置域名动态的功能。&lt;/p>
+&lt;p>怎么理解呢？假设我现在有了一个域名&lt;code>cloud-labs.io&lt;/code>，然后为使用这个域名配置了一个“云平台”，然后为希望我在这个平台部署一个应用&lt;code>nina&lt;/code>,部署完成后，为就可以使用&lt;code>nina.cloud-labs.io&lt;/code>进行访问，并不在乎我的运用被具体部署到哪里。&lt;/p>
+&lt;p>那么，要怎么做呢？&lt;/p>
+&lt;p>如果使用了traefik，其实很简单，我们只需要将应用作为一个&lt;code>backend&lt;/code>暴露给traefik即可。如果结合Docker使用，为们只需要在Label上加上对应的配置即可。&lt;/p>
+&lt;p>下面我们一起来部署traefik吧！&lt;/p>
+&lt;p>前提条件，你已经安装号Docker以及初始化完成Docker Swarm，当然你也可以只使用Docker模式，你可以参考traefik的&lt;a class="link" href="https://docs.traefik.io/configuration/backends/docker/" target="_blank" rel="noopener"
+>官方文档&lt;/a>。&lt;/p>
+&lt;h3 id="新建stack编排文件">新建stack编排文件
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">version&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;3.3&amp;#39;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">services&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">proxy&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">image&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">traefik&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">command&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>--&lt;span class="l">web --docker --docker.domain=cloud-labs.io --docker.watch --docker.swarmmode=true --logLevel=DEBUG&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">deploy&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">labels&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">traefik.backend=traefik&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">traefik.frontend.rule=Host:monitor.cloud-labs.io&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">traefik.port=8080&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">traefik.docker.network=traefik_proxy&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">networks&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">proxy&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">ports&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="s2">&amp;#34;80:80&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="s2">&amp;#34;443:443&amp;#34;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">volumes&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">/var/run/docker.sock:/var/run/docker.sock&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">/dev/null:/traefik.toml&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">networks&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="l">proxy&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>如上，我们开启了traefik的&lt;code>web&lt;/code>、&lt;code>docker&lt;/code>、&lt;code>docker swarm&lt;/code>功能，并且把它的&lt;code>web&lt;/code>功能暴露到&lt;code>monitor.cloud-labs.io&lt;/code>，当我们部署完成后，就可以使用&lt;code>monitor.cloud-labs.io&lt;/code>进行访问。&lt;/p>
+&lt;h3 id="部署traefik">部署traefik
+&lt;/h3>&lt;p>部署其实很简单，为采用的stack模式部署的traefik，命令如下：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">$ ls
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">traefik.yml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">$ docker stack deploy -c traefik.yml traefik
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>稍等一会儿，就可以在使用&lt;code>monitor.cloud-labs.io&lt;/code>访问了。&lt;/p>
+&lt;blockquote>
+&lt;p>当然，&lt;code>monitor.cloud-labs.io&lt;/code>是一个假定的域名，需要在你的host文件中进行配置。
+$ cat /etc/hosts
+127.0.0.1 monitor.cloud-labs.io&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="portainer">Portainer
+&lt;/h2>&lt;p>&lt;strong>Portainer&lt;/strong>是一个轻量级管理用户界面，可让你轻松管理不同的Docker环境（Docker主机或Swarm集群）。其使用与部署一样简单，它包含一个可以在任何Docker引擎上运行的容器（可以作为Linux容器或Windows本机容器部署）。并允许你管理Docker容器，图像，卷，网络等等！它与独立的Docker引擎和Docker Swarm模式兼容。&lt;/p>
+&lt;p>正如它的介绍那般，为们可以使用它作为我们的“云平台”的控制台，来作为我们平时的应用部署、管理、配置的WebUI，让我们的操作更加人性化。&lt;/p>
+&lt;h3 id="新建stack编排文件-1">新建stack编排文件
+&lt;/h3>&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt"> 1
+&lt;/span>&lt;span class="lnt"> 2
+&lt;/span>&lt;span class="lnt"> 3
+&lt;/span>&lt;span class="lnt"> 4
+&lt;/span>&lt;span class="lnt"> 5
+&lt;/span>&lt;span class="lnt"> 6
+&lt;/span>&lt;span class="lnt"> 7
+&lt;/span>&lt;span class="lnt"> 8
+&lt;/span>&lt;span class="lnt"> 9
+&lt;/span>&lt;span class="lnt">10
+&lt;/span>&lt;span class="lnt">11
+&lt;/span>&lt;span class="lnt">12
+&lt;/span>&lt;span class="lnt">13
+&lt;/span>&lt;span class="lnt">14
+&lt;/span>&lt;span class="lnt">15
+&lt;/span>&lt;span class="lnt">16
+&lt;/span>&lt;span class="lnt">17
+&lt;/span>&lt;span class="lnt">18
+&lt;/span>&lt;span class="lnt">19
+&lt;/span>&lt;span class="lnt">20
+&lt;/span>&lt;span class="lnt">21
+&lt;/span>&lt;span class="lnt">22
+&lt;/span>&lt;span class="lnt">23
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">version&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="s1">&amp;#39;3.3&amp;#39;&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">services&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">server&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">image&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="l">portainer/portainer&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">command&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>-&lt;span class="l">H unix:///var/run/docker.sock&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">networks&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">traefik_proxy&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">deploy&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">labels&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">traefik.backend=portainer&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">traefik.frontend.rule=Host:console.cloud-labs.io&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">traefik.docker.network=traefik_proxy&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">traefik.port=9000&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">volumes&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">/var/run/docker.sock:/var/run/docker.sock&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>- &lt;span class="l">portainer:/data&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">networks&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">traefik_proxy&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">external&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w">&lt;/span>&lt;span class="nt">volumes&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="l">portainer&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>如上，为们将会把Portainer部署到Docker环境中，同时将其暴露到了traefik中，使用&lt;code>console.cloud-labs.io&lt;/code>进行访问。在这里，你可能会发现，为们并没有为portainer配置暴露的端口，这也是因为traefik给我们带来的一个好处，便是为们不需要在我们的物理机上开启那么多的端口映射，为们知道，如果端口映射过多时，我们会在难以管理、感知，往往会出现端口已经使用的情况下导致部署失败。&lt;/p>
+&lt;blockquote>
+&lt;p>值得注意的是，我们的Portainer的网络设置：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-yaml" data-lang="yaml">&lt;span class="line">&lt;span class="cl">&lt;span class="nt">networks&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">traefik_proxy&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">&lt;span class="w"> &lt;/span>&lt;span class="nt">external&lt;/span>&lt;span class="p">:&lt;/span>&lt;span class="w"> &lt;/span>&lt;span class="kc">true&lt;/span>&lt;span class="w">
+&lt;/span>&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>是的，我们使用的是traefik的网络，因为我们希望它能够被traefik发现，并作反向代理和负载均衡。&lt;/p>
+&lt;/blockquote>
+&lt;h3 id="部署portainer">部署Portainer
+&lt;/h3>&lt;p>部署Portainer也很简单，为们使用stack进行部署：&lt;/p>
+&lt;div class="highlight">&lt;div class="chroma">
+&lt;table class="lntable">&lt;tr>&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code>&lt;span class="lnt">1
+&lt;/span>&lt;span class="lnt">2
+&lt;/span>&lt;span class="lnt">3
+&lt;/span>&lt;span class="lnt">4
+&lt;/span>&lt;/code>&lt;/pre>&lt;/td>
+&lt;td class="lntd">
+&lt;pre tabindex="0" class="chroma">&lt;code class="language-bash" data-lang="bash">&lt;span class="line">&lt;span class="cl">$ ls
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">portainer.yml
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">
+&lt;/span>&lt;/span>&lt;span class="line">&lt;span class="cl">$ docker stack deploy -c portainer.yml portainer
+&lt;/span>&lt;/span>&lt;/code>&lt;/pre>&lt;/td>&lt;/tr>&lt;/table>
+&lt;/div>
+&lt;/div>&lt;p>稍等一会儿，就可以在使用&lt;code>monitor.cloud-labs.io&lt;/code>中发现我们的应用以及部署好了，并且被暴露在&lt;code>console.cloud-labs.io&lt;/code>。&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2018/cloud-labs/monitor-portainer.png"
+width="1168"
+height="314"
+srcset="https://ronggle.com/2018/cloud-labs/monitor-portainer_hu611a50b5a7247650680fceb042e36d3a_21795_480x0_resize_box_3.png 480w, https://ronggle.com/2018/cloud-labs/monitor-portainer_hu611a50b5a7247650680fceb042e36d3a_21795_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="traefik monitor portainer"
+class="gallery-image"
+data-flex-grow="371"
+data-flex-basis="892px"
+>&lt;/p>
+&lt;blockquote>
+&lt;p>同样的，&lt;code>console.cloud-labs.io&lt;/code>是一个假定的域名，需要在你的host文件中进行配置。
+$ cat /etc/hosts
+127.0.0.1 console.cloud-labs.io&lt;/p>
+&lt;/blockquote>
+&lt;h2 id="部署运用">部署运用
+&lt;/h2>&lt;p>上面，我们已经把我们“云平台”的反向代理、负载均衡组件traefik，以及控制台portainer部署完毕，那么我们接下来就使用我们的“云平台”来部署一个应用吧！&lt;/p>
+&lt;p>接下来，我们来部署一个比较简单的应用。&lt;/p>
+&lt;h3 id="登入控制台">登入控制台
+&lt;/h3>&lt;p>登陆我们“云平台”的控制台后，选择stack，为们来编排一下我们的应用。&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2018/cloud-labs/portainer-stack-gitea.png"
+width="1280"
+height="720"
+srcset="https://ronggle.com/2018/cloud-labs/portainer-stack-gitea_hu3843b785654800157fafe1c0970fb7cb_89995_480x0_resize_box_3.png 480w, https://ronggle.com/2018/cloud-labs/portainer-stack-gitea_hu3843b785654800157fafe1c0970fb7cb_89995_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="portainer stack gitea"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;h3 id="进入traefik">进入Traefik
+&lt;/h3>&lt;p>当我们在控制台部署完成我们的gitea后，我们可以在Traefik的WebUI中看到，我们的gitea已经部署完成，并暴露在&lt;code>git.cloud-labs.io&lt;/code>，这时我们可以访问&lt;code>git.cloud-labs.io&lt;/code>来进行gitea的配置。&lt;/p>
+&lt;h3 id="应用预览">应用预览
+&lt;/h3>&lt;p>配置完成gitea后我们可以看到如下：&lt;/p>
+&lt;p>&lt;img src="https://ronggle.com/2018/cloud-labs/gitea.png"
+width="1280"
+height="720"
+srcset="https://ronggle.com/2018/cloud-labs/gitea_hud84183e9812d696d36869f3be7a3ff22_41180_480x0_resize_box_3.png 480w, https://ronggle.com/2018/cloud-labs/gitea_hud84183e9812d696d36869f3be7a3ff22_41180_1024x0_resize_box_3.png 1024w"
+loading="lazy"
+alt="gitea"
+class="gallery-image"
+data-flex-grow="177"
+data-flex-basis="426px"
+>&lt;/p>
+&lt;h2 id="总结">总结
+&lt;/h2>&lt;p>通过这次实战，你是否有收获呢？如果有，请为自己鼓掌，如果没有，那你也别责怪我，因为我其实真的是为了让自己记住。&lt;/p>
+&lt;p>好吧，我会把最后的文件整理下，放到我的Github上，仓库为&lt;a class="link" href="https://github.com/ycrxun/cloud-labs" target="_blank" rel="noopener"
+>cloud-labs&lt;/a>。&lt;/p></description></item></channel></rss>
