@@ -3,5 +3,5 @@
 	url = https://github.com/CaiJimmy/hugo-theme-stack/
 [submodule "public"]
 	path = public
-	url = ssh://git@ssh.github.com:443/ycrxun/ycrxun.github.io
+	url = git@github.com:ycrxun/ycrxun.github.io.git
 	branch = master
