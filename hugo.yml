@@ -70,7 +70,7 @@ params:
 
     comments:
         enabled: true
-        provider: gitalk
+        provider: giscus
         disqusjs:
             shortname:
             apiUrl:
@@ -130,15 +130,15 @@ params:
             siteName: "" # You must insert a unique identifier here matching the one you registered (See https://cactus.chat/docs/getting-started/quick-start/#register-your-site)
 
         giscus:
-            repo:
-            repoID:
-            category:
-            categoryID:
-            mapping:
+            repo: ycrxun/ycrxun.github.io
+            repoID: MDEwOlJlcG9zaXRvcnk1NjgzMTczMw==
+            category: Announcements
+            categoryID: DIC_kwDOA2Mu9c4CgXX6
+            mapping: title
             lightTheme:
             darkTheme:
             reactionsEnabled: 1
-            emitMetadata: 0
+            emitMetadata: 1
 
         gitalk:
             owner: ycrxun
