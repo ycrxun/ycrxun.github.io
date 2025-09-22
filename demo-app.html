@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <!-- 1. 安全区适配核心：viewport 必须加 viewport-fit=cover -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>daisyUI 安全区适配示例</title>
+  
+  <!-- 2. CDN 引入 Tailwind + daisyUI（无需本地安装） -->
+  <script src="https://cdn.tailwindcss.com"></script> <!-- Tailwind 基础 -->
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet"> <!-- daisyUI 全量组件 -->
+  
+  <!-- 3. 安全区适配 CSS（核心代码） -->
+  <style>
+    /* 定义安全区间距变量（兼容旧设备，加 fallback 值） */
+    :root {
+      --safe-top: env(safe-area-inset-top, 20px);    /* 顶部安全区（刘海高度） */
+      --safe-bottom: env(safe-area-inset-bottom, 30px); /* 底部安全区（手势栏高度） */
+      --safe-left: env(safe-area-inset-left, 0px);   /* 左侧安全区（极少用） */
+      --safe-right: env(safe-area-inset-right, 0px); /* 右侧安全区（极少用） */
+    }
+
+    /* 根容器：应用安全区 padding，确保内容不被遮挡 */
+    body {
+      padding-top: var(--safe-top);    /* 顶部留安全区（适配刘海） */
+      padding-bottom: var(--safe-bottom); /* 底部留安全区（适配手势栏） */
+      padding-left: var(--safe-left);
+      padding-right: var(--safe-right);
+      min-height: 100vh; /* 确保页面占满屏幕高度 */
+      box-sizing: border-box; /* 防止 padding 撑大页面 */
+    }
+  </style>
+</head>
+<body class="flex flex-col bg-gray-50">
+  <!-- 4. 顶部导航栏（固定在顶部，不被刘海遮挡） -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white shadow-sm" 
+       style="top: var(--safe-top);"> <!-- 导航栏顶部分别对齐安全区顶部 -->
+    <div class="navbar container mx-auto px-4 py-3">
+      <!-- 左侧：汉堡菜单（控制侧边栏） -->
+      <div class="navbar-start">
+        <label for="mobile-drawer" class="btn btn-ghost btn-circle md:hidden">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </label>
+        <a class="btn btn-ghost normal-case text-lg font-semibold">我的App</a>
+      </div>
+      <!-- 右侧：搜索按钮 -->
+      <div class="navbar-end">
+        <button class="btn btn-ghost btn-circle">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 5. 侧边栏（Drawer，移动端专用） -->
+  <input type="checkbox" id="mobile-drawer" class="drawer-toggle" />
+  <div class="drawer">
+    <!-- 主内容区（flex-1 占满中间空间，支持滚动） -->
+    <div class="drawer-content flex-1 pt-16 pb-16"> <!-- 上下内边距避开导航栏/底部栏 -->
+      <div class="container mx-auto px-4 py-6">
+        <!-- 示例内容：卡片列表 -->
+        <h2 class="text-xl font-bold mb-4">推荐内容</h2>
+        <div class="space-y-4">
+          <!-- 卡片1 -->
+          <div class="card bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="card-body p-4">
+              <h3 class="font-bold text-lg">安全区适配测试</h3>
+              <p class="text-gray-500 text-sm mt-1">此卡片内容不会被刘海/底部栏遮挡</p>
+              <div class="mt-3">
+                <button class="btn btn-primary btn-sm">查看详情</button>
+              </div>
+            </div>
+          </div>
+          <!-- 卡片2 -->
+          <div class="card bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="card-body p-4">
+              <h3 class="font-bold text-lg">移动交互组件</h3>
+              <p class="text-gray-500 text-sm mt-1">包含 Toggle 开关、按钮等触摸友好组件</p>
+              <div class="mt-3 flex items-center gap-4">
+                <span class="text-sm">夜间模式</span>
+                <input type="checkbox" class="toggle toggle-primary" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 侧边栏内容 -->
+    <div class="drawer-side">
+      <label for="mobile-drawer" class="drawer-overlay"></label>
+      <ul class="menu p-4 w-64 bg-white overflow-y-auto">
+        <li><a class="menu-item active">首页</a></li>
+        <li><a class="menu-item">我的收藏</a></li>
+        <li><a class="menu-item">设置</a></li>
+        <li><a class="menu-item text-red-500">退出登录</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 6. 底部导航栏（Dock，固定在底部，不被手势栏遮挡） -->
+  <div class="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.05)]"
+       style="bottom: var(--safe-bottom);"> <!-- 底部导航对齐安全区底部 -->
+    <div class="dock justify-around p-2">
+      <!-- 导航项1 -->
+      <label class="tab tab-active flex flex-col items-center py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+        </svg>
+        <span class="text-xs">首页</span>
+      </label>
+      <!-- 导航项2 -->
+      <label class="tab flex flex-col items-center py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg>
+        <span class="text-xs">分类</span>
+      </label>
+      <!-- 导航项3 -->
+      <label class="tab flex flex-col items-center py-2 px-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+        </svg>
+        <span class="text-xs">我的</span>
+      </label>
+    </div>
+  </div>
+
+  <!-- 7. 简单JS（控制侧边栏，可选） -->
+  <script>
+    // 点击侧边栏菜单项后关闭侧边栏
+    document.querySelectorAll('.menu-item').forEach(item => {
+      item.addEventListener('click', () => {
+        document.getElementById('mobile-drawer').checked = false;
+      });
+    });
+  </script>
+</body>
+</html>
