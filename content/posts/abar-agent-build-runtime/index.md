@@ -3,7 +3,7 @@ title: "ABAR：让 Agent 成为可治理的运行单元"
 description: "ABAR 用不可变 Revision、长期 Session、异步 Message 和结构化 Runtime Event，重新回答 Agent 如何从演示走向真实业务运行。"
 slug: abar-agent-build-runtime
 date: 2026-11-19T00:00:00+08:00
-draft: true
+draft: false
 categories:
     - Programming
 tags:
