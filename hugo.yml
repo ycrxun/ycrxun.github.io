@@ -1,7 +1,7 @@
 baseurl: https://ronggle.com
 locale: zh-CN
 defaultContentLanguage: zh-cn
-theme: wayline
+theme: wayline-world
 title: 凉都小道
 copyright: Soi
 
@@ -52,9 +52,11 @@ params:
         menuTitle: 影像
         title: 影像日志
         eyebrow: VISUAL JOURNAL
-        description: 从另一个视角记录工作、城市与生活。图片来自文章影像归档，也可以切换为独立的照片集合。
-        source: posts
+        description: 从另一个视角记录工作、城市与生活。这里只展示独立维护的影像，不自动混入文章配图。
+        source: gallery
         limit: 12
+    world:
+        enabled: true
     footer:
         since: 2015
         tagline: Built with Hugo. Notes on systems, paths, and traces.

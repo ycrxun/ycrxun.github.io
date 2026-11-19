@@ -9,3 +9,7 @@
 	path = themes/wayline
 	url = git@github.com:ycrxun/wayline.git
 	branch = main
+[submodule "themes/wayline-world"]
+	path = themes/wayline-world
+	url = git@github.com:ycrxun/wayline-world.git
+	branch = main

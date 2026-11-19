@@ -2,3 +2,5 @@
 *.iml
 .hugo_build.lock
 node_modules/
+.DS_Store
+resources/_gen/

@@ -8,7 +8,35 @@
 
 ## 影像菜单
 
-影像日志通过 `hugo.yml` 的 `params.gallery.enabled` 控制菜单是否出现，通过 `source` 指定内容集合。默认读取 `posts` 中带 `image` 的文章；如果要在独立照片集合中展示，可建立 `content/moments/` 页面包，并将 `source` 改为 `moments`。
+影像日志通过 `hugo.yml` 的 `params.gallery.enabled` 控制菜单是否出现，使用照片网格、灯箱和键盘/滑动切换。
+
+正式配置默认读取独立的 `content/gallery/` 内容集合，不会自动复用文章配图。每张照片使用独立页面包：
+
+```text
+content/gallery/west-lake-afternoon/
+├── index.md
+└── cover.jpg
+```
+
+```yaml
+---
+title: 西湖边的午后
+date: 2026-11-10
+description: 湖面、树影和一段很慢的下午。
+image: cover.jpg
+location: 杭州
+category: 旅记
+camera: X100VI
+tags: [杭州, 旅行]
+link: ""
+---
+```
+
+照片页可以继续写正文，`link` 是可选的关联页面。只有显式设置 `params.gallery.source: posts` 时，主题才会退回文章配图聚合模式。
+
+## 独立 3D 主题
+
+Wayline 博客主题不再包含 Three.js 世界。完整的 3D 世界、驾驶、文章时间线、影像时间线和阅读徽章已经拆分到独立的 [Wayline World](https://github.com/ycrxun/wayline-world) 主题。
 
 ## 本地预览
 
