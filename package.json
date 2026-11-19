@@ -1,0 +1,14 @@
+{
+  "name": "ronggle-blog",
+  "private": true,
+  "scripts": {
+    "build": "npm run styles && hugo --gc --minify",
+    "dev": "npm run styles && hugo server --buildDrafts --disableFastRender",
+    "preview": "npm run styles && HUGO_RESOURCEDIR=/tmp/ronggle-resources hugo --destination /tmp/ronggle-site --cacheDir /tmp/ronggle-cache --baseURL http://localhost:1313/ --cleanDestinationDir --ignoreCache --gc",
+    "styles": "sass themes/wayline/assets/scss/main.scss themes/wayline/assets/css/main.css --style=compressed --no-source-map",
+    "styles:watch": "sass themes/wayline/assets/scss/main.scss themes/wayline/assets/css/main.css --style=compressed --no-source-map --watch"
+  },
+  "devDependencies": {
+    "sass": "^1.94.0"
+  }
+}

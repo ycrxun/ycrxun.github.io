@@ -5,3 +5,7 @@
 	path = public
 	url = git@github.com:ycrxun/ycrxun.github.io.git
 	branch = master
+[submodule "themes/wayline"]
+	path = themes/wayline
+	url = git@github.com:ycrxun/wayline.git
+	branch = main

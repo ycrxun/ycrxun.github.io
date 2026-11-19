@@ -1,34 +1,28 @@
 baseurl: https://ronggle.com
-languageCode: zh-cn
-theme: hugo-theme-stack
-paginate: 5
+locale: zh-CN
+defaultContentLanguage: zh-cn
+theme: wayline
 title: 凉都小道
 copyright: Soi
 
-# Theme i18n support
-# Available values: ar, bn, ca, de, el, en, es, fr, hu, id, it, ja, ko, nl, pt-br, th, uk, zh-cn, zh-hk, zh-tw
-DefaultContentLanguage: zh-cn
+pagination:
+    pagerSize: 6
 
-# Set hasCJKLanguage to true if DefaultContentLanguage is in [zh-cn ja ko]
-# This will make .Summary and .WordCount behave correctly for CJK languages.
-hasCJKLanguage: false
+hasCJKLanguage: true
 
 languages:
     zh-cn:
-        languageName: 中文
+        label: 中文
         title: 凉都小道
-        weight: 2
+        weight: 1
         params:
-            description: Search Engine Oriented Programming.
-            keywords: Soi,Programming,Blog,ycrxun
-
-services:
-    # Change it to your Disqus shortname before using
-    disqus:
-        shortname: "hugo-theme-stack"
-    # GA Tracking ID
-    googleAnalytics:
-        id:
+            description: 关于工程、系统与持续成长的个人笔记。
+            keywords:
+                - Soi
+                - Programming
+                - Software Engineering
+                - Blog
+                - ycrxun
 
 permalinks:
     posts: /:year/:slug/
@@ -37,179 +31,60 @@ permalinks:
 params:
     mainSections:
         - posts
-    featuredImageField: image
     rssFullContent: true
-    favicon: '/favicon.ico' # e.g.: favicon placed in `static/favicon.ico` of your site folder, then set this field to `/favicon.ico` (`/` is necessary)
-
+    author: Soi
+    description: 关于工程、系统与持续成长的个人笔记。
+    keywords:
+        - Soi
+        - Programming
+        - Software Engineering
+        - Blog
+        - ycrxun
+    accent: cyan
+    hero:
+        eyebrow: SOFTWARE ENGINEER · SYSTEMS THINKER
+        title: 把复杂系统，<br>拆成清晰路径。
+        intro: 记录软件工程、微服务、云原生，以及那些让复杂问题变得简单的思考。
+        location: HUNAN · ZHUZHOU, CN
+        status: BUILDING IN PUBLIC
+    gallery:
+        enabled: true
+        menuTitle: 影像
+        title: 影像日志
+        eyebrow: VISUAL JOURNAL
+        description: 从另一个视角记录工作、城市与生活。图片来自文章影像归档，也可以切换为独立的照片集合。
+        source: posts
+        limit: 12
     footer:
         since: 2015
-        customText:
+        tagline: Built with Hugo. Notes on systems, paths, and traces.
 
-    dateFormat:
-        #published: Jan 02, 2006
-        published: 2006-01-02 15:04
-        #lastUpdated: Jan 02, 2006 15:04 MST
-        lastUpdated: 2006-01-02 15:04
-
-    sidebar:
-        emoji: 🍥
-        subtitle: 道生一，一生二，二生三，三生万物
-        avatar:
-            enabled: true
-            local: true
-            src: 'img/avatar.png'
+    social:
+        - name: GitHub
+          url: https://github.com/ycrxun
+        - name: X / Twitter
+          url: https://twitter.com/ChangrongYang
+        - name: RSS
+          url: /index.xml
+          internal: true
 
     article:
-        math: true
         toc: true
         readingTime: true
         license:
             enabled: true
-            default: '本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可'
-            #default: Licensed under CC BY-NC-SA 4.0
+            default: '本文采用 <a rel="license noopener" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a> 许可协议。'
 
     comments:
         enabled: true
-        provider: giscus
-        disqusjs:
-            shortname:
-            apiUrl:
-            apiKey:
-            admin:
-            adminLabel:
-
-        utterances:
-            repo:
-            issueTerm: pathname
-            label:
-
-        beaudar:
-            repo:
-            issueTerm: pathname
-            label:
-            theme:        
-
-        remark42:
-            host:
-            site:
-            locale:
-
-        vssue:
-            platform:
-            owner:
-            repo:
-            clientId:
-            clientSecret:
-            autoCreateIssue: false
-
-        # Waline client configuration see: https://waline.js.org/en/reference/component.html
-        waline:
-            serverURL:
-            lang:
-            pageview:
-            emoji:
-                - https://unpkg.com/@waline/emojis@1.0.1/weibo
-            requiredMeta:
-                - name
-                - email
-                - url
-            locale:
-                admin: Admin
-                placeholder:
-
-        twikoo:
-            envId:
-            region:
-            path:
-            lang:
-
-        # See https://cactus.chat/docs/reference/web-client/#configuration for description of the various options
-        cactus:
-            defaultHomeserverUrl: "https://matrix.cactus.chat:8448"
-            serverName: "cactus.chat"
-            siteName: "" # You must insert a unique identifier here matching the one you registered (See https://cactus.chat/docs/getting-started/quick-start/#register-your-site)
-
         giscus:
             repo: ycrxun/ycrxun.github.io
             repoID: MDEwOlJlcG9zaXRvcnk1NjgzMTczMw==
             category: Announcements
             categoryID: DIC_kwDOA2Mu9c4CgXX6
             mapping: title
-            lightTheme:
-            darkTheme:
             reactionsEnabled: 1
             emitMetadata: 1
-
-        gitalk:
-            owner: ycrxun
-            admin: ycrxun
-            repo: ycrxun.github.io
-            clientID: Ov23ct0fsrKzVbYEmrlH
-            clientSecret: b43db6fcb40cdf16875ab44b8af36632a9e514de
-
-        cusdis:
-            host:
-            id:
-    widgets:
-        homepage:
-            - type: search
-            - type: archives
-              params:
-                  limit: 5
-            - type: categories
-              params:
-                  limit: 10
-            - type: tag-cloud
-              params:
-                  limit: 10
-        page:
-            - type: toc
-
-    opengraph:
-        twitter:
-            # Your Twitter username
-            site:
-
-            # Available values: summary, summary_large_image
-            card: summary_large_image
-
-    defaultImage:
-        opengraph:
-            enabled: false
-            local: false
-            src:
-
-    colorScheme:
-        # Display toggle
-        toggle: true
-
-        # Available values: auto, light, dark
-        default: auto
-
-    imageProcessing:
-        cover:
-            enabled: true
-        content:
-            enabled: true
-
-### Custom menu
-### See https://stack.jimmycai.com/config/menu
-### To remove about, archive and search page menu item, remove `menu` field from their FrontMatter
-menu:
-    main: []
-
-    social:
-        - identifier: github
-          name: GitHub
-          url: https://github.com/ycrxun
-          params:
-              icon: brand-github
-
-        - identifier: twitter
-          name: Twitter
-          url: https://twitter.com/ChangrongYang
-          params:
-              icon: brand-twitter
 
 related:
     includeNewer: true
@@ -236,6 +111,6 @@ markup:
         codeFences: true
         guessSyntax: true
         lineNoStart: 1
-        lineNos: true
-        lineNumbersInTable: true
+        lineNos: false
+        lineNumbersInTable: false
         tabWidth: 4
