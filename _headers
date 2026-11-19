@@ -1,0 +1,14 @@
+/css/*
+    Cache-Control: public, max-age=31536000, immutable
+
+/js/*
+    Cache-Control: public, max-age=31536000, immutable
+
+/fonts/lxgw-wenkai-medium-v1.woff2
+    Cache-Control: public, max-age=31536000, immutable
+
+/*/*_hu_*
+    Cache-Control: public, max-age=31536000, immutable
+
+/favicon.ico
+    Cache-Control: public, max-age=604800
