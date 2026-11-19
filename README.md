@@ -4,7 +4,7 @@
 
 当前主题 **Wayline（径迹）** 位于 `themes/wayline`，采用深色优先的工程笔记视觉风格，支持深色、亮色和暖纸色护眼模式，以及文章目录、代码复制、归档、分类、标签、全文搜索和 Giscus 评论。
 
-主题自托管 Space Grotesk、Noto Sans SC、LXGW WenKai 和 JetBrains Mono，均采用 SIL Open Font License 1.1，可用于商业项目。字体来源和许可证见 `themes/wayline/THIRD_PARTY.md`。
+标题字体使用自托管的 LXGW WenKai，正文和等宽文本使用系统字体，以减少首屏字体请求。LXGW WenKai 采用 SIL Open Font License 1.1，详情见 `themes/wayline/THIRD_PARTY.md`。
 
 ## 影像菜单
 
