@@ -4,7 +4,7 @@
 [submodule "public"]
 	path = public
 	url = git@github.com:ycrxun/ycrxun.github.io.git
-	branch = master
+	branch = main
 [submodule "themes/wayline"]
 	path = themes/wayline
 	url = git@github.com:ycrxun/wayline.git
